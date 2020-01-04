@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
@@ -70,7 +69,7 @@ public class UserController {
     
     @RequestMapping(value = "/update")
     @ResponseBody
-    public String update(Integer id, String password, String apiKey, String secretKey, HttpSession session) {
+    public String update(Integer id, String password, String apiKey, String secretKey, String mail, HttpSession session) {
     	JSONObject result = new JSONObject();
     	try {
         	User user = new User();
@@ -78,6 +77,7 @@ public class UserController {
         	user.setPassword(password);
         	user.setApiKey(apiKey);
         	user.setSecretKey(secretKey);
+        	user.setMail(mail);
         	int number = userService.updateUserById(user);
 			if(number > 0) {
 				result.put("status", "ok");

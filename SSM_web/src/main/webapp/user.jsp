@@ -30,6 +30,7 @@
 	            			$("#password").val(msgObject.password);
 	            			$("#apiKey").val(msgObject.apiKey);
 	            			$("#secretKey").val(msgObject.secretKey);
+	            			$("#mail").val(msgObject.mail);
 	            		}
 
 	            	}
@@ -54,7 +55,7 @@
 	            type : "get",
 	            url : "/User/update",
 	            data : "id=" + $("#id").val() + "&password=" + $("#password").val() + "&apiKey=" + $("#apiKey").val() 
-	            	+ "&secretKey=" + $("#secretKey").val(),
+	            	+ "&secretKey=" + $("#secretKey").val() + "&mail=" + $("#mail").val(),
 
 	            //成功
 	            success : function(data) {
@@ -91,7 +92,7 @@
 <table id="config" name="config" width="100%" cellpadding="1" cellspacing="0" border="1">
 <input type="hidden" id="id" name="id">
 <tr>
-<td><b>密码</b></td>
+<td><b>password</b></td>
 <td><input type="text" id="password" name="password" value="" size="50"></td>
 </tr>
 <tr>
@@ -101,6 +102,10 @@
 <tr>
 <td><b>secretKey</b></td>
 <td><input type="text" id="secretKey" name="secretKey" value="" size="80"></td>
+</tr>
+<tr>
+<td><b>mail</b></td>
+<td><input type="text" id="mail" name="mail" value="" size="50"></td>
 </tr>
 <tr>
 <td><input type="button" name="save" id="save" value="保存" onclick ="save()"/></td>

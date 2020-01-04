@@ -20,8 +20,10 @@ import com.alibaba.fastjson.TypeReference;
 
 import cn.itcast.client.HttpClient;
 import cn.itcast.client.SHA256;
+import cn.itcast.dao.MailMapper;
 import cn.itcast.dao.PlanMapper;
 import cn.itcast.pojo.Config;
+import cn.itcast.pojo.Mail;
 import cn.itcast.pojo.Plan;
 import cn.itcast.service.ConfigService;
 import cn.itcast.service.OrderService;
@@ -39,6 +41,10 @@ public class OrderServiceImpl implements OrderService {
 
     @Autowired
     private PlanMapper planMapper;
+    
+    @Autowired
+    private MailMapper mailMapper;
+    
     @Autowired
     private ConfigService configService;
     
@@ -64,6 +70,10 @@ public class OrderServiceImpl implements OrderService {
 	
 	public int updatePlanById(Integer id, Integer state) {
 		return planMapper.updatePlanById(id, state);
+	}
+	
+	public int insertMail(Mail mail) {
+		return mailMapper.insertMail(mail);
 	}
 
 	//需要保证事务
@@ -102,6 +112,18 @@ public class OrderServiceImpl implements OrderService {
 				resultJson.put("msg", "create plan successful");
 				resultJson.put("id", plan.getId());
 				result = resultJson.toString();
+				if(status == 1) {
+					Mail mail = new Mail();
+					mail.setUid(plan.getUid());
+					mail.setSymbol(plan.getSymbol());
+					mail.setSubject(symbol + "计划单" + plan.getId() + "创建成功，已提交到币安");
+					mail.setContent("计划单详情：第一档：" + plan.getFirst() + "，第二档：" + plan.getSecond() 
+							+ "，第三档：" + plan.getThird() + "，止损档：" + plan.getStop());
+					mail.setState(0);
+					mail.setCreateTime(format.format(new Date()));
+					mail.setUpdateTime(format.format(new Date()));
+					mailMapper.insertMail(mail);
+				}
 			} else {
 				JSONObject resultJson = new JSONObject();
 				resultJson.put("status", "error");
@@ -152,6 +174,18 @@ public class OrderServiceImpl implements OrderService {
 				resultJson.put("status", "ok");
 				resultJson.put("msg", "create plan successful");
 				result = resultJson.toString();
+				if(status == 1) {
+					Mail mail = new Mail();
+					mail.setUid(plan.getUid());
+					mail.setSymbol(plan.getSymbol());
+					mail.setSubject(symbol + "计划单" + id + "的跟单创建成功，已提交到币安");
+					mail.setContent("计划单详情：第一档：" + plan.getFirst() + "，第二档：" + plan.getSecond() 
+							+ "，第三档：" + plan.getThird() + "，止损档：" + plan.getStop());
+					mail.setState(0);
+					mail.setCreateTime(format.format(new Date()));
+					mail.setUpdateTime(format.format(new Date()));
+					mailMapper.insertMail(mail);
+				}
 			} else {
 				JSONObject resultJson = new JSONObject();
 				resultJson.put("status", "error");
@@ -404,7 +438,7 @@ public class OrderServiceImpl implements OrderService {
     	return result;
     }
     
-    public int cancelPlan(String symbol, String id, String orderIds, String apiKey, String secretKey) throws Exception {
+    public int cancelPlan(Integer uid, String symbol, String id, String orderIds, String apiKey, String secretKey) throws Exception {
     	if(StringUtils.isNotEmpty(orderIds)) {
     		String[] orders = orderIds.split(",");
     		for(String orderId : orders) {
@@ -415,6 +449,15 @@ public class OrderServiceImpl implements OrderService {
     	    	}
     		}
     	}
+		Mail mail = new Mail();
+		mail.setUid(uid);
+		mail.setSymbol(symbol);
+		mail.setSubject(symbol + "计划单" + id + "和相关挂单撤销成功");
+		mail.setContent("关联订单：" + (StringUtils.isNotEmpty(orderIds) ? orderIds : ""));
+		mail.setState(0);
+		mail.setCreateTime(format.format(new Date()));
+		mail.setUpdateTime(format.format(new Date()));
+		mailMapper.insertMail(mail);
     	return planMapper.updatePlanById(Integer.parseInt(id), 4);
     }
 }

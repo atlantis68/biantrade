@@ -1,6 +1,8 @@
 package cn.itcast.controller;
 
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpSession;
@@ -19,6 +21,7 @@ import com.alibaba.fastjson.JSONObject;
 import cn.itcast.client.HttpClient;
 import cn.itcast.client.SHA256;
 import cn.itcast.pojo.Config;
+import cn.itcast.pojo.Mail;
 import cn.itcast.pojo.User;
 import cn.itcast.service.ConfigService;
 import cn.itcast.service.OrderService;
@@ -40,6 +43,8 @@ public class AccountController {
     private OrderService orderService;
     
 	private static DecimalFormat decimalFormat = new DecimalFormat("0.000");
+	
+	private static SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	
     @RequestMapping(value = "/index")
     public String logout(HttpSession session) {
@@ -72,6 +77,15 @@ public class AccountController {
     		String temp = orderService.trade(symbol, side, realQuantity, null, null, "MARKET", null, null, null, user.getApiKey(), user.getSecretKey());
         	result.put("status", "ok");
         	result.put("msg", JSON.toJSONString(temp));
+    		Mail mail = new Mail();
+    		mail.setUid(user.getId());
+    		mail.setSymbol(symbol);
+    		mail.setSubject(symbol + "即时单创建成功，已提交到币安");
+    		mail.setContent("提交数量：" + realQuantity);
+    		mail.setState(0);
+    		mail.setCreateTime(format.format(new Date()));
+    		mail.setUpdateTime(format.format(new Date()));
+    		orderService.insertMail(mail);
         	if(user.getRole() == 0) {
 				Config config = new Config();
 				config.setType(symbol);
@@ -85,6 +99,14 @@ public class AccountController {
 	        			realQuantity = quantity;
 	        		}
 					orderService.trade(symbol, side, realQuantity, null, null, "MARKET", null, null, null, c.getType(), c.getLossWorkingType());
+		    		mail.setUid(c.getUid());
+		    		mail.setSymbol(symbol);
+		    		mail.setSubject(symbol + "即时单跟单创建成功，已提交到币安");
+		    		mail.setContent("提交数量：" + realQuantity);
+		    		mail.setState(0);
+		    		mail.setCreateTime(format.format(new Date()));
+		    		mail.setUpdateTime(format.format(new Date()));
+		    		orderService.insertMail(mail);
 				}
         	}
 		} catch (Exception e) {

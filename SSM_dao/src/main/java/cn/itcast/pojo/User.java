@@ -7,6 +7,7 @@ public class User {
 	private String password;
 	private String apiKey;
 	private String secretKey;
+	private String mail;
 	private Integer role;
 
 	public Integer getId() {
@@ -49,6 +50,14 @@ public class User {
 		this.secretKey = secretKey;
 	}
 
+	public String getMail() {
+		return mail;
+	}
+
+	public void setMail(String mail) {
+		this.mail = mail;
+	}
+
 	public Integer getRole() {
 		return role;
 	}
@@ -56,12 +65,5 @@ public class User {
 	public void setRole(Integer role) {
 		this.role = role;
 	}
-
-	@Override
-	public String toString() {
-		return "User [id=" + id + ", username=" + username + ", password=" + password + ", apiKey=" + apiKey
-				+ ", secretKey=" + secretKey + ", role=" + role + "]";
-	}
-
 
 }

@@ -11,6 +11,6 @@
         select * from user where id= #{id}
     </select>    
     <update id="updateUserById" parameterType="cn.itcast.pojo.User">
-		UPDATE `user` SET `password` = #{password}, `apiKey` = #{apiKey}, `secretKey` = #{secretKey}  WHERE `id` = #{id};
+		UPDATE `user` SET `password` = #{password}, `apiKey` = #{apiKey}, `secretKey` = #{secretKey}, `mail` = #{mail}  WHERE `id` = #{id};
     </update> 
 </mapper>

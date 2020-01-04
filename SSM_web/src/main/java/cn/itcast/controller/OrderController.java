@@ -129,7 +129,7 @@ public class OrderController {
     	try {
     		//获取配置项
     		User user = (User) session.getAttribute("USER_SESSION");
-    		int number = orderService.cancelPlan(symbol, id, orderIds, user.getApiKey(), user.getSecretKey());
+    		int number = orderService.cancelPlan(user.getId(), symbol, id, orderIds, user.getApiKey(), user.getSecretKey());
 			if(number > 0) {
 				result.put("status", "ok");
 				result.put("msg", "canceled successful");
@@ -141,7 +141,7 @@ public class OrderController {
 				//进入关联撤单
 				List<Plan> plans = orderService.findPlansById(Integer.parseInt(id));
 				for(Plan plan : plans) {
-					ThreadPool.execute(new CancelPlanTask(orderService, plan.getId(), plan.getSymbol(), plan.getOrderIds(), plan.getCreateTime(), plan.getUpdateTime()));
+					ThreadPool.execute(new CancelPlanTask(orderService, plan.getUid(), plan.getId(), plan.getSymbol(), plan.getOrderIds(), plan.getCreateTime(), plan.getUpdateTime()));
 				}				
 			}
 		} catch (Exception e) {
