@@ -1,12 +1,16 @@
 package cn.itcast.task;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import cn.itcast.dao.MailMapper;
 import cn.itcast.dao.PlanMapper;
+import cn.itcast.pojo.Mail;
 import cn.itcast.pojo.Plan;
 import cn.itcast.service.OrderService;
 import cn.itcast.utils.ToolsUtils;
@@ -17,10 +21,12 @@ public class DealState1 implements Runnable {
     private PlanMapper planMapper;
     
     @Autowired
-    private OrderService orderService;
+    private MailMapper mailMapper;
     
     private static final Logger logger = LoggerFactory.getLogger(DealState1.class);
     
+    private static SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
     public DealState1() {
     	new Thread(this).start();
     }
@@ -34,9 +40,29 @@ public class DealState1 implements Runnable {
 	    			Float curPrice = ToolsUtils.getCurPriceByKey(plan.getSymbol());
 	    			if(plan.getFirst() > plan.getSecond() && plan.getFirst() > curPrice) {
 	    				planMapper.updatePlanById(plan.getId(), 2);
+    					Mail mail = new Mail();
+    					mail.setUid(plan.getUid());
+    					mail.setSymbol(plan.getSymbol());
+    					mail.setSubject(plan.getSymbol() + "计划单（多单）" + plan.getId() + "满足第一档价格" + curPrice + "大于当前价格" + curPrice + "，预估已成交");
+    					mail.setContent("计划单详情：第一档：" + plan.getFirst() + "，第二档：" + plan.getSecond() 
+    							+ "，第三档：" + plan.getThird() + "，止损档：" + plan.getStop());
+    					mail.setState(0);
+    					mail.setCreateTime(format.format(new Date()));
+    					mail.setUpdateTime(format.format(new Date()));
+    					mailMapper.insertMail(mail);
 	    			} 
 	    			if(plan.getFirst() < plan.getSecond() && plan.getFirst() < curPrice) {
 	    				planMapper.updatePlanById(plan.getId(), 2);
+    					Mail mail = new Mail();
+    					mail.setUid(plan.getUid());
+    					mail.setSymbol(plan.getSymbol());
+    					mail.setSubject(plan.getSymbol() + "计划单（空单）" + plan.getId() + "满足第一档价格" + curPrice + "小于于当前价格" + curPrice + "，预估已成交");
+    					mail.setContent("计划单详情：第一档：" + plan.getFirst() + "，第二档：" + plan.getSecond() 
+    							+ "，第三档：" + plan.getThird() + "，止损档：" + plan.getStop());
+    					mail.setState(0);
+    					mail.setCreateTime(format.format(new Date()));
+    					mail.setUpdateTime(format.format(new Date()));
+    					mailMapper.insertMail(mail);
 	    			} 
 	    		}
 	    	} catch(Exception e) {

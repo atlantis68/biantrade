@@ -12,7 +12,7 @@ public class HttpClient {
 	    .readTimeout(10, TimeUnit.SECONDS)
 	    .writeTimeout(10, TimeUnit.SECONDS)
 	    .connectTimeout(5, TimeUnit.SECONDS)
-	    .proxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress("127.0.0.1", 1080)))
+//	    .proxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress("127.0.0.1", 1080)))
 		.sslSocketFactory(SSLSocketClient.getSSLSocketFactory())
 		.hostnameVerifier(SSLSocketClient.getHostnameVerifier());
     
