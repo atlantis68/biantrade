@@ -146,6 +146,15 @@ public class AccountController {
             String temp = orderService.cancel(symbol, orderId, user.getApiKey(), user.getSecretKey());
         	result.put("status", "ok");
         	result.put("msg", JSON.toJSONString(temp));
+    		Mail mail = new Mail();
+    		mail.setUid(user.getId());
+    		mail.setSymbol(symbol);
+    		mail.setSubject(symbol + "即时单撤销成功，已提交到币安");
+    		mail.setContent("撤销订单号：" + orderId);
+    		mail.setState(0);
+    		mail.setCreateTime(format.format(new Date()));
+    		mail.setUpdateTime(format.format(new Date()));
+    		orderService.insertMail(mail);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -179,6 +188,15 @@ public class AccountController {
 			logger.info("cancelAll = " + temp);
         	result.put("status", "ok");
         	result.put("msg", temp);
+    		Mail mail = new Mail();
+    		mail.setUid(user.getId());
+    		mail.setSymbol(symbol);
+    		mail.setSubject(symbol + "的全部即时单撤销成功，已提交到币安");
+    		mail.setContent(symbol + "的全部即时单撤销成功，已提交到币安");
+    		mail.setState(0);
+    		mail.setCreateTime(format.format(new Date()));
+    		mail.setUpdateTime(format.format(new Date()));
+    		orderService.insertMail(mail);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

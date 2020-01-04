@@ -8,7 +8,7 @@
     </select>
     <select id="findConfigFlag2" parameterType="cn.itcast.pojo.Config"
             resultType="cn.itcast.pojo.Config">
-        select c.marketAmount, c.rate, `apikey` as `type`, `secretkey` as lossWorkingType from config c, user u 
+        select c.uid, c.marketAmount, c.rate, `apikey` as `type`, `secretkey` as lossWorkingType from config c, user u 
         where c.uid = u.id and type=#{type} and autoTrade = 1 and u.role = 2 
     </select>    
     <select id="findConfigFlag12" parameterType="cn.itcast.pojo.Config"
