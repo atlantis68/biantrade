@@ -14,6 +14,8 @@ public interface OrderService {
     
     public List<Plan> findPlansById(Integer id);
     
+    public int updatePlanById(Integer id, Integer state);
+    
 	public int generateAndDealOrder(String symbol, String first, String second, String third, String stop, String trigger, 
 			Integer compare, Integer uid, String apiKey, String secretKey, List<String> orderIds);
 			

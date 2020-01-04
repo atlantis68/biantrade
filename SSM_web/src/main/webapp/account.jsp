@@ -656,7 +656,8 @@
 		            		}
 		            		for (x in list) {
 		            			i = list.length - x - 1;
-		            			var edit = "<input type=\"button\" id=\"plan" + list[i].id + "\" name=\"plan" + list[i].id + "\" value=\"撤销计划单\" onclick =\"cancelPlan(" + list[i].id + ", '" + list[i].orderIds + "')\"/>";
+		            			var edit = "<input type=\"button\" id=\"cplan" + list[i].id + "\" name=\"cplan" + list[i].id + "\" value=\"撤销\" onclick =\"cancelPlan(" + list[i].id + ", '" + list[i].orderIds + "')\"/>"
+		            			 + "<input type=\"button\" id=\"oplan" + list[i].id + "\" name=\"oplan" + list[i].id + "\" value=\"完成\" onclick =\"finish(" + list[i].id + ")\"/>";
 		            			str += "<tr>" + 
 			            			"<td>" + Math.round(list[i].first * 100) / 100 + "</td>" + 
 			            			"<td>" + Math.round(list[i].second * 100) / 100 + "</td>" + 
@@ -726,7 +727,7 @@
 		            		}
 		            		for (x in list) {
 		            			i = list.length - x - 1;
-		            			var edit = "<input type=\"button\" id=\"fplan" + list[i].id + "\" name=\"fplan" + list[i].id + "\" value=\"跟随计划单\" onclick =\"follow(" + list[i].id + ")\"/>";
+		            			var edit = "<input type=\"button\" id=\"fplan" + list[i].id + "\" name=\"fplan" + list[i].id + "\" value=\"跟随\" onclick =\"follow(" + list[i].id + ")\"/>";
 		            			str += "<tr>" + 
 			            			"<td>" + list[i].first + "</td>" + 
 			            			"<td>" + list[i].second + "</td>" + 
@@ -763,7 +764,7 @@
 	    
 	    function cancelPlan(id, orderIds){  
 	    	$("#message").html('');
-	    	$("#plan"+id).attr("disabled","true");
+	    	$("#cplan"+id).attr("disabled","true");
 	        $.ajax({  
 	            type : "get",
 	            url : "/Order/cancelPlan",
@@ -791,7 +792,7 @@
 
 	            //请求完成后回调函数 (请求成功或失败之后均调用)。
 	            complete: function(message) {
-	            	$("#plan"+id).removeAttr("disabled");
+	            	$("#cplan"+id).removeAttr("disabled");
 	            } 
 	        });  
 	    }
@@ -827,6 +828,41 @@
 	            //请求完成后回调函数 (请求成功或失败之后均调用)。
 	            complete: function(message) {
 	            	$("#fplan"+id).removeAttr("disabled");
+	            } 
+	        });  
+	    }	
+	    
+	    function finish(id){  
+	    	$("#message").html('');
+	    	$("#oplan"+id).attr("disabled","true");
+	        $.ajax({  
+	            type : "get",
+	            url : "/Order/finish",
+	            data : "id="+id,
+
+	            //成功
+	            success : function(data) {
+	            	if(data.indexOf("登录") > -1) {
+	            		window.location.href='User/logout';
+	            	} else {
+	            		var jsonObject= jQuery.parseJSON(data);
+	            		if(jsonObject.status == 'error') {
+	            			$("#message").html(jsonObject.msg);
+	            		} else {
+	            			findAllPlans();
+	            			$("#message").html("plan" + id + " " + jsonObject.msg);	
+	            		}
+	            	}
+	            },
+
+	            //错误情况
+	            error : function(error) {
+	                console.log("error : " + error);
+	            },
+
+	            //请求完成后回调函数 (请求成功或失败之后均调用)。
+	            complete: function(message) {
+	            	$("#oplan"+id).removeAttr("disabled");
 	            } 
 	        });  
 	    }	    

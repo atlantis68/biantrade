@@ -162,7 +162,7 @@ public class OrderController {
     		//获取配置项
     		User user = (User) session.getAttribute("USER_SESSION");
     		Plan plan = orderService.findPlanById(id);
-    		if(plan != null) {
+    		if(plan != null && plan.getState() < 4) {
     			orderService.follow(id, plan.getSymbol(), plan.getFirst().toString(), plan.getSecond().toString(), 
     					plan.getThird().toString(), plan.getStop().toString(), plan.getTrigger().toString(), 
     					plan.getCompare(), user.getId(), user.getApiKey(), user.getSecretKey());
@@ -172,6 +172,29 @@ public class OrderController {
     			result.put("status", "error");
     			result.put("msg", "follow failed");   
     		}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+    		result.put("status", "error");
+    		result.put("msg", e.getMessage());
+		}
+    	return result.toJSONString();
+		
+    }
+    
+    @RequestMapping(value = "/finish")
+    @ResponseBody
+    public String finish(String id) {
+    	JSONObject result = new JSONObject();
+    	try {
+    		int numer = orderService.updatePlanById(Integer.parseInt(id), 5);
+			if(numer > 0) {
+				result.put("status", "ok");
+				result.put("msg", "finish successful");
+			} else {
+				result.put("status", "error");
+				result.put("msg", "finish failed");
+			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -61,6 +61,10 @@ public class OrderServiceImpl implements OrderService {
 	public List<Plan> findPlansById(Integer id) {
 		return planMapper.findPlansById(id);
 	}
+	
+	public int updatePlanById(Integer id, Integer state) {
+		return planMapper.updatePlanById(id, state);
+	}
 
 	//需要保证事务
 	public String plan(String symbol, String first, String second, String third, 
