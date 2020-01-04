@@ -15,7 +15,7 @@
     <packaging>pom</packaging>
     <!--统一管理jar包版本-->
     <properties>
-        <spring.version>5.0.2.RELEASE</spring.version>
+        <spring.version>5.2.2.RELEASE</spring.version>
         <springmvc.version>5.0.2.RELEASE</springmvc.version>
         <mybatis.version>3.4.5</mybatis.version>
         <slf4j.version>1.7.7</slf4j.version>
