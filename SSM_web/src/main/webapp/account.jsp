@@ -656,8 +656,8 @@
 		            		}
 		            		for (x in list) {
 		            			i = list.length - x - 1;
-		            			var edit = "<input type=\"button\" id=\"cplan" + list[i].id + "\" name=\"cplan" + list[i].id + "\" value=\"撤销\" onclick =\"cancelPlan(" + list[i].id + ", '" + list[i].orderIds + "')\"/>"
-		            			 + "<input type=\"button\" id=\"oplan" + list[i].id + "\" name=\"oplan" + list[i].id + "\" value=\"完成\" onclick =\"finish(" + list[i].id + ")\"/>";
+		            			var edit = "<input type=\"button\" id=\"cplan" + list[i].id + "\" name=\"cplan" + list[i].id + "\" value=\"撤销\" onclick =\"cancelPlan(" + list[i].id + ", '" + list[i].orderIds + "')\"/>";
+		            			 /* + "<input type=\"button\" id=\"oplan" + list[i].id + "\" name=\"oplan" + list[i].id + "\" value=\"完成\" onclick =\"finish(" + list[i].id + ")\"/>"; */
 		            			str += "<tr>" + 
 			            			"<td>" + Math.round(list[i].first * 100) / 100 + "</td>" + 
 			            			"<td>" + Math.round(list[i].second * 100) / 100 + "</td>" + 
