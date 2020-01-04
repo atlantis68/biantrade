@@ -5,6 +5,8 @@
     <title>主页</title>
     <script type="text/javascript">  
 
+    window.setInterval(getPrice, 5000); 
+    
     function validateFloat(val){
    	 var patten = /^-?\d+\.?\d{0,2}$/;
    	 return patten.test(val);
@@ -221,6 +223,41 @@
     	}
     	return result;
     }
+    
+    function getPrice(){  
+        $.ajax({  
+            type : "get",
+            url : "/Account/getPrice",
+            data : '',
+
+            //成功
+            success : function(data) {
+            	if(data.indexOf("登录") > -1) {
+            		window.location.href='User/logout';
+            	} else {
+            		var jsonObject= jQuery.parseJSON(data);  
+            		if(jsonObject.status == 'ok') {
+	            		var prices = JSON.parse(jsonObject.msg);
+	            		var str = "<tr>";
+	            		for (x in prices) {
+	            			str += "<td>" + x + "：" + prices[x] + "</td>";
+	            		}
+	            		str += "</tr>";
+            			$("#showList").html(str);
+            		}
+            	}
+            },
+
+            //错误情况
+            error : function(error) {
+                console.log("error : " + error);
+            },
+
+            //请求完成后回调函数 (请求成功或失败之后均调用)。
+            complete: function(message) {
+            } 
+        });  
+    }  
     
 	    function findAllOrders(){  
 	    	$("#message").html('');
@@ -799,6 +836,8 @@
     <%-- 提示信息--%>
     <span id="message" name="message"></span>
 </font>
+<p>
+<table id="showList" name="showList" width="100%" cellpadding="1" cellspacing="0" border="1"></table>
 <p>
 <input type="button" id="balanceSubmit" id="balanceSubmit" value="刷新账户" onclick ="balance()"/><p>
 <table id="balanceList" name="balanceList" width="100%" cellpadding="1" cellspacing="0" border="1"></table>

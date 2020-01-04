@@ -2,7 +2,6 @@ package cn.itcast.controller;
 
 import java.text.DecimalFormat;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.http.HttpSession;
 
@@ -16,7 +15,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.TypeReference;
 
 import cn.itcast.client.HttpClient;
 import cn.itcast.client.SHA256;
@@ -283,5 +281,14 @@ public class AccountController {
 			}
 		}
     	return result.toJSONString();
+    }
+    
+    @RequestMapping("/getPrice")
+    @ResponseBody
+    public String getPrice() {
+    	JSONObject result = new JSONObject();
+		result.put("status", "ok");
+		result.put("msg", JSON.toJSONString(ToolsUtils.getCurPrice()));
+		return result.toJSONString();
     }
 }
