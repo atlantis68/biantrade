@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.itcast.dao.ConfigMapper">
+    <select id="findConfigByUid" parameterType="cn.itcast.pojo.Config"
+            resultType="cn.itcast.pojo.Config">
+        select * from config where uid= #{uid} and type=#{type}
+    </select>
+    <select id="findConfigFlag2" parameterType="cn.itcast.pojo.Config"
+            resultType="cn.itcast.pojo.Config">
+        select c.marketAmount, c.rate, `apikey` as `type`, `secretkey` as lossWorkingType from config c, user u 
+        where c.uid = u.id and type=#{type} and autoTrade = 1 and u.role = 2 
+    </select>    
+    <select id="findConfigFlag12" parameterType="cn.itcast.pojo.Config"
+            resultType="cn.itcast.pojo.Config">
+        select c.uid, `apikey` as `type`, `secretkey` as lossWorkingType from config c, user u 
+        where c.uid = u.id and type=#{type} and autoTrade = 1 and u.role in (1,2)
+    </select>      
+    <update id="updateConfig" parameterType="cn.itcast.pojo.Config">
+		UPDATE config SET marketAmount = #{marketAmount}, limitAmount = #{limitAmount}, maxLoss = #{maxLoss}, 
+			tradeOffset = #{tradeOffset}, lossTriggerOffset = #{lossTriggerOffset}, lossEntrustOffset = #{lossEntrustOffset}, 
+			lossWorkingType = #{lossWorkingType}, lossType = #{lossType}, rate = #{rate}, 
+			autoTrade = #{autoTrade}, autoCancel = #{autoCancel} WHERE id = #{id}
+    </update>    
+</mapper>

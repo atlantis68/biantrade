@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.itcast.dao.PlanMapper">
+    <insert id="insertPlan" parameterType="cn.itcast.pojo.Plan" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO `plan` (uid, pid, symbol, first, second, third, stop, `trigger`, compare, state, createTime, updateTime, `type`, orderIds) 
+        	VALUES (#{uid}, #{pid}, #{symbol}, #{first}, #{second}, #{third}, #{stop}, #{trigger}, #{compare}, #{state}, #{createTime}, #{updateTime}, #{type}, #{orderIds});
+    </insert>
+    <select id="findPlanByUid" parameterType="String"
+            resultType="cn.itcast.pojo.Plan">
+        select * from `plan` where uid = #{uid} and symbol = #{symbol} and state &lt; 4;
+    </select>         
+    <select id="findFllowPlans" parameterType="String"
+            resultType="cn.itcast.pojo.Plan">
+        SELECT p.* FROM plan p, USER u WHERE symbol = #{symbol} AND state &lt; 4 AND u.id = p.uid AND u.role = 0;
+    </select>        
+    <update id="updatePlanById" parameterType="Integer">
+        update `plan` set state = #{state} where id = #{id};
+    </update>   
+    <select id="findPlanById" parameterType="Integer"
+            resultType="cn.itcast.pojo.Plan">
+        select * from `plan` where id = #{id}
+    </select>
+    <select id="findPlansById" parameterType="Integer"
+            resultType="cn.itcast.pojo.Plan">
+		SELECT p.id, `symbol`, `apikey` as createTime, `secretkey` as updateTime, `orderIds` FROM `plan` p, user u, config c where p.uid = u.id 
+		and c.uid = u.id and c.type = p.symbol and c.autoCancel = 1 and p.pid = #{id} AND p.state &lt; 4
+    </select>   
+    <select id="findPlansByState" parameterType="String"
+            resultType="cn.itcast.pojo.Plan">
+        select p.`id`, p.`uid`, p.`pid`, p.`symbol`, p.`first`, p.`second`, p.`third`, p.`stop`, p.`trigger`, p.`compare`, p.`state`, 
+        	u.apikey as createTime, u.secretkey as updateTime, p.`type`, p.`orderIds` from `plan` p, user u where p.uid = u.id and state = #{state}
+    </select>     
+</mapper>
