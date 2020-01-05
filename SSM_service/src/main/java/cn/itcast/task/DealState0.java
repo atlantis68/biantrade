@@ -51,42 +51,46 @@ public class DealState0 implements Runnable {
 	    	    				int status = orderService.generateAndDealOrder(plan.getSymbol(), plan.getFirst().toString(), plan.getSecond().toString(), 
 	    	    						plan.getThird().toString(), plan.getStop().toString(), plan.getTrigger().toString(), plan.getCompare(), plan.getUid(), 
 	    	    						plan.getCreateTime(), plan.getUpdateTime(), orderIds);
+	    	    				planMapper.updatePlanById(plan.getId(), (status == 1 ? 1 : 4));
+	    	    				Mail mail = new Mail();
+	    	    				mail.setUid(plan.getUid());
+	    	    				mail.setSymbol(plan.getSymbol());
 	    	    				if(status == 1) {
-	    	    					planMapper.updatePlanById(plan.getId(), 1);
-	    	    					Mail mail = new Mail();
-	    	    					mail.setUid(plan.getUid());
-	    	    					mail.setSymbol(plan.getSymbol());
-	    	    					mail.setSubject(plan.getSymbol() + "计划单" + plan.getId() + "满足当前价" + curPrice + "大于触发价" + plan.getTrigger() + "，被系统提交到币安");
+	    	    					mail.setSubject(plan.getSymbol() + "计划单" + (plan.getFirst() > plan.getSecond() ? "（多单）" : "（空单）")
+	    	    							+ plan.getFirst() + "满足当前价" + curPrice + "大于触发价" + plan.getTrigger() + "，被系统提交到币安");
 	    	    					mail.setContent("计划单详情：第一档：" + plan.getFirst() + "，第二档：" + plan.getSecond() 
-	    	    							+ "，第三档：" + plan.getThird() + "，止损档：" + plan.getStop());
-	    	    					mail.setState(0);
-	    	    					mail.setCreateTime(format.format(new Date()));
-	    	    					mail.setUpdateTime(format.format(new Date()));
-	    	    					mailMapper.insertMail(mail);
+	    	    							+ "，第三档：" + plan.getThird() + "，止损档：" + plan.getStop());	    	    					
 	    	    				} else {
-	    	    					planMapper.updatePlanById(plan.getId(), 4);
+	    	    					mail.setSubject(plan.getSymbol() + "计划单" + (plan.getFirst() > plan.getSecond() ? "（多单）" : "（空单）")
+	    	    							+ "，提交到币安失败");
+	    	    					mail.setContent("异常编码：" + status);
 	    	    				}
-	    	    				
+	    	    				mail.setState(0);
+	    	    				mail.setCreateTime(format.format(new Date()));
+	    	    				mail.setUpdateTime(format.format(new Date()));
+	    	    				mailMapper.insertMail(mail);
 	    	    			} else if(plan.getCompare() == 1 && curPrice < plan.getTrigger()) {
 	    	    				int status = orderService.generateAndDealOrder(plan.getSymbol(), plan.getFirst().toString(), plan.getSecond().toString(), 
 	    	    						plan.getThird().toString(), plan.getStop().toString(), plan.getTrigger().toString(), plan.getCompare(), plan.getUid(), 
 	    	    						plan.getCreateTime(), plan.getUpdateTime(), orderIds);
+	    	    				planMapper.updatePlanById(plan.getId(), (status == 1 ? 1 : 4));
+	    	    				Mail mail = new Mail();
+	    	    				mail.setUid(plan.getUid());
+	    	    				mail.setSymbol(plan.getSymbol());
 	    	    				if(status == 1) {
-	    	    					planMapper.updatePlanById(plan.getId(), 1);
-	    	    					Mail mail = new Mail();
-	    	    					mail.setUid(plan.getUid());
-	    	    					mail.setSymbol(plan.getSymbol());
-	    	    					mail.setSubject(plan.getSymbol() + "计划单" + plan.getId() + "满足当前价" + curPrice + "小于触发价" + plan.getTrigger() + "，被系统提交到币安");
+	    	    					mail.setSubject(plan.getSymbol() + "计划单" + (plan.getFirst() > plan.getSecond() ? "（多单）" : "（空单）")
+	    	    							+ plan.getFirst() + "满足当前价" + curPrice + "小于触发价" + plan.getTrigger() + "，被系统提交到币安");
 	    	    					mail.setContent("计划单详情：第一档：" + plan.getFirst() + "，第二档：" + plan.getSecond() 
-	    	    							+ "，第三档：" + plan.getThird() + "，止损档：" + plan.getStop());
-	    	    					mail.setState(0);
-	    	    					mail.setCreateTime(format.format(new Date()));
-	    	    					mail.setUpdateTime(format.format(new Date()));
-	    	    					mailMapper.insertMail(mail);
-	    	    					planMapper.updatePlanById(plan.getId(), 1);
+	    	    							+ "，第三档：" + plan.getThird() + "，止损档：" + plan.getStop());	    	    					
 	    	    				} else {
-	    	    					planMapper.updatePlanById(plan.getId(), 4);
+	    	    					mail.setSubject(plan.getSymbol() + "计划单" + (plan.getFirst() > plan.getSecond() ? "（多单）" : "（空单）")
+	    	    							+ "，提交到币安失败");
+	    	    					mail.setContent("异常编码：" + status);
 	    	    				}
+	    	    				mail.setState(0);
+	    	    				mail.setCreateTime(format.format(new Date()));
+	    	    				mail.setUpdateTime(format.format(new Date()));
+	    	    				mailMapper.insertMail(mail);
 	    	    			}
 	    	    		}
 	    			}

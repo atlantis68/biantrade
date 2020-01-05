@@ -656,7 +656,7 @@
 		            		}
 		            		for (x in list) {
 		            			i = list.length - x - 1;
-		            			var edit = "<input type=\"button\" id=\"cplan" + list[i].id + "\" name=\"cplan" + list[i].id + "\" value=\"撤销\" onclick =\"cancelPlan(" + list[i].id + ", '" + list[i].orderIds + "')\"/>";
+		            			var edit = "<input type=\"button\" id=\"cplan" + list[i].id + "\" name=\"cplan" + list[i].id + "\" value=\"撤销计划单\" onclick =\"cancelPlan(" + list[i].id + ", '" + list[i].orderIds + "')\"/>";
 		            			 /* + "<input type=\"button\" id=\"oplan" + list[i].id + "\" name=\"oplan" + list[i].id + "\" value=\"完成\" onclick =\"finish(" + list[i].id + ")\"/>"; */
 		            			str += "<tr>" + 
 			            			"<td>" + Math.round(list[i].first * 100) / 100 + "</td>" + 
@@ -727,7 +727,7 @@
 		            		}
 		            		for (x in list) {
 		            			i = list.length - x - 1;
-		            			var edit = "<input type=\"button\" id=\"fplan" + list[i].id + "\" name=\"fplan" + list[i].id + "\" value=\"跟随\" onclick =\"follow(" + list[i].id + ")\"/>";
+		            			var edit = "<input type=\"button\" id=\"fplan" + list[i].id + "\" name=\"fplan" + list[i].id + "\" value=\"跟随计划单\" onclick =\"follow(" + list[i].id + ")\"/>";
 		            			str += "<tr>" + 
 			            			"<td>" + list[i].first + "</td>" + 
 			            			"<td>" + list[i].second + "</td>" + 

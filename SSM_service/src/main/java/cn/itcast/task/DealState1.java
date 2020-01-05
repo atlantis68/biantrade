@@ -46,7 +46,7 @@ public class DealState1 implements Runnable {
 	    						Mail mail = new Mail();
 	    						mail.setUid(plan.getUid());
 	    						mail.setSymbol(plan.getSymbol());
-	    						mail.setSubject(plan.getSymbol() + "计划单（多单）" + plan.getId() + "满足第一档价格" + plan.getFirst() + "大于当前价格" + curPrice + "，预估已成交");
+	    						mail.setSubject(plan.getSymbol() + "计划单（多单）" + plan.getFirst() + "满足第一档价格" + plan.getFirst() + "大于当前价格" + curPrice + "，预估已成交");
 	    						mail.setContent("计划单详情：第一档：" + plan.getFirst() + "，第二档：" + plan.getSecond() 
 	    								+ "，第三档：" + plan.getThird() + "，止损档：" + plan.getStop());
 	    						mail.setState(0);
@@ -59,7 +59,7 @@ public class DealState1 implements Runnable {
 	    						Mail mail = new Mail();
 	    						mail.setUid(plan.getUid());
 	    						mail.setSymbol(plan.getSymbol());
-	    						mail.setSubject(plan.getSymbol() + "计划单（空单）" + plan.getId() + "满足第一档价格" + plan.getFirst() + "小于于当前价格" + curPrice + "，预估已成交");
+	    						mail.setSubject(plan.getSymbol() + "计划单（空单）" + plan.getFirst() + "满足第一档价格" + plan.getFirst() + "小于于当前价格" + curPrice + "，预估已成交");
 	    						mail.setContent("计划单详情：第一档：" + plan.getFirst() + "，第二档：" + plan.getSecond() 
 	    								+ "，第三档：" + plan.getThird() + "，止损档：" + plan.getStop());
 	    						mail.setState(0);

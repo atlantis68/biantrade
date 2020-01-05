@@ -83,53 +83,57 @@ public class OrderServiceImpl implements OrderService {
 		try {
 			List<String> orderIds = new ArrayList<String>();
 			int status = generateAndDealOrder(symbol, first, second, third, stop, trigger, compare, uid, apiKey, secretKey, orderIds);
-			if(status < 2) {
-				Plan plan = new Plan();
-				plan.setUid(uid);
-				plan.setPid(0);
-				plan.setSymbol(symbol);
-				plan.setFirst(Float.parseFloat(first));
-				plan.setSecond(Float.parseFloat(second));
-				plan.setThird(Float.parseFloat(third));
-				plan.setStop(Float.parseFloat(stop));
-				plan.setTrigger(StringUtils.isNotEmpty(trigger) ? Float.parseFloat(trigger) : 0f);
-				plan.setCompare(compare);
-				plan.setState(status);
-				plan.setCreateTime(format.format(new Date()));
-				plan.setUpdateTime(format.format(new Date()));
-				plan.setType(0);
-				String orders = "";
-				if(status == 1) {
-					for(String orderId : orderIds) {
-						orders += orderId + ",";
-					}
-					orders = orders.substring(0, orders.length() - 1);
+			Plan plan = new Plan();
+			plan.setUid(uid);
+			plan.setPid(0);
+			plan.setSymbol(symbol);
+			plan.setFirst(Float.parseFloat(first));
+			plan.setSecond(Float.parseFloat(second));
+			plan.setThird(Float.parseFloat(third));
+			plan.setStop(Float.parseFloat(stop));
+			plan.setTrigger(StringUtils.isNotEmpty(trigger) ? Float.parseFloat(trigger) : 0f);
+			plan.setCompare(compare);
+			plan.setState(status < 2 ? status : 4);
+			plan.setCreateTime(format.format(new Date()));
+			plan.setUpdateTime(format.format(new Date()));
+			plan.setType(0);
+			String orders = "";
+			if(status == 1) {
+				for(String orderId : orderIds) {
+					orders += orderId + ",";
 				}
-				plan.setOrderIds(orders);
-				planMapper.insertPlan(plan);
-				JSONObject resultJson = new JSONObject();
-				resultJson.put("status", "ok");
-				resultJson.put("msg", "create plan successful");
-				resultJson.put("id", plan.getId());
-				result = resultJson.toString();
-				if(status == 1) {
-					Mail mail = new Mail();
-					mail.setUid(plan.getUid());
-					mail.setSymbol(plan.getSymbol());
-					mail.setSubject(symbol + "计划单" + plan.getId() + "创建成功，已提交到币安");
-					mail.setContent("计划单详情：第一档：" + plan.getFirst() + "，第二档：" + plan.getSecond() 
-							+ "，第三档：" + plan.getThird() + "，止损档：" + plan.getStop());
-					mail.setState(0);
-					mail.setCreateTime(format.format(new Date()));
-					mail.setUpdateTime(format.format(new Date()));
-					mailMapper.insertMail(mail);
-				}
-			} else {
-				JSONObject resultJson = new JSONObject();
-				resultJson.put("status", "error");
-				resultJson.put("msg", "create plan failed");
-				result = resultJson.toString();
+				orders = orders.substring(0, orders.length() - 1);
 			}
+			plan.setOrderIds(orders);
+			planMapper.insertPlan(plan);
+			JSONObject resultJson = new JSONObject();
+			resultJson.put("status", "ok");
+			resultJson.put("msg", "create plan successful");
+			resultJson.put("id", plan.getId());
+			result = resultJson.toString();
+
+			Mail mail = new Mail();
+			mail.setUid(plan.getUid());
+			mail.setSymbol(plan.getSymbol());
+			if(status == 0) {
+				mail.setSubject(symbol + "计划单" + (plan.getFirst() > plan.getSecond() ? "（多单）" : "（空单）") 
+						+ first + "创建成功，不满足触发条件，未提交到币安");
+				mail.setContent("计划单详情：第一档：" + plan.getFirst() + "，第二档：" + plan.getSecond() 
+						+ "，第三档：" + plan.getThird() + "，止损档：" + plan.getStop());	    
+			} else if(status == 1) {
+				mail.setSubject(symbol + "计划单" + (plan.getFirst() > plan.getSecond() ? "（多单）" : "（空单）") 
+						+ first + "创建成功，已提交到币安");
+				mail.setContent("计划单详情：第一档：" + plan.getFirst() + "，第二档：" + plan.getSecond() 
+						+ "，第三档：" + plan.getThird() + "，止损档：" + plan.getStop());	    	    					
+			} else {
+				mail.setSubject(plan.getSymbol() + "计划单" + (plan.getFirst() > plan.getSecond() ? "（多单）" : "（空单）")
+						+ "，提交到币安失败");
+				mail.setContent("异常编码：" + status);
+			}
+			mail.setState(0);
+			mail.setCreateTime(format.format(new Date()));
+			mail.setUpdateTime(format.format(new Date()));
+			mailMapper.insertMail(mail);
 		} catch(Exception e) {
 			e.printStackTrace();
 			JSONObject resultJson = new JSONObject();
@@ -146,52 +150,56 @@ public class OrderServiceImpl implements OrderService {
 		try {
 			List<String> orderIds = new ArrayList<String>();
 			int status = generateAndDealOrder(symbol, first, second, third, stop, trigger, compare, uid, apiKey, secretKey, orderIds);
-			if(status < 2) {
-				Plan plan = new Plan();
-				plan.setUid(uid);
-				plan.setPid(id);
-				plan.setSymbol(symbol);
-				plan.setFirst(Float.parseFloat(first));
-				plan.setSecond(Float.parseFloat(second));
-				plan.setThird(Float.parseFloat(third));
-				plan.setStop(Float.parseFloat(stop));
-				plan.setTrigger(StringUtils.isNotEmpty(trigger) ? Float.parseFloat(trigger) : 0f);
-				plan.setCompare(compare);
-				plan.setState(status);
-				plan.setCreateTime(format.format(new Date()));
-				plan.setUpdateTime(format.format(new Date()));
-				plan.setType(1);
-				String orders = "";
-				if(status == 1) {
-					for(String orderId : orderIds) {
-						orders += orderId + ",";
-					}
-					orders = orders.substring(0, orders.length() - 1);
+			Plan plan = new Plan();
+			plan.setUid(uid);
+			plan.setPid(id);
+			plan.setSymbol(symbol);
+			plan.setFirst(Float.parseFloat(first));
+			plan.setSecond(Float.parseFloat(second));
+			plan.setThird(Float.parseFloat(third));
+			plan.setStop(Float.parseFloat(stop));
+			plan.setTrigger(StringUtils.isNotEmpty(trigger) ? Float.parseFloat(trigger) : 0f);
+			plan.setCompare(compare);
+			plan.setState(status < 2 ? status : 4);
+			plan.setCreateTime(format.format(new Date()));
+			plan.setUpdateTime(format.format(new Date()));
+			plan.setType(1);
+			String orders = "";
+			if(status == 1) {
+				for(String orderId : orderIds) {
+					orders += orderId + ",";
 				}
-				plan.setOrderIds(orders);
-				planMapper.insertPlan(plan);
-				JSONObject resultJson = new JSONObject();
-				resultJson.put("status", "ok");
-				resultJson.put("msg", "create plan successful");
-				result = resultJson.toString();
-				if(status == 1) {
-					Mail mail = new Mail();
-					mail.setUid(plan.getUid());
-					mail.setSymbol(plan.getSymbol());
-					mail.setSubject(symbol + "计划单" + id + "的跟单创建成功，已提交到币安");
-					mail.setContent("计划单详情：第一档：" + plan.getFirst() + "，第二档：" + plan.getSecond() 
-							+ "，第三档：" + plan.getThird() + "，止损档：" + plan.getStop());
-					mail.setState(0);
-					mail.setCreateTime(format.format(new Date()));
-					mail.setUpdateTime(format.format(new Date()));
-					mailMapper.insertMail(mail);
-				}
-			} else {
-				JSONObject resultJson = new JSONObject();
-				resultJson.put("status", "error");
-				resultJson.put("msg", "create plan failed");
-				result = resultJson.toString();
+				orders = orders.substring(0, orders.length() - 1);
 			}
+			plan.setOrderIds(orders);
+			planMapper.insertPlan(plan);
+			JSONObject resultJson = new JSONObject();
+			resultJson.put("status", "ok");
+			resultJson.put("msg", "create plan successful");
+			result = resultJson.toString();
+			
+			Mail mail = new Mail();
+			mail.setUid(plan.getUid());
+			mail.setSymbol(plan.getSymbol());
+			if(status == 0) {
+				mail.setSubject(symbol + "计划单" + (plan.getFirst() > plan.getSecond() ? "（多单）" : "（空单）") 
+						+ first + "的跟单创建成功，不满足触发条件，未提交到币安");
+				mail.setContent("计划单详情：第一档：" + plan.getFirst() + "，第二档：" + plan.getSecond() 
+						+ "，第三档：" + plan.getThird() + "，止损档：" + plan.getStop());	    
+			} else if(status == 1) {
+				mail.setSubject(symbol + "计划单" + (plan.getFirst() > plan.getSecond() ? "（多单）" : "（空单）") 
+						+ first + "的跟单创建成功，已提交到币安");
+				mail.setContent("计划单详情：第一档：" + plan.getFirst() + "，第二档：" + plan.getSecond() 
+						+ "，第三档：" + plan.getThird() + "，止损档：" + plan.getStop());	    	    					
+			} else {
+				mail.setSubject(plan.getSymbol() + "计划单" + (plan.getFirst() > plan.getSecond() ? "（多单）" : "（空单）")
+						+ "的跟单，提交到币安失败");
+				mail.setContent("异常编码：" + status);
+			}
+			mail.setState(0);
+			mail.setCreateTime(format.format(new Date()));
+			mail.setUpdateTime(format.format(new Date()));
+			mailMapper.insertMail(mail);
 		} catch(Exception e) {
 			e.printStackTrace();
 			JSONObject resultJson = new JSONObject();
@@ -448,16 +456,16 @@ public class OrderServiceImpl implements OrderService {
     	    		e.printStackTrace();
     	    	}
     		}
+    		Mail mail = new Mail();
+    		mail.setUid(uid);
+    		mail.setSymbol(symbol);
+    		mail.setSubject(symbol + "计划单" + id + "和相关挂单撤销成功");
+    		mail.setContent("关联订单：" + orderIds);
+    		mail.setState(0);
+    		mail.setCreateTime(format.format(new Date()));
+    		mail.setUpdateTime(format.format(new Date()));
+    		mailMapper.insertMail(mail);
     	}
-		Mail mail = new Mail();
-		mail.setUid(uid);
-		mail.setSymbol(symbol);
-		mail.setSubject(symbol + "计划单" + id + "和相关挂单撤销成功");
-		mail.setContent("关联订单：" + (StringUtils.isNotEmpty(orderIds) ? orderIds : ""));
-		mail.setState(0);
-		mail.setCreateTime(format.format(new Date()));
-		mail.setUpdateTime(format.format(new Date()));
-		mailMapper.insertMail(mail);
     	return planMapper.updatePlanById(Integer.parseInt(id), 4);
     }
 }
