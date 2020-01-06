@@ -75,6 +75,7 @@ public class AccountController {
     			realQuantity = decimalFormat.format(number * allConfig.getRate() / price);
     		} else {
     			realQuantity = quantity;
+    			uri.append("&reduceOnly=true");
     		}
     		String temp = orderService.trade(symbol, side, realQuantity, null, null, "MARKET", null, null, null, user.getApiKey(), user.getSecretKey());
 			Map<String, String> tempInfo = JSON.parseObject(temp, new TypeReference<Map<String, String>>(){} );

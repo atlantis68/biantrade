@@ -422,11 +422,11 @@
 		            		   	if(list[i].positionAmt < 0) {
 		            		   		edit = "<input type=\"button\" value=\"平空\" id=\"market3\" name=\"market3\" onclick =\"tradeMarket('BUY', '', 3, '" + list[i].symbol + "')\"/>" 
 		            		   			+ "<input type=\"button\" value=\"全平\" id=\"market3\" name=\"market3\" onclick =\"tradeMarket('BUY', " 
-		            		   					+ Math.abs(list[i].positionAmt) + ", 3, '" + list[i].symbol + "'\")/>";
+		            		   					+ Math.abs(list[i].positionAmt) + ", 3, '" + list[i].symbol + "')\"/>" 
 		            		    } else if(list[i].positionAmt > 0) {
 		            		    	edit = "<input type=\"button\" value=\"平多\" id=\"market4\" name=\"market4\" onclick =\"tradeMarket('SELL', '', 4, '" + list[i].symbol + "')\"/>" 
 		            		    		+ "<input type=\"button\" value=\"全平\" id=\"market4\" name=\"market4\" onclick =\"tradeMarket('SELL', " 
-		            		    				+ Math.abs(list[i].positionAmt) + "), 4, '" + list[i].symbol + "'\")/>";
+		            		    				+ Math.abs(list[i].positionAmt) + ", 4, '" + list[i].symbol + "')\"/>" ;
 		            		    }
 		            			str += "<tr>" + 
 			            			"<td>" + list[i].symbol + "</td>" + 
@@ -529,9 +529,9 @@
 	    }
 	    
 	    function tradeMarket(side, quantity, seq, symbol) {  
-	    	$("#message").html('');
+	     	$("#message").html('');
 	    	$("#market"+seq).attr("disabled","true");
-	    	if(symbol == null) {
+	    	if(symbol.length == 0) {
 	    		symbol = $('input[name="symbol1"]:checked').val();
 	    	}
 	        $.ajax({  
@@ -563,7 +563,7 @@
 	            complete: function(message) {
 	            	$("#market"+seq).removeAttr("disabled");
 	            } 
-	        });  
+	        });
 	    }
 	    
 	    function tradePlan(){  
@@ -902,8 +902,8 @@
 <input type="radio" name="symbol1" value="BTCUSDT" checked>BTCUSDT
 <input type="radio" name="symbol1" value="ETHUSDT">ETHUSDT
 <input type="radio" name="symbol1" value="BCHUSDT">BCHUSDT
-<input type="button" value="开多" id="market1" name="market1" onclick ="tradeMarket('BUY', '', 1, null)"/>
-<input type="button" value="开空" id="market2" name="market2" onclick ="tradeMarket('SELL', '', 2, null)"/>
+<input type="button" value="开多" id="market1" name="market1" onclick ="tradeMarket('BUY', '', 1, '')"/>
+<input type="button" value="开空" id="market2" name="market2" onclick ="tradeMarket('SELL', '', 2, '')"/>
 <p>
 <p>
 计划单：
