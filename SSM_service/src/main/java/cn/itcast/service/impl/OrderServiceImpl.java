@@ -68,8 +68,8 @@ public class OrderServiceImpl implements OrderService {
 		return planMapper.findPlansById(id);
 	}
 	
-	public int updatePlanById(Integer id, Integer state) {
-		return planMapper.updatePlanById(id, state);
+	public int updatePlanById(Plan plan) {
+		return planMapper.updatePlanById(plan);
 	}
 	
 	public int insertMail(Mail mail) {
@@ -93,7 +93,7 @@ public class OrderServiceImpl implements OrderService {
 			plan.setStop(Float.parseFloat(stop));
 			plan.setTrigger(StringUtils.isNotEmpty(trigger) ? Float.parseFloat(trigger) : 0f);
 			plan.setCompare(compare);
-			plan.setState(status < 2 ? status : 4);
+			plan.setState(status < 2 ? status : 3);
 			plan.setCreateTime(format.format(new Date()));
 			plan.setUpdateTime(format.format(new Date()));
 			plan.setType(0);
@@ -160,7 +160,7 @@ public class OrderServiceImpl implements OrderService {
 			plan.setStop(Float.parseFloat(stop));
 			plan.setTrigger(StringUtils.isNotEmpty(trigger) ? Float.parseFloat(trigger) : 0f);
 			plan.setCompare(compare);
-			plan.setState(status < 2 ? status : 4);
+			plan.setState(status < 2 ? status : 3);
 			plan.setCreateTime(format.format(new Date()));
 			plan.setUpdateTime(format.format(new Date()));
 			plan.setType(1);
@@ -466,6 +466,10 @@ public class OrderServiceImpl implements OrderService {
     		mail.setUpdateTime(format.format(new Date()));
     		mailMapper.insertMail(mail);
     	}
-    	return planMapper.updatePlanById(Integer.parseInt(id), 4);
+    	Plan plan = new Plan();
+    	plan.setId(Integer.parseInt(id));
+    	plan.setState(4);
+    	plan.setUpdateTime(format.format(new Date()));
+    	return planMapper.updatePlanById(plan);
     }
 }

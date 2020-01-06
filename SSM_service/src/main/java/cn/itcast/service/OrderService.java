@@ -15,7 +15,7 @@ public interface OrderService {
     
     public List<Plan> findPlansById(Integer id);
     
-    public int updatePlanById(Integer id, Integer state);
+    public int updatePlanById(Plan plan);
     
     public int insertMail(Mail mail);
     

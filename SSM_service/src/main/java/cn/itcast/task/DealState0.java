@@ -51,7 +51,9 @@ public class DealState0 implements Runnable {
 	    	    				int status = orderService.generateAndDealOrder(plan.getSymbol(), plan.getFirst().toString(), plan.getSecond().toString(), 
 	    	    						plan.getThird().toString(), plan.getStop().toString(), plan.getTrigger().toString(), plan.getCompare(), plan.getUid(), 
 	    	    						plan.getCreateTime(), plan.getUpdateTime(), orderIds);
-	    	    				planMapper.updatePlanById(plan.getId(), (status == 1 ? 1 : 4));
+	    	    	        	plan.setState(status == 1 ? 1 : 3);
+	    	    	        	plan.setUpdateTime(format.format(new Date()));
+	    	    				planMapper.updatePlanById(plan);
 	    	    				Mail mail = new Mail();
 	    	    				mail.setUid(plan.getUid());
 	    	    				mail.setSymbol(plan.getSymbol());
@@ -73,7 +75,9 @@ public class DealState0 implements Runnable {
 	    	    				int status = orderService.generateAndDealOrder(plan.getSymbol(), plan.getFirst().toString(), plan.getSecond().toString(), 
 	    	    						plan.getThird().toString(), plan.getStop().toString(), plan.getTrigger().toString(), plan.getCompare(), plan.getUid(), 
 	    	    						plan.getCreateTime(), plan.getUpdateTime(), orderIds);
-	    	    				planMapper.updatePlanById(plan.getId(), (status == 1 ? 1 : 4));
+	    	    	        	plan.setState(status == 1 ? 1 : 3);
+	    	    	        	plan.setUpdateTime(format.format(new Date()));
+	    	    				planMapper.updatePlanById(plan);
 	    	    				Mail mail = new Mail();
 	    	    				mail.setUid(plan.getUid());
 	    	    				mail.setSymbol(plan.getSymbol());

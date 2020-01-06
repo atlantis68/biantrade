@@ -42,7 +42,9 @@ public class DealState1 implements Runnable {
 	    			for(Plan plan : plans) {
 	    				if(plan.getSymbol().equals(symbol)) {
 	    					if(plan.getFirst() > plan.getSecond() && plan.getFirst() > curPrice) {
-	    						planMapper.updatePlanById(plan.getId(), 2);
+	    	    	        	plan.setState(2);
+	    	    	        	plan.setUpdateTime(format.format(new Date()));
+	    	    				planMapper.updatePlanById(plan);
 	    						Mail mail = new Mail();
 	    						mail.setUid(plan.getUid());
 	    						mail.setSymbol(plan.getSymbol());
@@ -55,7 +57,9 @@ public class DealState1 implements Runnable {
 	    						mailMapper.insertMail(mail);
 	    					} 
 	    					if(plan.getFirst() < plan.getSecond() && plan.getFirst() < curPrice) {
-	    						planMapper.updatePlanById(plan.getId(), 2);
+	    	    	        	plan.setState(2);
+	    	    	        	plan.setUpdateTime(format.format(new Date()));
+	    	    				planMapper.updatePlanById(plan);
 	    						Mail mail = new Mail();
 	    						mail.setUid(plan.getUid());
 	    						mail.setSymbol(plan.getSymbol());

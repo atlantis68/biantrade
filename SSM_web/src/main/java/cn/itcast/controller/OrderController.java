@@ -1,5 +1,7 @@
 package cn.itcast.controller;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpSession;
@@ -34,6 +36,8 @@ public class OrderController {
     
     @Autowired
     private ConfigService configService;
+    
+    private static SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     
     @RequestMapping(value = "/index")
     public String logout(HttpSession session) {
@@ -187,7 +191,11 @@ public class OrderController {
     public String finish(String id) {
     	JSONObject result = new JSONObject();
     	try {
-    		int numer = orderService.updatePlanById(Integer.parseInt(id), 5);
+        	Plan plan = new Plan();
+        	plan.setId(Integer.parseInt(id));
+        	plan.setState(5);
+        	plan.setUpdateTime(format.format(new Date()));
+    		int numer = orderService.updatePlanById(plan);
 			if(numer > 0) {
 				result.put("status", "ok");
 				result.put("msg", "finish successful");

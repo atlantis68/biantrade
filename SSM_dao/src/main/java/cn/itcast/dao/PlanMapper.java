@@ -10,7 +10,7 @@ public interface PlanMapper {
 
 	public int insertPlan(Plan plan);
 
-	public int updatePlanById(@Param("id") Integer id, @Param("state") Integer state);
+	public int updatePlanById(Plan plan);
 
 	public List<Plan> findPlanByUid(@Param("uid") String uid, @Param("symbol") String symbol);
 	

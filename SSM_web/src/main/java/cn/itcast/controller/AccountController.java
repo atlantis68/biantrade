@@ -4,6 +4,7 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpSession;
 
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.TypeReference;
 
 import cn.itcast.client.HttpClient;
 import cn.itcast.client.SHA256;
@@ -75,17 +77,22 @@ public class AccountController {
     			realQuantity = quantity;
     		}
     		String temp = orderService.trade(symbol, side, realQuantity, null, null, "MARKET", null, null, null, user.getApiKey(), user.getSecretKey());
-        	result.put("status", "ok");
-        	result.put("msg", JSON.toJSONString(temp));
-    		Mail mail = new Mail();
-    		mail.setUid(user.getId());
-    		mail.setSymbol(symbol);
-    		mail.setSubject(symbol + "即时单创建成功，已提交到币安");
-    		mail.setContent("提交数量：" + realQuantity);
-    		mail.setState(0);
-    		mail.setCreateTime(format.format(new Date()));
-    		mail.setUpdateTime(format.format(new Date()));
-    		orderService.insertMail(mail);
+			Map<String, String> tempInfo = JSON.parseObject(temp, new TypeReference<Map<String, String>>(){} );
+			if(tempInfo != null && StringUtils.isNotEmpty(tempInfo.get("orderId"))) {
+				result.put("status", "ok");
+				Mail mail = new Mail();
+				mail.setUid(user.getId());
+				mail.setSymbol(symbol);
+				mail.setSubject(symbol + "即时单创建成功，已提交到币安");
+				mail.setContent("提交数量：" + realQuantity);
+				mail.setState(0);
+				mail.setCreateTime(format.format(new Date()));
+				mail.setUpdateTime(format.format(new Date()));
+				orderService.insertMail(mail);
+			} else {
+				result.put("status", "error");
+			}
+			result.put("msg", JSON.toJSONString(temp));
         	if(user.getRole() == 0) {
 				Config config = new Config();
 				config.setType(symbol);
@@ -98,15 +105,19 @@ public class AccountController {
 	        		} else {
 	        			realQuantity = quantity;
 	        		}
-					orderService.trade(symbol, side, realQuantity, null, null, "MARKET", null, null, null, c.getType(), c.getLossWorkingType());
-		    		mail.setUid(c.getUid());
-		    		mail.setSymbol(symbol);
-		    		mail.setSubject(symbol + "即时单跟单创建成功，已提交到币安");
-		    		mail.setContent("提交数量：" + realQuantity);
-		    		mail.setState(0);
-		    		mail.setCreateTime(format.format(new Date()));
-		    		mail.setUpdateTime(format.format(new Date()));
-		    		orderService.insertMail(mail);
+					temp = orderService.trade(symbol, side, realQuantity, null, null, "MARKET", null, null, null, c.getType(), c.getLossWorkingType());
+					tempInfo = JSON.parseObject(temp, new TypeReference<Map<String, String>>(){} );
+					if(tempInfo != null && StringUtils.isNotEmpty(tempInfo.get("orderId"))) {
+						Mail mail = new Mail();
+			    		mail.setUid(c.getUid());
+			    		mail.setSymbol(symbol);
+			    		mail.setSubject(symbol + "即时单跟单创建成功，已提交到币安");
+			    		mail.setContent("提交数量：" + realQuantity);
+			    		mail.setState(0);
+			    		mail.setCreateTime(format.format(new Date()));
+			    		mail.setUpdateTime(format.format(new Date()));
+			    		orderService.insertMail(mail);
+					} 
 				}
         	}
 		} catch (Exception e) {
@@ -144,17 +155,22 @@ public class AccountController {
     	try {
             User user = (User) session.getAttribute("USER_SESSION");
             String temp = orderService.cancel(symbol, orderId, user.getApiKey(), user.getSecretKey());
-        	result.put("status", "ok");
-        	result.put("msg", JSON.toJSONString(temp));
-    		Mail mail = new Mail();
-    		mail.setUid(user.getId());
-    		mail.setSymbol(symbol);
-    		mail.setSubject(symbol + "即时单撤销成功，已提交到币安");
-    		mail.setContent("撤销订单号：" + orderId);
-    		mail.setState(0);
-    		mail.setCreateTime(format.format(new Date()));
-    		mail.setUpdateTime(format.format(new Date()));
-    		orderService.insertMail(mail);
+			Map<String, String> tempInfo = JSON.parseObject(temp, new TypeReference<Map<String, String>>(){} );
+			if(tempInfo != null && StringUtils.isNotEmpty(tempInfo.get("orderId"))) {
+				result.put("status", "ok");
+				Mail mail = new Mail();
+				mail.setUid(user.getId());
+				mail.setSymbol(symbol);
+				mail.setSubject(symbol + "即时单撤销成功，已提交到币安");
+				mail.setContent("撤销订单号：" + orderId);
+				mail.setState(0);
+				mail.setCreateTime(format.format(new Date()));
+				mail.setUpdateTime(format.format(new Date()));
+				orderService.insertMail(mail);
+			} else {
+				result.put("status", "error");
+			}
+			result.put("msg", JSON.toJSONString(temp));
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
