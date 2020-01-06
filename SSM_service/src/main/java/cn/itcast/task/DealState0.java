@@ -51,6 +51,14 @@ public class DealState0 implements Runnable {
 	    	    				int status = orderService.generateAndDealOrder(plan.getSymbol(), plan.getFirst().toString(), plan.getSecond().toString(), 
 	    	    						plan.getThird().toString(), plan.getStop().toString(), plan.getTrigger().toString(), plan.getCompare(), plan.getUid(), 
 	    	    						plan.getCreateTime(), plan.getUpdateTime(), orderIds);
+	    	    				String orders = "";
+	    	    				if(status == 1) {
+	    	    					for(String orderId : orderIds) {
+	    	    						orders += orderId + ",";
+	    	    					}
+	    	    					orders = orders.substring(0, orders.length() - 1);
+	    	    				}
+	    	    				plan.setOrderIds(orders);
 	    	    	        	plan.setState(status == 1 ? 1 : 3);
 	    	    	        	plan.setUpdateTime(format.format(new Date()));
 	    	    				planMapper.updatePlanById(plan);
@@ -75,6 +83,14 @@ public class DealState0 implements Runnable {
 	    	    				int status = orderService.generateAndDealOrder(plan.getSymbol(), plan.getFirst().toString(), plan.getSecond().toString(), 
 	    	    						plan.getThird().toString(), plan.getStop().toString(), plan.getTrigger().toString(), plan.getCompare(), plan.getUid(), 
 	    	    						plan.getCreateTime(), plan.getUpdateTime(), orderIds);
+	    	    				String orders = "";
+	    	    				if(status == 1) {
+	    	    					for(String orderId : orderIds) {
+	    	    						orders += orderId + ",";
+	    	    					}
+	    	    					orders = orders.substring(0, orders.length() - 1);
+	    	    				}
+	    	    				plan.setOrderIds(orders);
 	    	    	        	plan.setState(status == 1 ? 1 : 3);
 	    	    	        	plan.setUpdateTime(format.format(new Date()));
 	    	    				planMapper.updatePlanById(plan);

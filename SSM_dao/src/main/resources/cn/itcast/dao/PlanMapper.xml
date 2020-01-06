@@ -15,7 +15,7 @@
         SELECT p.* FROM plan p, USER u WHERE symbol = #{symbol} AND state &lt; 4 AND u.id = p.uid AND u.role = 0;
     </select>        
     <update id="updatePlanById" parameterType="cn.itcast.pojo.Plan">
-        update `plan` set state = #{state}, updateTime = #{updateTime} where id = #{id};
+        update `plan` set state = #{state}, updateTime = #{updateTime}, orderIds = #{orderIds} where id = #{id};
     </update>   
     <select id="findPlanById" parameterType="Integer"
             resultType="cn.itcast.pojo.Plan">

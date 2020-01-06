@@ -186,30 +186,4 @@ public class OrderController {
 		
     }
     
-    @RequestMapping(value = "/finish")
-    @ResponseBody
-    public String finish(String id) {
-    	JSONObject result = new JSONObject();
-    	try {
-        	Plan plan = new Plan();
-        	plan.setId(Integer.parseInt(id));
-        	plan.setState(5);
-        	plan.setUpdateTime(format.format(new Date()));
-    		int numer = orderService.updatePlanById(plan);
-			if(numer > 0) {
-				result.put("status", "ok");
-				result.put("msg", "finish successful");
-			} else {
-				result.put("status", "error");
-				result.put("msg", "finish failed");
-			}
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-    		result.put("status", "error");
-    		result.put("msg", e.getMessage());
-		}
-    	return result.toJSONString();
-		
-    }
 }

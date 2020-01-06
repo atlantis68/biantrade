@@ -469,6 +469,7 @@ public class OrderServiceImpl implements OrderService {
     	Plan plan = new Plan();
     	plan.setId(Integer.parseInt(id));
     	plan.setState(4);
+    	plan.setOrderIds(orderIds);
     	plan.setUpdateTime(format.format(new Date()));
     	return planMapper.updatePlanById(plan);
     }
