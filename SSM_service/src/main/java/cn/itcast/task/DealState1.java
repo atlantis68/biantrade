@@ -41,7 +41,7 @@ public class DealState1 implements Runnable {
 	    			Float curPrice = entry.getValue();
 	    			for(Plan plan : plans) {
 	    				if(plan.getSymbol().equals(symbol)) {
-	    					if(plan.getFirst() > plan.getSecond() && plan.getFirst() > curPrice) {
+	    					if(plan.getThird() > plan.getStop() && plan.getFirst() > curPrice) {
 	    	    	        	plan.setState(2);
 	    	    	        	plan.setUpdateTime(format.format(new Date()));
 	    	    				planMapper.updatePlanById(plan);
@@ -56,7 +56,7 @@ public class DealState1 implements Runnable {
 	    						mail.setUpdateTime(format.format(new Date()));
 	    						mailMapper.insertMail(mail);
 	    					} 
-	    					if(plan.getFirst() < plan.getSecond() && plan.getFirst() < curPrice) {
+	    					if(plan.getThird() < plan.getStop() && plan.getFirst() < curPrice) {
 	    	    	        	plan.setState(2);
 	    	    	        	plan.setUpdateTime(format.format(new Date()));
 	    	    				planMapper.updatePlanById(plan);

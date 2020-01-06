@@ -585,8 +585,8 @@
 				$("#stop").focus();
 				return;
 			} 
-			if((parseInt($("#first").val()) < parseInt($("#second").val()) && parseInt($("#second").val()) < parseInt($("#third").val()) && parseInt($("#third").val()) < parseInt($("#stop").val())) ||
-					(parseInt($("#first").val()) > parseInt($("#second").val()) && parseInt($("#second").val()) > parseInt($("#third").val()) && parseInt($("#third").val()) > parseInt($("#stop").val()))) {
+			if((parseInt($("#first").val()) <= parseInt($("#second").val()) && parseInt($("#second").val()) <= parseInt($("#third").val()) && parseInt($("#third").val()) < parseInt($("#stop").val())) ||
+					(parseInt($("#first").val()) >= parseInt($("#second").val()) && parseInt($("#second").val()) >= parseInt($("#third").val()) && parseInt($("#third").val()) > parseInt($("#stop").val()))) {
 		    	$("#plan").attr("disabled","true");
 		        $.ajax({  
 		            type : "get",

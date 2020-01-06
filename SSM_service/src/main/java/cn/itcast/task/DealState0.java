@@ -66,12 +66,12 @@ public class DealState0 implements Runnable {
 	    	    				mail.setUid(plan.getUid());
 	    	    				mail.setSymbol(plan.getSymbol());
 	    	    				if(status == 1) {
-	    	    					mail.setSubject(plan.getSymbol() + "计划单" + (plan.getFirst() > plan.getSecond() ? "（多单）" : "（空单）")
+	    	    					mail.setSubject(plan.getSymbol() + "计划单" + (plan.getThird() > plan.getStop() ? "（多单）" : "（空单）")
 	    	    							+ plan.getFirst() + "满足当前价" + curPrice + "大于触发价" + plan.getTrigger() + "，被系统提交到币安");
 	    	    					mail.setContent("计划单详情：第一档：" + plan.getFirst() + "，第二档：" + plan.getSecond() 
 	    	    							+ "，第三档：" + plan.getThird() + "，止损档：" + plan.getStop());	    	    					
 	    	    				} else {
-	    	    					mail.setSubject(plan.getSymbol() + "计划单" + (plan.getFirst() > plan.getSecond() ? "（多单）" : "（空单）")
+	    	    					mail.setSubject(plan.getSymbol() + "计划单" + (plan.getThird() > plan.getStop() ? "（多单）" : "（空单）")
 	    	    							+ "，提交到币安失败");
 	    	    					mail.setContent("异常编码：" + status);
 	    	    				}
@@ -98,12 +98,12 @@ public class DealState0 implements Runnable {
 	    	    				mail.setUid(plan.getUid());
 	    	    				mail.setSymbol(plan.getSymbol());
 	    	    				if(status == 1) {
-	    	    					mail.setSubject(plan.getSymbol() + "计划单" + (plan.getFirst() > plan.getSecond() ? "（多单）" : "（空单）")
+	    	    					mail.setSubject(plan.getSymbol() + "计划单" + (plan.getThird() > plan.getStop() ? "（多单）" : "（空单）")
 	    	    							+ plan.getFirst() + "满足当前价" + curPrice + "小于触发价" + plan.getTrigger() + "，被系统提交到币安");
 	    	    					mail.setContent("计划单详情：第一档：" + plan.getFirst() + "，第二档：" + plan.getSecond() 
 	    	    							+ "，第三档：" + plan.getThird() + "，止损档：" + plan.getStop());	    	    					
 	    	    				} else {
-	    	    					mail.setSubject(plan.getSymbol() + "计划单" + (plan.getFirst() > plan.getSecond() ? "（多单）" : "（空单）")
+	    	    					mail.setSubject(plan.getSymbol() + "计划单" + (plan.getThird() > plan.getStop() ? "（多单）" : "（空单）")
 	    	    							+ "，提交到币安失败");
 	    	    					mail.setContent("异常编码：" + status);
 	    	    				}

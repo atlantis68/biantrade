@@ -116,17 +116,17 @@ public class OrderServiceImpl implements OrderService {
 			mail.setUid(plan.getUid());
 			mail.setSymbol(plan.getSymbol());
 			if(status == 0) {
-				mail.setSubject(symbol + "计划单" + (plan.getFirst() > plan.getSecond() ? "（多单）" : "（空单）") 
+				mail.setSubject(symbol + "计划单" + (plan.getThird() > plan.getStop() ? "（多单）" : "（空单）") 
 						+ first + "创建成功，不满足触发条件，未提交到币安");
 				mail.setContent("计划单详情：第一档：" + plan.getFirst() + "，第二档：" + plan.getSecond() 
 						+ "，第三档：" + plan.getThird() + "，止损档：" + plan.getStop());	    
 			} else if(status == 1) {
-				mail.setSubject(symbol + "计划单" + (plan.getFirst() > plan.getSecond() ? "（多单）" : "（空单）") 
+				mail.setSubject(symbol + "计划单" + (plan.getThird() > plan.getStop() ? "（多单）" : "（空单）") 
 						+ first + "创建成功，已提交到币安");
 				mail.setContent("计划单详情：第一档：" + plan.getFirst() + "，第二档：" + plan.getSecond() 
 						+ "，第三档：" + plan.getThird() + "，止损档：" + plan.getStop());	    	    					
 			} else {
-				mail.setSubject(plan.getSymbol() + "计划单" + (plan.getFirst() > plan.getSecond() ? "（多单）" : "（空单）")
+				mail.setSubject(plan.getSymbol() + "计划单" + (plan.getThird() > plan.getStop() ? "（多单）" : "（空单）")
 						+ "，提交到币安失败");
 				mail.setContent("异常编码：" + status);
 			}
@@ -182,17 +182,17 @@ public class OrderServiceImpl implements OrderService {
 			mail.setUid(plan.getUid());
 			mail.setSymbol(plan.getSymbol());
 			if(status == 0) {
-				mail.setSubject(symbol + "计划单" + (plan.getFirst() > plan.getSecond() ? "（多单）" : "（空单）") 
+				mail.setSubject(symbol + "计划单" + (plan.getThird() > plan.getStop() ? "（多单）" : "（空单）") 
 						+ first + "的跟单创建成功，不满足触发条件，未提交到币安");
 				mail.setContent("计划单详情：第一档：" + plan.getFirst() + "，第二档：" + plan.getSecond() 
 						+ "，第三档：" + plan.getThird() + "，止损档：" + plan.getStop());	    
 			} else if(status == 1) {
-				mail.setSubject(symbol + "计划单" + (plan.getFirst() > plan.getSecond() ? "（多单）" : "（空单）") 
+				mail.setSubject(symbol + "计划单" + (plan.getThird() > plan.getStop() ? "（多单）" : "（空单）") 
 						+ first + "的跟单创建成功，已提交到币安");
 				mail.setContent("计划单详情：第一档：" + plan.getFirst() + "，第二档：" + plan.getSecond() 
 						+ "，第三档：" + plan.getThird() + "，止损档：" + plan.getStop());	    	    					
 			} else {
-				mail.setSubject(plan.getSymbol() + "计划单" + (plan.getFirst() > plan.getSecond() ? "（多单）" : "（空单）")
+				mail.setSubject(plan.getSymbol() + "计划单" + (plan.getThird() > plan.getStop() ? "（多单）" : "（空单）")
 						+ "的跟单，提交到币安失败");
 				mail.setContent("异常编码：" + status);
 			}
@@ -219,7 +219,6 @@ public class OrderServiceImpl implements OrderService {
 			Integer compare, Integer uid, String apiKey, String secretKey, List<String> orderIds) {
 		int seq = 0;
     	try {
-    		String result = "";
     		//获取配置项
 			Config config = new Config();
 			config.setUid(uid);
@@ -233,7 +232,7 @@ public class OrderServiceImpl implements OrderService {
 			String side = null;
 			String stopSide = null;
 			Float entrustPrice = null;
-			if(firstPrice > secondPrice && secondPrice > thirdPrice && thirdPrice > stopPrice) {
+			if(firstPrice >= secondPrice && secondPrice >= thirdPrice && thirdPrice > stopPrice) {
 				side = "BUY";
 				firstPrice += allConfig.getTradeOffset();
 				secondPrice += allConfig.getTradeOffset();
@@ -241,7 +240,7 @@ public class OrderServiceImpl implements OrderService {
 				stopSide = "SELL";
 				stopPrice -= allConfig.getLossTriggerOffset();
 				entrustPrice = stopPrice - allConfig.getLossEntrustOffset();
-			} else if(firstPrice < secondPrice && secondPrice < thirdPrice && thirdPrice < stopPrice) {
+			} else if(firstPrice <= secondPrice && secondPrice <= thirdPrice && thirdPrice < stopPrice) {
 				side = "SELL";
 				firstPrice -= allConfig.getTradeOffset();
 				secondPrice -= allConfig.getTradeOffset();
