@@ -162,6 +162,7 @@
 <input type="radio" name="symbol" value="BTCUSDT" checked>BTCUSDT
 <input type="radio" name="symbol" value="ETHUSDT">ETHUSDT
 <input type="radio" name="symbol" value="BCHUSDT">BCHUSDT
+<input type="radio" name="symbol" value="XRPUSDT">XRPUSDT
 <input type="button" id="findConfigSubmit" id="findConfigSubmit" value="查询配置" onclick ="findConfig()"/>
 <table id="config" name="config" width="100%" cellpadding="1" cellspacing="0" border="1"></table>
 <p>

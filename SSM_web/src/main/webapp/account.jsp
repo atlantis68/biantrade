@@ -890,6 +890,7 @@
 <input type="radio" name="symbol" value="BTCUSDT" checked>BTCUSDT
 <input type="radio" name="symbol" value="ETHUSDT">ETHUSDT
 <input type="radio" name="symbol" value="BCHUSDT">BCHUSDT
+<input type="radio" name="symbol" value="XRPUSDT">XRPUSDT
 范围：
 <input type="radio" name="startTime" value="1">一天
 <input type="radio" name="startTime" value="3">三天
@@ -902,6 +903,7 @@
 <input type="radio" name="symbol1" value="BTCUSDT" checked>BTCUSDT
 <input type="radio" name="symbol1" value="ETHUSDT">ETHUSDT
 <input type="radio" name="symbol1" value="BCHUSDT">BCHUSDT
+<input type="radio" name="symbol1" value="XRPUSDT">XRPUSDT
 <input type="button" value="开多" id="market1" name="market1" onclick ="tradeMarket('BUY', '', 1, '')"/>
 <input type="button" value="开空" id="market2" name="market2" onclick ="tradeMarket('SELL', '', 2, '')"/>
 <p>
@@ -910,6 +912,7 @@
 <input type="radio" name="symbol2" value="BTCUSDT" checked>BTCUSDT
 <input type="radio" name="symbol2" value="ETHUSDT">ETHUSDT
 <input type="radio" name="symbol2" value="BCHUSDT">BCHUSDT
+<input type="radio" name="symbol2" value="XRPUSDT">XRPUSDT
 <input type="button" value="开单" id="plan" name="plan" onclick ="tradePlan()"/>
 <input type="button" id="fllowSubmit" id="fllowSubmit" value="跟单" onclick ="fllowPlans()"/>
 <input type="button" id="findAllPlansSubmit" id="findAllPlansSubmit" value="我的计划单" onclick ="findAllPlans()"/>

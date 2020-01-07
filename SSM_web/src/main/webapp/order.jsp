@@ -52,6 +52,7 @@
   <option value ="BTCUSDT">BTCUSDT</option>
   <option value ="ETHUSDT">ETHUSDT</option>
   <option value ="BCHUSDT">BCHUSDT</option>
+  <option value ="XRPUSDT">XRPUSDT</option>
 </select> 
 <p>
 方向:<select name="side">
