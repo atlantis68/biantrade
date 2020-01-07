@@ -912,7 +912,6 @@
 <input type="radio" name="symbol2" value="BTCUSDT" checked>BTCUSDT
 <input type="radio" name="symbol2" value="ETHUSDT">ETHUSDT
 <input type="radio" name="symbol2" value="BCHUSDT">BCHUSDT
-<input type="radio" name="symbol2" value="XRPUSDT">XRPUSDT
 <input type="button" value="开单" id="plan" name="plan" onclick ="tradePlan()"/>
 <input type="button" id="fllowSubmit" id="fllowSubmit" value="跟单" onclick ="fllowPlans()"/>
 <input type="button" id="findAllPlansSubmit" id="findAllPlansSubmit" value="我的计划单" onclick ="findAllPlans()"/>

@@ -46,6 +46,8 @@ public class AccountController {
     
 	private static DecimalFormat decimalFormat = new DecimalFormat("0.000");
 	
+	private static DecimalFormat decimalFormatForXRP = new DecimalFormat("0.0");
+	
 	private static SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	
     @RequestMapping(value = "/index")
@@ -72,7 +74,11 @@ public class AccountController {
     			Config allConfig = configService.findConfigByUid(config);
     			int number = allConfig.getMarketAmount();
     			float price = ToolsUtils.getCurPriceByKey(symbol);
-    			realQuantity = decimalFormat.format(number * allConfig.getRate() / price);
+    			if(symbol.toUpperCase().equals("XRPUSDT")) {
+    				realQuantity = decimalFormatForXRP.format(number * allConfig.getRate() / price);
+    			} else {
+    				realQuantity = decimalFormat.format(number * allConfig.getRate() / price);
+    			}
     		} else {
     			realQuantity = quantity;
     			uri.append("&reduceOnly=true");
@@ -102,7 +108,11 @@ public class AccountController {
 	        		if(StringUtils.isEmpty(quantity)) {
 		    			int number = c.getMarketAmount();
 		    			float price = ToolsUtils.getCurPriceByKey(symbol);
-	        			realQuantity = decimalFormat.format(number * c.getRate() / price);
+		    			if(symbol.toUpperCase().equals("XRPUSDT")) {
+		    				realQuantity = decimalFormatForXRP.format(number * c.getRate() / price);
+		    			} else {
+		    				realQuantity = decimalFormat.format(number * c.getRate() / price);
+		    			}
 	        		} else {
 	        			realQuantity = quantity;
 	        		}
