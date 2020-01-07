@@ -66,6 +66,7 @@ public class AccountController {
     		if(StringUtils.isNotEmpty(symbol)) {
     			uri.append("&symbol=").append(symbol);
     		}
+    		float price = ToolsUtils.getCurPriceByKey(symbol);
     		User user = (User) session.getAttribute("USER_SESSION");
     		if(StringUtils.isEmpty(quantity)) {
     			Config config = new Config();
@@ -73,7 +74,6 @@ public class AccountController {
     			config.setType(symbol);
     			Config allConfig = configService.findConfigByUid(config);
     			int number = allConfig.getMarketAmount();
-    			float price = ToolsUtils.getCurPriceByKey(symbol);
     			if(symbol.toUpperCase().equals("XRPUSDT")) {
     				realQuantity = decimalFormatForXRP.format(number * allConfig.getRate() / price);
     			} else {
@@ -90,7 +90,7 @@ public class AccountController {
 				Mail mail = new Mail();
 				mail.setUid(user.getId());
 				mail.setSymbol(symbol);
-				mail.setSubject(symbol + "即时单创建成功，已提交到币安");
+				mail.setSubject(symbol + "即时单创建成功，成交价格" + price + "，已提交到币安");
 				mail.setContent("提交数量：" + realQuantity);
 				mail.setState(0);
 				mail.setCreateTime(format.format(new Date()));
@@ -105,9 +105,9 @@ public class AccountController {
 				config.setType(symbol);
 				List<Config> allConfig = configService.findConfigFlag2(config);
 				for(Config c : allConfig) {
+					price = ToolsUtils.getCurPriceByKey(symbol);
 	        		if(StringUtils.isEmpty(quantity)) {
 		    			int number = c.getMarketAmount();
-		    			float price = ToolsUtils.getCurPriceByKey(symbol);
 		    			if(symbol.toUpperCase().equals("XRPUSDT")) {
 		    				realQuantity = decimalFormatForXRP.format(number * c.getRate() / price);
 		    			} else {
@@ -122,7 +122,7 @@ public class AccountController {
 						Mail mail = new Mail();
 			    		mail.setUid(c.getUid());
 			    		mail.setSymbol(symbol);
-			    		mail.setSubject(symbol + "即时单跟单创建成功，已提交到币安");
+			    		mail.setSubject(symbol + "即时单跟单创建成功，成交价格" + price + "，已提交到币安");
 			    		mail.setContent("提交数量：" + realQuantity);
 			    		mail.setState(0);
 			    		mail.setCreateTime(format.format(new Date()));
