@@ -420,17 +420,15 @@
 		            		for (i in list) {
 		            			var edit = "";
 		            		   	if(list[i].positionAmt < 0) {
-		            		   		edit = "<input type=\"button\" value=\"平空\" id=\"market3\" name=\"market3\" onclick =\"tradeMarket('BUY', '', 3, '" + list[i].symbol + "')\"/>" 
-		            		   			+ "<input type=\"button\" value=\"全平\" id=\"market3\" name=\"market3\" onclick =\"tradeMarket('BUY', " 
-		            		   					+ Math.abs(list[i].positionAmt) + ", 3, '" + list[i].symbol + "')\"/>" 
+		            		   		edit = "<input type=\"type\" value=" + Math.abs(list[i].positionAmt) + " id=\"position" + list[i].symbol + "\" name=\"position" + list[i].symbol + "\")\"/>" 
+		            		   			+ "<input type=\"button\" value=\"平仓\" id=\"market" + list[i].symbol + "\" name=\"market" + list[i].symbol + "\" onclick =\"tradeMarket2('BUY', '" + list[i].symbol + "')\"/>" 
 		            		    } else if(list[i].positionAmt > 0) {
-		            		    	edit = "<input type=\"button\" value=\"平多\" id=\"market4\" name=\"market4\" onclick =\"tradeMarket('SELL', '', 4, '" + list[i].symbol + "')\"/>" 
-		            		    		+ "<input type=\"button\" value=\"全平\" id=\"market4\" name=\"market4\" onclick =\"tradeMarket('SELL', " 
-		            		    				+ Math.abs(list[i].positionAmt) + ", 4, '" + list[i].symbol + "')\"/>" ;
+		            		    	edit = "<input type=\"type\" value=" + Math.abs(list[i].positionAmt) + " id=\"position" + list[i].symbol + "\" name=\"position" + list[i].symbol + "\")\"/>" 
+		            		    		+ "<input type=\"button\" value=\"平仓\" id=\"market" + list[i].symbol + "\" name=\"market" + list[i].symbol + "\" onclick =\"tradeMarket2('SELL', '" + list[i].symbol + "')\"/>" ;
 		            		    }
 		            			str += "<tr>" + 
 			            			"<td>" + list[i].symbol + "</td>" + 
-			            			"<td>" + Math.round(list[i].positionAmt * 100) / 100 + "</td>" + 
+			            			"<td>" + list[i].positionAmt + "</td>" + 
 			            			"<td>" + Math.round(list[i].entryPrice * 100) / 100 + "</td>" + 
 			            			"<td>" + Math.round(list[i].markPrice * 100) / 100 + "</td>" + 
 			            			"<td>" + Math.round(list[i].unRealizedProfit * 100) / 100 + "</td>" + 
@@ -528,16 +526,17 @@
 	        });  
 	    }
 	    
-	    function tradeMarket(side, quantity, seq, symbol) {  
+	    function tradeMarket1(side, seq) { 
+	    	if(!confirm("是否" + translateSide(side))) {
+	    		return;
+	    	}
 	     	$("#message").html('');
 	    	$("#market"+seq).attr("disabled","true");
-	    	if(symbol.length == 0) {
-	    		symbol = $('input[name="symbol1"]:checked').val();
-	    	}
+	    	
 	        $.ajax({  
 	            type : "get",
 	            url : "/Account/tradeMarket",
-	            data : "symbol=" + symbol + "&side=" + side + "&quantity=" + quantity,
+	            data : "symbol=" + $('input[name="symbol1"]:checked').val() + "&side=" + side,
 
 	            //成功
 	            success : function(data) {
@@ -563,8 +562,55 @@
 	            complete: function(message) {
 	            	$("#market"+seq).removeAttr("disabled");
 	            } 
-	        });
+	        }); 
 	    }
+	    
+	    function tradeMarket2(side, symbol) { 
+	    	if(!confirm("是否" + translateSide(side))) {
+	    		return;
+	    	}
+	     	$("#message").html('');
+	    	$("#market"+symbol).attr("disabled","true");
+    		var quantity = $("#position" + symbol).val();
+    		if(quantity == '') {
+    			$("#message").html("平仓数量必须填写");
+    			$("#position" + symbol).focus();
+    			$("#market"+symbol).removeAttr("disabled");
+    			return;
+    		}
+    		quantity = "&quantity=" + quantity;
+	    	
+	        $.ajax({  
+	            type : "get",
+	            url : "/Account/tradeMarket",
+	            data : "symbol=" + symbol + "&side=" + side + quantity,
+
+	            //成功
+	            success : function(data) {
+	            	if(data.indexOf("登录") > -1) {
+	            		window.location.href='User/logout';
+	            	} else {
+	            		var jsonObject= jQuery.parseJSON(data);
+	            		if(jsonObject.status == 'error') {
+	            			$("#message").html(jsonObject.msg);
+	            		} else {
+	            			positionRisk();
+	            			$("#message").html("市价单已提交");	
+	            		}
+	            	}
+	            },
+
+	            //错误情况
+	            error : function(error) {
+	                console.log("error : " + error);
+	            },
+
+	            //请求完成后回调函数 (请求成功或失败之后均调用)。
+	            complete: function(message) {
+	            	$("#market"+symbol).removeAttr("disabled");
+	            } 
+	        }); 
+	    }	    
 	    
 	    function tradePlan(){  
 	    	$("#message").html('');
@@ -904,8 +950,8 @@
 <input type="radio" name="symbol1" value="ETHUSDT">ETHUSDT
 <input type="radio" name="symbol1" value="BCHUSDT">BCHUSDT
 <input type="radio" name="symbol1" value="XRPUSDT">XRPUSDT
-<input type="button" value="开多" id="market1" name="market1" onclick ="tradeMarket('BUY', '', 1, '')"/>
-<input type="button" value="开空" id="market2" name="market2" onclick ="tradeMarket('SELL', '', 2, '')"/>
+<input type="button" value="开多" id="market1" name="market1" onclick ="tradeMarket1('BUY', 1)"/>
+<input type="button" value="开空" id="market2" name="market2" onclick ="tradeMarket1('SELL', 2)"/>
 <p>
 <p>
 计划单：
@@ -913,8 +959,6 @@
 <input type="radio" name="symbol2" value="ETHUSDT">ETHUSDT
 <input type="radio" name="symbol2" value="BCHUSDT">BCHUSDT
 <input type="button" value="开单" id="plan" name="plan" onclick ="tradePlan()"/>
-<input type="button" id="fllowSubmit" id="fllowSubmit" value="跟单" onclick ="fllowPlans()"/>
-<input type="button" id="findAllPlansSubmit" id="findAllPlansSubmit" value="我的计划单" onclick ="findAllPlans()"/>
 <table id="positionRiskList" name="positionRiskList" width="100%" cellpadding="1" cellspacing="0" border="1">
 <tr>
 <td>
@@ -960,8 +1004,10 @@
 </tr>
 </table>
 <p>
+<input type="button" id="fllowSubmit" id="fllowSubmit" value="跟单" onclick ="fllowPlans()"/>
 <table id="followList" name="followList" width="100%" cellpadding="1" cellspacing="0" border="1"></table>
 <p>
+<input type="button" id="findAllPlansSubmit" id="findAllPlansSubmit" value="我的计划单" onclick ="findAllPlans()"/>
 <table id="plansList" name="plansList" width="100%" cellpadding="1" cellspacing="0" border="1"></table>
 <p>
 <a href="${pageContext.request.contextPath}/User/index">用户页面</a>
