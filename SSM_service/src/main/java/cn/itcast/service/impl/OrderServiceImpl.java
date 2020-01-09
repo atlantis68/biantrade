@@ -27,7 +27,6 @@ import cn.itcast.pojo.Mail;
 import cn.itcast.pojo.Plan;
 import cn.itcast.service.ConfigService;
 import cn.itcast.service.OrderService;
-import cn.itcast.utils.ToolsUtils;
 import okhttp3.Call;
 import okhttp3.FormBody;
 import okhttp3.Request;
@@ -234,20 +233,20 @@ public class OrderServiceImpl implements OrderService {
 			Float entrustPrice = null;
 			if(firstPrice >= secondPrice && secondPrice >= thirdPrice && thirdPrice > stopPrice) {
 				side = "BUY";
-				firstPrice += allConfig.getTradeOffset();
-				secondPrice += allConfig.getTradeOffset();
-				thirdPrice += allConfig.getTradeOffset();
+				firstPrice = firstPrice * (1 + allConfig.getTradeOffset() / 10000);
+				secondPrice = secondPrice * (1 + allConfig.getTradeOffset() / 10000);
+				thirdPrice = thirdPrice * (1 + allConfig.getTradeOffset() / 10000);
 				stopSide = "SELL";
-				stopPrice -= allConfig.getLossTriggerOffset();
-				entrustPrice = stopPrice - allConfig.getLossEntrustOffset();
+				stopPrice = stopPrice * (1 - allConfig.getLossTriggerOffset() / 10000);
+				entrustPrice = stopPrice * (1 - allConfig.getLossEntrustOffset() / 10000);
 			} else if(firstPrice <= secondPrice && secondPrice <= thirdPrice && thirdPrice < stopPrice) {
 				side = "SELL";
-				firstPrice -= allConfig.getTradeOffset();
-				secondPrice -= allConfig.getTradeOffset();
-				thirdPrice -= allConfig.getTradeOffset();
+				firstPrice = firstPrice * (1 - allConfig.getTradeOffset() / 10000);
+				secondPrice = secondPrice * (1 - allConfig.getTradeOffset() / 10000);
+				thirdPrice = thirdPrice * (1 - allConfig.getTradeOffset() / 10000);
 				stopSide = "BUY";
-				stopPrice += allConfig.getLossTriggerOffset();
-				entrustPrice = stopPrice + allConfig.getLossEntrustOffset();
+				stopPrice = stopPrice * (1 + allConfig.getLossTriggerOffset() / 10000);
+				entrustPrice = stopPrice * (1 + allConfig.getLossEntrustOffset() / 10000);
 			}
 			if(StringUtils.isEmpty(side)) {
 				return 2;

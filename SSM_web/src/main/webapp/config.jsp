@@ -53,9 +53,9 @@
 	            			str += "<tr><td><b>即时下单金额（刀）</b></td><td><input type=\"text\" id=\"marketAmount\" name=\"marketAmount\" value=" + jsonObject.marketAmount + " /></td></tr>" ;
 	            			str += "<tr><td><b>合约本金（刀）</b></td><td><input type=\"text\" id=\"limitAmount\" name=\"limitAmount\" value=" + jsonObject.limitAmount + " /></td></tr>" ;
 	            			str += "<tr><td><b>最大亏损率（百分比）</b></td><td><input type=\"text\" id=\"maxLoss\" name=\"maxLoss\" value=" + jsonObject.maxLoss + " /></td></tr>" ;
-	            			str += "<tr><td><b>下单偏移量（刀）</b></td><td><input type=\"text\" id=\"tradeOffset\" name=\"tradeOffset\" value=" + jsonObject.tradeOffset + " /></td></tr>" ;
-	            			str += "<tr><td><b>止损单触发偏移量（刀）</b></td><td><input type=\"text\" id=\"lossTriggerOffset\" name=\"lossTriggerOffset\" value=" + jsonObject.lossTriggerOffset + " /></td></tr>" ;
-	            			str += "<tr><td><b>止损单委托偏移量（刀）</b></td><td><input type=\"text\" id=\"lossEntrustOffset\" name=\"lossEntrustOffset\" value=" + jsonObject.lossEntrustOffset + " /></td></tr>" ;
+	            			str += "<tr><td><b>下单偏移量（万分比）</b></td><td><input type=\"text\" id=\"tradeOffset\" name=\"tradeOffset\" value=" + jsonObject.tradeOffset + " /></td></tr>" ;
+	            			str += "<tr><td><b>止损单触发偏移量（万分比）</b></td><td><input type=\"text\" id=\"lossTriggerOffset\" name=\"lossTriggerOffset\" value=" + jsonObject.lossTriggerOffset + " /></td></tr>" ;
+	            			str += "<tr><td><b>止损单委托偏移量（万分比）</b></td><td><input type=\"text\" id=\"lossEntrustOffset\" name=\"lossEntrustOffset\" value=" + jsonObject.lossEntrustOffset + " /></td></tr>" ;
 	            			str += "<tr><td><b>止损对标</b></td><td><input type=\"radio\" name=\"lossWorkingType\" value=\"MARK_PRICE\" " + isChecked(jsonObject.lossWorkingType, 'MARK_PRICE') + ">标记价格"
 	            				+"<input type=\"radio\" name=\"lossWorkingType\" value=\"CONTRACT_PRICE\" " + isChecked(jsonObject.lossWorkingType, 'CONTRACT_PRICE') + ">合约价格</td></tr>" ;
 	            			str += "<tr><td><b>止损方式</b></td><td><input type=\"radio\" name=\"lossType\" value=\"0\" " + isChecked(jsonObject.lossType, 0) + ">限价"
