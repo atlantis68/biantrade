@@ -1,6 +1,5 @@
 package cn.itcast.service.impl;
 
-import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -27,6 +26,7 @@ import cn.itcast.pojo.Mail;
 import cn.itcast.pojo.Plan;
 import cn.itcast.service.ConfigService;
 import cn.itcast.service.OrderService;
+import cn.itcast.utils.ToolsUtils;
 import okhttp3.Call;
 import okhttp3.FormBody;
 import okhttp3.Request;
@@ -46,8 +46,6 @@ public class OrderServiceImpl implements OrderService {
     
     @Autowired
     private ConfigService configService;
-    
-	private static DecimalFormat decimalFormat = new DecimalFormat("0.000");
 	
 	private static SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	
@@ -253,7 +251,7 @@ public class OrderServiceImpl implements OrderService {
 			}
 			//计算下单数量
 			Float diff = Math.abs(((firstPrice + secondPrice + thirdPrice) / 3) - stopPrice);
-			String quantity = decimalFormat.format(allConfig.getLimitAmount() * allConfig.getMaxLoss() / 100 / diff / 3);
+			String quantity = ToolsUtils.formatQuantity(symbol, allConfig.getLimitAmount() * allConfig.getMaxLoss() / 100 / diff / 3);
 			//是否立即提交
 			Float triggerPrice = null;
 			if(StringUtils.isNotEmpty(trigger)) {
@@ -270,7 +268,7 @@ public class OrderServiceImpl implements OrderService {
 			}
 			//开始执行
 			//操作第一档
-			String temp = trade(symbol, side, quantity, decimalFormat.format(firstPrice), null, "LIMIT", "GTC", allConfig.getLossWorkingType(), null, apiKey, secretKey);
+			String temp = trade(symbol, side, quantity, ToolsUtils.formatPrice(symbol, firstPrice), null, "LIMIT", "GTC", allConfig.getLossWorkingType(), null, apiKey, secretKey);
 			Map<String, String> tempInfo = JSON.parseObject(temp, new TypeReference<Map<String, String>>(){} );
 			if(tempInfo != null && StringUtils.isNotEmpty(tempInfo.get("orderId"))) {
 				orderIds.add(tempInfo.get("orderId"));
@@ -278,7 +276,7 @@ public class OrderServiceImpl implements OrderService {
 			seq++;
 			if(orderIds.size() == seq) {
 				//操作第二档
-				temp = trade(symbol, side, quantity, decimalFormat.format(secondPrice), null, "LIMIT", "GTC", allConfig.getLossWorkingType(), null, apiKey, secretKey);
+				temp = trade(symbol, side, quantity, ToolsUtils.formatPrice(symbol, secondPrice), null, "LIMIT", "GTC", allConfig.getLossWorkingType(), null, apiKey, secretKey);
 				tempInfo = JSON.parseObject(temp, new TypeReference<Map<String, String>>(){} );
 				if(tempInfo != null && StringUtils.isNotEmpty(tempInfo.get("orderId"))) {
 					orderIds.add(tempInfo.get("orderId"));
@@ -287,7 +285,7 @@ public class OrderServiceImpl implements OrderService {
 			seq++;
 			if(orderIds.size() == seq) {
 				//操作第三档
-				temp = trade(symbol, side, quantity, decimalFormat.format(thirdPrice), null, "LIMIT", "GTC", allConfig.getLossWorkingType(), null, apiKey, secretKey);
+				temp = trade(symbol, side, quantity, ToolsUtils.formatPrice(symbol, thirdPrice), null, "LIMIT", "GTC", allConfig.getLossWorkingType(), null, apiKey, secretKey);
 				tempInfo = JSON.parseObject(temp, new TypeReference<Map<String, String>>(){} );
 				if(tempInfo != null && StringUtils.isNotEmpty(tempInfo.get("orderId"))) {
 					orderIds.add(tempInfo.get("orderId"));
@@ -298,7 +296,7 @@ public class OrderServiceImpl implements OrderService {
 			if(allConfig.getLossType() == 0) {
 				if(orderIds.size() == seq) {
 					//操作止损单1
-					temp = trade(symbol, stopSide, quantity, decimalFormat.format(entrustPrice), decimalFormat.format(stopPrice), "STOP", "GTC", allConfig.getLossWorkingType(), null, apiKey, secretKey);
+					temp = trade(symbol, stopSide, quantity, ToolsUtils.formatPrice(symbol, entrustPrice), ToolsUtils.formatPrice(symbol, stopPrice), "STOP", "GTC", allConfig.getLossWorkingType(), null, apiKey, secretKey);
 					tempInfo = JSON.parseObject(temp, new TypeReference<Map<String, String>>(){} );
 					if(tempInfo != null && StringUtils.isNotEmpty(tempInfo.get("orderId"))) {
 						orderIds.add(tempInfo.get("orderId"));
@@ -307,7 +305,7 @@ public class OrderServiceImpl implements OrderService {
 				seq++;
 				if(orderIds.size() == seq) {
 					//操作止损单2
-					temp = trade(symbol, stopSide, quantity, decimalFormat.format(entrustPrice), decimalFormat.format(stopPrice), "STOP", "GTC", allConfig.getLossWorkingType(), null, apiKey, secretKey);
+					temp = trade(symbol, stopSide, quantity, ToolsUtils.formatPrice(symbol, entrustPrice), ToolsUtils.formatPrice(symbol, stopPrice), "STOP", "GTC", allConfig.getLossWorkingType(), null, apiKey, secretKey);
 					tempInfo = JSON.parseObject(temp, new TypeReference<Map<String, String>>(){} );
 					if(tempInfo != null && StringUtils.isNotEmpty(tempInfo.get("orderId"))) {
 						orderIds.add(tempInfo.get("orderId"));
@@ -316,7 +314,7 @@ public class OrderServiceImpl implements OrderService {
 				seq++;
 				if(orderIds.size() == seq) {
 					//操作止损单3
-					temp = trade(symbol, stopSide, quantity, decimalFormat.format(entrustPrice), decimalFormat.format(stopPrice), "STOP", "GTC", allConfig.getLossWorkingType(), null, apiKey, secretKey);
+					temp = trade(symbol, stopSide, quantity, ToolsUtils.formatPrice(symbol, entrustPrice), ToolsUtils.formatPrice(symbol, stopPrice), "STOP", "GTC", allConfig.getLossWorkingType(), null, apiKey, secretKey);
 					tempInfo = JSON.parseObject(temp, new TypeReference<Map<String, String>>(){} );
 					if(tempInfo != null && StringUtils.isNotEmpty(tempInfo.get("orderId"))) {
 						orderIds.add(tempInfo.get("orderId"));
@@ -326,7 +324,7 @@ public class OrderServiceImpl implements OrderService {
 			} else {
 				if(orderIds.size() == seq) {
 					//操作止损单1
-					temp = trade(symbol, stopSide, quantity, null, decimalFormat.format(stopPrice), "STOP_MARKET", null, allConfig.getLossWorkingType(), null, apiKey, secretKey);
+					temp = trade(symbol, stopSide, quantity, null, ToolsUtils.formatPrice(symbol, stopPrice), "STOP_MARKET", null, allConfig.getLossWorkingType(), null, apiKey, secretKey);
 					tempInfo = JSON.parseObject(temp, new TypeReference<Map<String, String>>(){} );
 					if(tempInfo != null && StringUtils.isNotEmpty(tempInfo.get("orderId"))) {
 						orderIds.add(tempInfo.get("orderId"));
@@ -335,7 +333,7 @@ public class OrderServiceImpl implements OrderService {
 				seq++;
 				if(orderIds.size() == seq) {
 					//操作止损单2
-					temp = trade(symbol, stopSide, quantity, null, decimalFormat.format(stopPrice), "STOP_MARKET", null, allConfig.getLossWorkingType(), null, apiKey, secretKey);
+					temp = trade(symbol, stopSide, quantity, null, ToolsUtils.formatPrice(symbol, stopPrice), "STOP_MARKET", null, allConfig.getLossWorkingType(), null, apiKey, secretKey);
 					tempInfo = JSON.parseObject(temp, new TypeReference<Map<String, String>>(){} );
 					if(tempInfo != null && StringUtils.isNotEmpty(tempInfo.get("orderId"))) {
 						orderIds.add(tempInfo.get("orderId"));
@@ -344,7 +342,7 @@ public class OrderServiceImpl implements OrderService {
 				seq++;
 				if(orderIds.size() == seq) {
 					//操作止损单3
-					temp = trade(symbol, stopSide, quantity, null, decimalFormat.format(stopPrice), "STOP_MARKET", null, allConfig.getLossWorkingType(), null, apiKey, secretKey);
+					temp = trade(symbol, stopSide, quantity, null, ToolsUtils.formatPrice(symbol, stopPrice), "STOP_MARKET", null, allConfig.getLossWorkingType(), null, apiKey, secretKey);
 					tempInfo = JSON.parseObject(temp, new TypeReference<Map<String, String>>(){} );
 					if(tempInfo != null && StringUtils.isNotEmpty(tempInfo.get("orderId"))) {
 						orderIds.add(tempInfo.get("orderId"));

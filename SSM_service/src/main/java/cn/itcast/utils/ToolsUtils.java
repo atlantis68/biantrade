@@ -1,5 +1,6 @@
 package cn.itcast.utils;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -13,6 +14,14 @@ public class ToolsUtils {
 	private static List<Properties> platformMail;
 
 	private static int offset;
+	
+	private static DecimalFormat decimalFormatFor4 = new DecimalFormat("0.0000");
+	
+	private static DecimalFormat decimalFormatFor3 = new DecimalFormat("0.000");
+	
+	private static DecimalFormat decimalFormatFor2 = new DecimalFormat("0.00");
+	
+	private static DecimalFormat decimalFormatFor1 = new DecimalFormat("0.0");
 	
 	static {
 		platformMail = new ArrayList<Properties>();
@@ -62,5 +71,29 @@ public class ToolsUtils {
 	
 	public static Properties getRandomPlat() {
 		return platformMail.get(offset++ % platformMail.size());
+	}
+	
+	public static String formatQuantity(String symbol, Float value) {
+		String result;
+		if(symbol.toUpperCase().equals("XRPUSDT")) {
+			result = decimalFormatFor1.format(value);
+		} else if(symbol.toUpperCase().equals("EOSUSDT")) {
+			result = decimalFormatFor2.format(value);
+		} else {
+			result = decimalFormatFor3.format(value);
+		}
+		return result;
+	}
+	
+	public static String formatPrice(String symbol, Float value) {
+		String result;
+		if(symbol.toUpperCase().equals("XRPUSDT")) {
+			result = decimalFormatFor4.format(value);
+		} else if(symbol.toUpperCase().equals("EOSUSDT")) {
+			result = decimalFormatFor3.format(value);
+		} else {
+			result = decimalFormatFor2.format(value);
+		}
+		return result;
 	}
 }

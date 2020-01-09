@@ -1,6 +1,5 @@
 package cn.itcast.controller;
 
-import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -43,10 +42,6 @@ public class AccountController {
     
     @Autowired
     private OrderService orderService;
-    
-	private static DecimalFormat decimalFormat = new DecimalFormat("0.000");
-	
-	private static DecimalFormat decimalFormatForXRP = new DecimalFormat("0.0");
 	
 	private static SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	
@@ -70,11 +65,7 @@ public class AccountController {
     			config.setType(symbol);
     			Config allConfig = configService.findConfigByUid(config);
     			int number = allConfig.getMarketAmount();
-    			if(symbol.toUpperCase().equals("XRPUSDT")) {
-    				realQuantity = decimalFormatForXRP.format(number * allConfig.getRate() / price);
-    			} else {
-    				realQuantity = decimalFormat.format(number * allConfig.getRate() / price);
-    			}
+    			realQuantity = ToolsUtils.formatQuantity(symbol, number * allConfig.getRate() / price);
     		} else {
     			realQuantity = quantity;
     			reduceOnly = "true";
@@ -104,11 +95,7 @@ public class AccountController {
 					price = ToolsUtils.getCurPriceByKey(symbol);
 	        		if(StringUtils.isEmpty(quantity)) {
 		    			int number = c.getMarketAmount();
-		    			if(symbol.toUpperCase().equals("XRPUSDT")) {
-		    				realQuantity = decimalFormatForXRP.format(number * c.getRate() / price);
-		    			} else {
-		    				realQuantity = decimalFormat.format(number * c.getRate() / price);
-		    			}
+		    			realQuantity = ToolsUtils.formatQuantity(symbol, number * c.getRate() / price);
 	        		} else {
 	        			realQuantity = quantity;
 	        		}
