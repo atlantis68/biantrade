@@ -16,10 +16,11 @@ public class FollowPlanTask implements Runnable {
 	private Integer uid;
 	private String apiKey;
 	private String secretKey;
+	private Float curPrice;
 	
 	
-	public FollowPlanTask(OrderService orderService, Integer id, String symbol, String first, String second,
-			String third, String stop, String trigger, Integer compare, Integer uid, String apiKey, String secretKey) {
+	public FollowPlanTask(OrderService orderService, Integer id, String symbol, String first, String second, String third, String stop, 
+			String trigger, Integer compare, Integer uid, String apiKey, String secretKey, Float curPrice) {
 		super();
 		this.orderService = orderService;
 		this.id = id;
@@ -33,13 +34,14 @@ public class FollowPlanTask implements Runnable {
 		this.uid = uid;
 		this.apiKey = apiKey;
 		this.secretKey = secretKey;
+		this.curPrice = curPrice;
 	}
 
 
 	@Override
 	public void run() {
 		try {
-			orderService.follow(id, symbol, first, second, third, stop, trigger, compare, uid, apiKey, secretKey);
+			orderService.follow(id, symbol, first, second, third, stop, trigger, compare, uid, apiKey, secretKey, curPrice);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

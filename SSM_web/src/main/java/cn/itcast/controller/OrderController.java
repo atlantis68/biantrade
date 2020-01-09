@@ -1,7 +1,6 @@
 package cn.itcast.controller;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpSession;
@@ -24,6 +23,7 @@ import cn.itcast.pojo.Plan;
 import cn.itcast.pojo.User;
 import cn.itcast.service.ConfigService;
 import cn.itcast.service.OrderService;
+import cn.itcast.utils.ToolsUtils;
 
 @Controller
 @RequestMapping("/Order")
@@ -50,10 +50,11 @@ public class OrderController {
     		String trigger, Integer compare, HttpSession session) {
     	JSONObject result = new JSONObject();
     	try {
+    		Float curPrice = ToolsUtils.getCurPriceByKey(symbol);
     		//获取配置项
     		User user = (User) session.getAttribute("USER_SESSION");
     		String plan = orderService.plan(symbol, first, second, third, stop, trigger, compare,
-    				user.getId(), user.getApiKey(), user.getSecretKey());
+    				user.getId(), user.getApiKey(), user.getSecretKey(), curPrice);
         	result.put("status", "ok");
         	result.put("msg", plan);
         	if(user.getRole() == 0) {
@@ -67,7 +68,7 @@ public class OrderController {
         				List<Config> allConfig = configService.findConfigFlag12(config);
         				for(Config c : allConfig) {
         					ThreadPool.execute(new FollowPlanTask(orderService, id, symbol, first, second, third, stop, 
-        							trigger, compare, c.getUid(), c.getType(), c.getLossWorkingType()));
+        							trigger, compare, c.getUid(), c.getType(), c.getLossWorkingType(), curPrice));
         				}
         			}
         		}
@@ -169,7 +170,7 @@ public class OrderController {
     		if(plan != null && plan.getState() < 4) {
     			orderService.follow(id, plan.getSymbol(), plan.getFirst().toString(), plan.getSecond().toString(), 
     					plan.getThird().toString(), plan.getStop().toString(), plan.getTrigger().toString(), 
-    					plan.getCompare(), user.getId(), user.getApiKey(), user.getSecretKey());
+    					plan.getCompare(), user.getId(), user.getApiKey(), user.getSecretKey(), ToolsUtils.getCurPriceByKey(plan.getSymbol()));
     			result.put("status", "ok");
     			result.put("msg", "follow successful");    			
     		} else {

@@ -60,12 +60,8 @@ public class AccountController {
     public String tradeMarket(String symbol, String side, String quantity, HttpSession session) {
     	JSONObject result = new JSONObject();
     	String realQuantity;
+    	String reduceOnly = null;
     	try {
-    		StringBuffer uri = new StringBuffer();
-    		uri.append("timestamp=").append(System.currentTimeMillis());
-    		if(StringUtils.isNotEmpty(symbol)) {
-    			uri.append("&symbol=").append(symbol);
-    		}
     		float price = ToolsUtils.getCurPriceByKey(symbol);
     		User user = (User) session.getAttribute("USER_SESSION");
     		if(StringUtils.isEmpty(quantity)) {
@@ -81,9 +77,9 @@ public class AccountController {
     			}
     		} else {
     			realQuantity = quantity;
-    			uri.append("&reduceOnly=true");
+    			reduceOnly = "true";
     		}
-    		String temp = orderService.trade(symbol, side, realQuantity, null, null, "MARKET", null, null, null, user.getApiKey(), user.getSecretKey());
+    		String temp = orderService.trade(symbol, side, realQuantity, null, null, "MARKET", null, null, reduceOnly, user.getApiKey(), user.getSecretKey());
 			Map<String, String> tempInfo = JSON.parseObject(temp, new TypeReference<Map<String, String>>(){} );
 			if(tempInfo != null && StringUtils.isNotEmpty(tempInfo.get("orderId"))) {
 				result.put("status", "ok");

@@ -50,7 +50,7 @@ public class DealState0 implements Runnable {
 	    	    			if(plan.getCompare() == 0 && curPrice > plan.getTrigger()) {
 	    	    				int status = orderService.generateAndDealOrder(plan.getSymbol(), plan.getFirst().toString(), plan.getSecond().toString(), 
 	    	    						plan.getThird().toString(), plan.getStop().toString(), plan.getTrigger().toString(), plan.getCompare(), plan.getUid(), 
-	    	    						plan.getCreateTime(), plan.getUpdateTime(), orderIds);
+	    	    						plan.getCreateTime(), plan.getUpdateTime(), orderIds, curPrice);
 	    	    				String orders = "";
 	    	    				if(status == 1) {
 	    	    					for(String orderId : orderIds) {
@@ -82,7 +82,7 @@ public class DealState0 implements Runnable {
 	    	    			} else if(plan.getCompare() == 1 && curPrice < plan.getTrigger()) {
 	    	    				int status = orderService.generateAndDealOrder(plan.getSymbol(), plan.getFirst().toString(), plan.getSecond().toString(), 
 	    	    						plan.getThird().toString(), plan.getStop().toString(), plan.getTrigger().toString(), plan.getCompare(), plan.getUid(), 
-	    	    						plan.getCreateTime(), plan.getUpdateTime(), orderIds);
+	    	    						plan.getCreateTime(), plan.getUpdateTime(), orderIds, curPrice);
 	    	    				String orders = "";
 	    	    				if(status == 1) {
 	    	    					for(String orderId : orderIds) {
