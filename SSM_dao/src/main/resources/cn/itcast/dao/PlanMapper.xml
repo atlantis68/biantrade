@@ -8,11 +8,11 @@
     </insert>
     <select id="findPlanByUid" parameterType="String"
             resultType="cn.itcast.pojo.Plan">
-        select * from `plan` where uid = #{uid} and symbol = #{symbol} and state &lt; 4;
+        select * from `plan` where uid = #{uid} and state &lt; 4;
     </select>         
     <select id="findFllowPlans" parameterType="String"
             resultType="cn.itcast.pojo.Plan">
-        SELECT p.* FROM plan p, USER u WHERE symbol = #{symbol} AND state &lt; 4 AND u.id = p.uid AND u.role = 0;
+        SELECT p.* FROM plan p, USER u WHERE state &lt; 4 AND u.id = p.uid AND u.role = 0;
     </select>        
     <update id="updatePlanById" parameterType="cn.itcast.pojo.Plan">
         update `plan` set state = #{state}, updateTime = #{updateTime}, orderIds = #{orderIds} where id = #{id};

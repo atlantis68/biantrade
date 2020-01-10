@@ -8,7 +8,7 @@
     window.setInterval(getPrice, 5000); 
     
     function validateFloat(val){
-   	 var patten = /^-?\d+\.?\d{0,2}$/;
+   	 var patten = /^-?\d+\.?\d{0,4}$/;
    	 return patten.test(val);
 	}    
 
@@ -301,14 +301,14 @@
 			            			str += "<tr>" + 
 				            			"<td>" + list[i].orderId + "</td>" + 
 				            			"<td>" + translateStatus(list[i].status) + "</td>" + 
-				            			"<td>" + Math.round(list[i].price * 100) / 100 + "</td>" + 
-				            			"<td>" + Math.round(list[i].origQty * 100) / 100 + "</td>" + 
-				            			"<td>" + Math.round(list[i].executedQty * 100) / 100 + "</td>" + 
+				            			"<td>" + list[i].price + "</td>" + 
+				            			"<td>" + list[i].origQty + "</td>" + 
+				            			"<td>" + list[i].executedQty + "</td>" + 
 				            			"<td>" + translateTimeInForce(list[i].timeInForce) + "</td>" + 
 				            			"<td>" + translateType(list[i].type) + "</td>" + 
 				            			"<td>" + translateBoolean(list[i].reduceOnly) + "</td>" + 
 				            			"<td>" + translateSide(list[i].side) + "</td>" + 
-				            			"<td>" + Math.round(list[i].stopPrice * 100) / 100 + "</td>" + 
+				            			"<td>" + list[i].stopPrice + "</td>" + 
 				            			"<td>" + translateWorkingType(list[i].workingType) + "</td>" + 
 				            			"<td>" + getFormatDateByLong(list[i].time) + "</td>" + 
 				            			"<td>" + getFormatDateByLong(list[i].updateTime) + "</td>" + 
@@ -364,8 +364,8 @@
 		            		for (i in list) {
 		            			str += "<tr>" + 
 			            			"<td>" + list[i].asset + "</td>" + 
-			            			"<td>" + Math.round(list[i].balance * 100) / 100 + "</td>" + 
-			            			"<td>" + Math.round(list[i].withdrawAvailable * 100) / 100 + "</td>" + 
+			            			"<td>" + list[i].balance + "</td>" + 
+			            			"<td>" + list[i].withdrawAvailable + "</td>" + 
 			            			"<td>" + getFormatDateByLong(list[i].updateTime) + "</td>" + 
 			            			"</tr>";
 		            		}	
@@ -429,10 +429,10 @@
 		            			str += "<tr>" + 
 			            			"<td>" + list[i].symbol + "</td>" + 
 			            			"<td>" + list[i].positionAmt + "</td>" + 
-			            			"<td>" + Math.round(list[i].entryPrice * 100) / 100 + "</td>" + 
-			            			"<td>" + Math.round(list[i].markPrice * 100) / 100 + "</td>" + 
-			            			"<td>" + Math.round(list[i].unRealizedProfit * 100) / 100 + "</td>" + 
-			            			"<td>" + Math.round(list[i].liquidationPrice * 100) / 100 + "</td>" +
+			            			"<td>" + list[i].entryPrice + "</td>" + 
+			            			"<td>" + list[i].markPrice + "</td>" + 
+			            			"<td>" + list[i].unRealizedProfit + "</td>" + 
+			            			"<td>" + list[i].liquidationPrice + "</td>" +
 			            			"<td>" + list[i].leverage + "</td>" +
 			            			"<td>" + edit + "</td>" + 
 			            			"</tr>";
@@ -615,24 +615,24 @@
 	    function tradePlan(){  
 	    	$("#message").html('');
 			if(!validateFloat($("#first").val())) {
-				$("#message").html("“第一档”必须是小数点后两位的小数");
+				$("#message").html("“第一档”必须是小数点后四位以内的小数");
 				$("#first").focus();
 				return;
 			} else if(!validateFloat($("#second").val())) {
-				$("#message").html("“第二档”必须是小数点后两位的小数");
+				$("#message").html("“第二档”必须是小数点后四位以内的小数");
 				$("#second").focus();
 				return;
 			} else if(!validateFloat($("#third").val())) {
-				$("#message").html("“第三档”必须是小数点后两位的小数");
+				$("#message").html("“第三档”必须是小数点后四位以内的小数");
 				$("#third").focus();
 				return;
 			} else if(!validateFloat($("#stop").val())) {
-				$("#message").html("“止损档”必须是小数点后两位的小数");
+				$("#message").html("“止损档”必须是小数点后四位以内的小数");
 				$("#stop").focus();
 				return;
 			} 
-			if((parseInt($("#first").val()) <= parseInt($("#second").val()) && parseInt($("#second").val()) <= parseInt($("#third").val()) && parseInt($("#third").val()) < parseInt($("#stop").val())) ||
-					(parseInt($("#first").val()) >= parseInt($("#second").val()) && parseInt($("#second").val()) >= parseInt($("#third").val()) && parseInt($("#third").val()) > parseInt($("#stop").val()))) {
+			if((parseFloat($("#first").val()) <= parseFloat($("#second").val()) && parseFloat($("#second").val()) <= parseFloat($("#third").val()) && parseFloat($("#third").val()) < parseFloat($("#stop").val())) ||
+					(parseFloat($("#first").val()) >= parseFloat($("#second").val()) && parseFloat($("#second").val()) >= parseFloat($("#third").val()) && parseFloat($("#third").val()) > parseFloat($("#stop").val()))) {
 		    	$("#plan").attr("disabled","true");
 		        $.ajax({  
 		            type : "get",
@@ -664,7 +664,7 @@
 		            complete: function(message) {
 		            	$("#plan").removeAttr("disabled");
 		            } 
-		        }); 
+		        });
 			} else {
 				$("#message").html("档位设置不合规");
 				return;
@@ -691,6 +691,7 @@
 	            			var list = JSON.parse(jsonObject.msg);
 		            		if(list.length > 0) {
 		            			var str = "<tr>" + 
+		            				"<td><b>类型</b></td>" +
 			            			"<td><b>第一档</b></td>" + 
 			            			"<td><b>第二档</b></td>" + 
 			            			"<td><b>第三档</b></td>" + 
@@ -707,13 +708,14 @@
 		            		}
 		            		for (x in list) {
 		            			i = list.length - x - 1;
-		            			var edit = "<input type=\"button\" id=\"cplan" + list[i].id + "\" name=\"cplan" + list[i].id + "\" value=\"撤销计划单\" onclick =\"cancelPlan(" + list[i].id + ", '" + list[i].orderIds + "')\"/>";
+		            			var edit = "<input type=\"button\" id=\"cplan" + list[i].id + "\" name=\"cplan" + list[i].id + "\" value=\"撤销计划单\" onclick =\"cancelPlan('" + list[i].symbol + "', " + list[i].id + ", '" + list[i].orderIds + "')\"/>";
 		            			 /* + "<input type=\"button\" id=\"oplan" + list[i].id + "\" name=\"oplan" + list[i].id + "\" value=\"完成\" onclick =\"finish(" + list[i].id + ")\"/>"; */
 		            			str += "<tr>" + 
-			            			"<td>" + Math.round(list[i].first * 100) / 100 + "</td>" + 
-			            			"<td>" + Math.round(list[i].second * 100) / 100 + "</td>" + 
-			            			"<td>" + Math.round(list[i].third * 100) / 100 + "</td>" + 
-			            			"<td>" + Math.round(list[i].stop * 100) / 100 + "</td>" + 
+		            				"<td>" + list[i].symbol + "</td>" + 
+			            			"<td>" + list[i].first + "</td>" + 
+			            			"<td>" + list[i].second + "</td>" + 
+			            			"<td>" + list[i].third + "</td>" + 
+			            			"<td>" + list[i].stop + "</td>" + 
 			            			"<td>" + translateCompare(list[i].compare) + "</td>" + 
 			            			"<td>" + translateNull(list[i].trigger) + "</td>" + 
 			            			"<td>" + translateState(list[i].state) + "</td>" +  
@@ -762,6 +764,7 @@
 	            			var list = JSON.parse(jsonObject.msg);
 		            		if(list.length > 0) {
 		            			var str = "<tr>" + 
+		            				"<td><b>类型</b></td>" +
 			            			"<td><b>第一档</b></td>" + 
 			            			"<td><b>第二档</b></td>" + 
 			            			"<td><b>第三档</b></td>" + 
@@ -780,6 +783,7 @@
 		            			i = list.length - x - 1;
 		            			var edit = "<input type=\"button\" id=\"fplan" + list[i].id + "\" name=\"fplan" + list[i].id + "\" value=\"跟随计划单\" onclick =\"follow(" + list[i].id + ")\"/>";
 		            			str += "<tr>" + 
+		            				"<td>" + list[i].symbol + "</td>" + 
 			            			"<td>" + list[i].first + "</td>" + 
 			            			"<td>" + list[i].second + "</td>" + 
 			            			"<td>" + list[i].third + "</td>" + 
@@ -813,13 +817,13 @@
 	        });  
 	    } 		    
 	    
-	    function cancelPlan(id, orderIds){  
+	    function cancelPlan(symbol, id, orderIds){  
 	    	$("#message").html('');
 	    	$("#cplan"+id).attr("disabled","true");
 	        $.ajax({  
 	            type : "get",
 	            url : "/Order/cancelPlan",
-	            data : "symbol="+$('input[name="symbol2"]:checked').val() + "&id="+id + "&orderIds="+orderIds,
+	            data : "symbol=" + symbol + "&id="+id + "&orderIds="+orderIds,
 
 	            //成功
 	            success : function(data) {

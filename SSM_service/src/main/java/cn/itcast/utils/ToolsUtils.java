@@ -75,10 +75,8 @@ public class ToolsUtils {
 	
 	public static String formatQuantity(String symbol, Float value) {
 		String result;
-		if(symbol.toUpperCase().equals("XRPUSDT")) {
+		if(symbol.toUpperCase().equals("XRPUSDT") || symbol.toUpperCase().equals("EOSUSDT")) {
 			result = decimalFormatFor1.format(value);
-		} else if(symbol.toUpperCase().equals("EOSUSDT")) {
-			result = decimalFormatFor2.format(value);
 		} else {
 			result = decimalFormatFor3.format(value);
 		}
