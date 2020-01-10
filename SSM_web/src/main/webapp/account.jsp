@@ -637,8 +637,10 @@
 		        $.ajax({  
 		            type : "get",
 		            url : "/Order/plan",
-		            data : "first=" + $("#first").val() + "&second=" + $("#second").val() + "&third=" + $("#third").val() + "&compare=" + +$('input[name="compare"]:checked').val()
-		            	+ "&stop=" + $("#stop").val() + "&trigger=" + $("#trigger").val() + "&symbol="+$('input[name="symbol2"]:checked').val(),
+		            data : "first=" + $("#first").val() + "&second=" + $("#second").val() + "&third=" + $("#third").val() + "&stop=" + $("#stop").val() 
+		            	+ "&compare=" + +$('input[name="compare"]:checked').val() + "&trigger=" + $("#trigger").val() 
+		            	+ "&compare1=" + +$('input[name="compare1"]:checked').val() + "&trigger1=" + $("#trigger1").val() 
+		            	+ "&symbol="+$('input[name="symbol2"]:checked').val(),
 
 		            //成功
 		            success : function(data) {
@@ -696,8 +698,8 @@
 			            			"<td><b>第二档</b></td>" + 
 			            			"<td><b>第三档</b></td>" + 
 			            			"<td><b>止损档</b></td>" + 
-			            			"<td><b>操作</b></td>" +
-			            			"<td><b>触发价</b></td>" + 
+			            			"<td><b>开单触发价</b></td>" + 
+			            			"<td><b>撤单触发价</b></td>" + 	
 			            			"<td><b>状态</b></td>" + 
 			            			"<td><b>来源</b></td>" + 
 			            			"<td><b>关联订单号</b></td>" + 
@@ -716,8 +718,8 @@
 			            			"<td>" + list[i].second + "</td>" + 
 			            			"<td>" + list[i].third + "</td>" + 
 			            			"<td>" + list[i].stop + "</td>" + 
-			            			"<td>" + translateCompare(list[i].compare) + "</td>" + 
-			            			"<td>" + translateNull(list[i].trigger) + "</td>" + 
+			            			"<td>" + translateCompare(list[i].compare) + translateNull(list[i].trigger) + "</td>" + 
+			            			"<td>" + translateCompare(list[i].compare1) + translateNull(list[i].trigger1) + "</td>" + 			            			
 			            			"<td>" + translateState(list[i].state) + "</td>" +  
 			            			"<td>" + translateFrom(list[i].type) + "</td>" +
 			            			"<td>" + list[i].orderIds + "</td>" +
@@ -769,8 +771,8 @@
 			            			"<td><b>第二档</b></td>" + 
 			            			"<td><b>第三档</b></td>" + 
 			            			"<td><b>止损档</b></td>" + 
-			            			"<td><b>操作</b></td>" +
-			            			"<td><b>触发价</b></td>" + 
+			            			"<td><b>开单触发价</b></td>" + 
+			            			"<td><b>撤单触发价</b></td>" + 			            			
 			            			"<td><b>状态</b></td>" + 
 			            			"<td><b>来源</b></td>" + 
 			            			"<td><b>关联订单号</b></td>" + 
@@ -788,8 +790,8 @@
 			            			"<td>" + list[i].second + "</td>" + 
 			            			"<td>" + list[i].third + "</td>" + 
 			            			"<td>" + list[i].stop + "</td>" + 
-			            			"<td>" + translateCompare(list[i].compare) + "</td>" + 
-			            			"<td>" + translateNull(list[i].trigger) + "</td>" + 
+			            			"<td>" + translateCompare(list[i].compare) + translateNull(list[i].trigger) + "</td>" + 
+			            			"<td>" + translateCompare(list[i].compare1) + translateNull(list[i].trigger1) + "</td>" + 			            			
 			            			"<td>" + translateState(list[i].state) + "</td>" +  
 			            			"<td>" + translateFrom(list[i].type) + "</td>" +
 			            			"<td>" + list[i].orderIds + "</td>" +
@@ -1005,12 +1007,22 @@
 </tr>
 <tr>
 <td>
-触发价
+开单触发价
 </td>
 <td>
 <input type="radio" name="compare" value="0" checked>大于
 <input type="radio" name="compare" value="1">小于
 <input type="text" id="trigger" name="trigger"/>
+</td>
+</tr>
+<tr>
+<td>
+撤单触发价
+</td>
+<td>
+<input type="radio" name="compare1" value="0">大于
+<input type="radio" name="compare1" value="1" checked>小于
+<input type="text" id="trigger1" name="trigger1"/>
 </td>
 </tr>
 </table>

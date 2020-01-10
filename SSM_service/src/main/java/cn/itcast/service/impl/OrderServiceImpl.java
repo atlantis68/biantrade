@@ -75,11 +75,12 @@ public class OrderServiceImpl implements OrderService {
 
 	//需要保证事务
 	public String plan(String symbol, String first, String second, String third, String stop, String trigger, 
-			Integer compare, Integer uid, String apiKey, String secretKey, Float curPrice) {
+			Integer compare, String trigger1, Integer compare1, Integer uid, String apiKey, String secretKey, Float curPrice) {
 		String result = "";
 		try {
 			List<String> orderIds = new ArrayList<String>();
-			int status = generateAndDealOrder(symbol, first, second, third, stop, trigger, compare, uid, apiKey, secretKey, orderIds, curPrice);
+			int status = generateAndDealOrder(symbol, first, second, third, stop, trigger, compare, 
+					trigger1, compare1, uid, apiKey, secretKey, orderIds, curPrice);
 			Plan plan = new Plan();
 			plan.setUid(uid);
 			plan.setPid(0);
@@ -90,6 +91,8 @@ public class OrderServiceImpl implements OrderService {
 			plan.setStop(Float.parseFloat(stop));
 			plan.setTrigger(StringUtils.isNotEmpty(trigger) ? Float.parseFloat(trigger) : 0f);
 			plan.setCompare(compare);
+			plan.setTrigger1(StringUtils.isNotEmpty(trigger1) ? Float.parseFloat(trigger1) : 0f);
+			plan.setCompare1(compare1);
 			plan.setState(status < 2 ? status : 3);
 			plan.setCreateTime(format.format(new Date()));
 			plan.setUpdateTime(format.format(new Date()));
@@ -142,11 +145,12 @@ public class OrderServiceImpl implements OrderService {
 	}
 	
 	public String follow(Integer id, String symbol, String first, String second, String third, String stop, String trigger, 
-			Integer compare, Integer uid, String apiKey, String secretKey, Float curPrice) {
+			Integer compare, String trigger1, Integer compare1, Integer uid, String apiKey, String secretKey, Float curPrice) {
 		String result = "";
 		try {
 			List<String> orderIds = new ArrayList<String>();
-			int status = generateAndDealOrder(symbol, first, second, third, stop, trigger, compare, uid, apiKey, secretKey, orderIds, curPrice);
+			int status = generateAndDealOrder(symbol, first, second, third, stop, trigger, compare, 
+					trigger1, compare1, uid, apiKey, secretKey, orderIds, curPrice);
 			Plan plan = new Plan();
 			plan.setUid(uid);
 			plan.setPid(id);
@@ -157,6 +161,8 @@ public class OrderServiceImpl implements OrderService {
 			plan.setStop(Float.parseFloat(stop));
 			plan.setTrigger(StringUtils.isNotEmpty(trigger) ? Float.parseFloat(trigger) : 0f);
 			plan.setCompare(compare);
+			plan.setTrigger1(StringUtils.isNotEmpty(trigger1) ? Float.parseFloat(trigger1) : 0f);
+			plan.setCompare1(compare1);
 			plan.setState(status < 2 ? status : 3);
 			plan.setCreateTime(format.format(new Date()));
 			plan.setUpdateTime(format.format(new Date()));
@@ -213,7 +219,7 @@ public class OrderServiceImpl implements OrderService {
 	//3：满足触发条件，提交币安未全部成功但是回滚成功
 	//4：满足触发条件，提交币安未全部成功，回滚也未全部成功，需要人工操作
 	public int generateAndDealOrder(String symbol, String first, String second, String third, String stop, String trigger, 
-			Integer compare, Integer uid, String apiKey, String secretKey, List<String> orderIds, Float curPrice) {
+			Integer compare, String trigger1, Integer compare1, Integer uid, String apiKey, String secretKey, List<String> orderIds, Float curPrice) {
 		int seq = 0;
     	try {
     		//获取配置项

@@ -3,8 +3,8 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="cn.itcast.dao.PlanMapper">
     <insert id="insertPlan" parameterType="cn.itcast.pojo.Plan" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO `plan` (uid, pid, symbol, first, second, third, stop, `trigger`, compare, state, createTime, updateTime, `type`, orderIds) 
-        	VALUES (#{uid}, #{pid}, #{symbol}, #{first}, #{second}, #{third}, #{stop}, #{trigger}, #{compare}, #{state}, #{createTime}, #{updateTime}, #{type}, #{orderIds});
+        INSERT INTO `plan` (uid, pid, symbol, first, second, third, stop, `trigger`, compare, `trigger1`, compare1, state, createTime, updateTime, `type`, orderIds) 
+        	VALUES (#{uid}, #{pid}, #{symbol}, #{first}, #{second}, #{third}, #{stop}, #{trigger}, #{compare}, #{trigger1}, #{compare1}, #{state}, #{createTime}, #{updateTime}, #{type}, #{orderIds});
     </insert>
     <select id="findPlanByUid" parameterType="String"
             resultType="cn.itcast.pojo.Plan">
@@ -30,5 +30,9 @@
             resultType="cn.itcast.pojo.Plan">
         select p.`id`, p.`uid`, p.`pid`, p.`symbol`, p.`first`, p.`second`, p.`third`, p.`stop`, p.`trigger`, p.`compare`, p.`state`, 
         	u.apikey as createTime, u.secretkey as updateTime, p.`type`, p.`orderIds` from `plan` p, user u where p.uid = u.id and state = #{state}
-    </select>     
+    </select>  
+    <select id="findPlansByState1" resultType="cn.itcast.pojo.Plan">
+        select p.`id`, p.`uid`, p.`pid`, p.`symbol`, p.`first`, p.`second`, p.`third`, p.`stop`, p.`trigger1`, p.`compare1`, p.`state`, 
+        	u.apikey as createTime, u.secretkey as updateTime, p.`type`, p.`orderIds` from `plan` p, user u where p.uid = u.id and state &lt; 4
+    </select>        
 </mapper>

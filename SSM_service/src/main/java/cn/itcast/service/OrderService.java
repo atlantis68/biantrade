@@ -20,10 +20,10 @@ public interface OrderService {
     public int insertMail(Mail mail);
     
 	public int generateAndDealOrder(String symbol, String first, String second, String third, String stop, String trigger, 
-			Integer compare, Integer uid, String apiKey, String secretKey, List<String> orderIds, Float curPrice);
+			Integer compare, String trigger1, Integer compare1, Integer uid, String apiKey, String secretKey, List<String> orderIds, Float curPrice);
 			
     public String plan(String symbol, String first, String second, String third, String stop, String trigger, 
-    		Integer compare, Integer uid, String apiKey, String secretKey, Float curPrice);
+    		Integer compare, String trigger1, Integer compare1, Integer uid, String apiKey, String secretKey, Float curPrice);
     
     public String trade(String symbol, String side, String quantity, String price, String stopPrice, String type, 
     		String timeInForce, String workingType, String reduceOnly, String apiKey, String secretKey) throws Exception;
@@ -33,5 +33,5 @@ public interface OrderService {
     public String cancel(String symbol, String orderId, String apiKey, String secretKey) throws Exception;
   
     public String follow(Integer id, String symbol, String first, String second, String third, String stop, String trigger, 
-    		Integer compare, Integer uid, String apiKey, String secretKey, Float curPrice) throws Exception;
+    		Integer compare, String trigger1, Integer compare1, Integer uid, String apiKey, String secretKey, Float curPrice) throws Exception;
 }

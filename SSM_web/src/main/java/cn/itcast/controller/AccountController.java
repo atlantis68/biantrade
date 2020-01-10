@@ -99,7 +99,7 @@ public class AccountController {
 	        		} else {
 	        			realQuantity = quantity;
 	        		}
-					temp = orderService.trade(symbol, side, realQuantity, null, null, "MARKET", null, null, null, c.getType(), c.getLossWorkingType());
+					temp = orderService.trade(symbol, side, realQuantity, null, null, "MARKET", null, null, reduceOnly, c.getType(), c.getLossWorkingType());
 					tempInfo = JSON.parseObject(temp, new TypeReference<Map<String, String>>(){} );
 					if(tempInfo != null && StringUtils.isNotEmpty(tempInfo.get("orderId"))) {
 						Mail mail = new Mail();

@@ -21,4 +21,6 @@ public interface PlanMapper {
 	public List<Plan> findPlansById(@Param("id") Integer id);
 	
 	public List<Plan> findPlansByState(@Param("state") String state);
+	
+	public List<Plan> findPlansByState1();
 }

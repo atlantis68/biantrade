@@ -47,13 +47,13 @@ public class OrderController {
     @RequestMapping(value = "/plan")
     @ResponseBody
     public String plan(String symbol, String first, String second, String third, String stop, 
-    		String trigger, Integer compare, HttpSession session) {
+    		String trigger, Integer compare, String trigger1, Integer compare1, HttpSession session) {
     	JSONObject result = new JSONObject();
     	try {
     		Float curPrice = ToolsUtils.getCurPriceByKey(symbol);
     		//获取配置项
     		User user = (User) session.getAttribute("USER_SESSION");
-    		String plan = orderService.plan(symbol, first, second, third, stop, trigger, compare,
+    		String plan = orderService.plan(symbol, first, second, third, stop, trigger, compare, trigger1, compare1,
     				user.getId(), user.getApiKey(), user.getSecretKey(), curPrice);
         	result.put("status", "ok");
         	result.put("msg", plan);
@@ -68,7 +68,7 @@ public class OrderController {
         				List<Config> allConfig = configService.findConfigFlag12(config);
         				for(Config c : allConfig) {
         					ThreadPool.execute(new FollowPlanTask(orderService, id, symbol, first, second, third, stop, 
-        							trigger, compare, c.getUid(), c.getType(), c.getLossWorkingType(), curPrice));
+        							trigger, compare, trigger1, compare1, c.getUid(), c.getType(), c.getLossWorkingType(), curPrice));
         				}
         			}
         		}
@@ -169,8 +169,9 @@ public class OrderController {
     		Plan plan = orderService.findPlanById(id);
     		if(plan != null && plan.getState() < 4) {
     			orderService.follow(id, plan.getSymbol(), plan.getFirst().toString(), plan.getSecond().toString(), 
-    					plan.getThird().toString(), plan.getStop().toString(), plan.getTrigger().toString(), 
-    					plan.getCompare(), user.getId(), user.getApiKey(), user.getSecretKey(), ToolsUtils.getCurPriceByKey(plan.getSymbol()));
+    					plan.getThird().toString(), plan.getStop().toString(), plan.getTrigger().toString(), plan.getCompare(), 
+    					plan.getTrigger1().toString(), plan.getCompare1(), user.getId(), user.getApiKey(), user.getSecretKey(), 
+    					ToolsUtils.getCurPriceByKey(plan.getSymbol()));
     			result.put("status", "ok");
     			result.put("msg", "follow successful");    			
     		} else {

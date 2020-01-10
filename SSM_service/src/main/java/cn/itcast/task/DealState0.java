@@ -49,8 +49,9 @@ public class DealState0 implements Runnable {
 	    	    			List<String> orderIds = new ArrayList<String>();
 	    	    			if(plan.getCompare() == 0 && curPrice > plan.getTrigger()) {
 	    	    				int status = orderService.generateAndDealOrder(plan.getSymbol(), plan.getFirst().toString(), plan.getSecond().toString(), 
-	    	    						plan.getThird().toString(), plan.getStop().toString(), plan.getTrigger().toString(), plan.getCompare(), plan.getUid(), 
-	    	    						plan.getCreateTime(), plan.getUpdateTime(), orderIds, curPrice);
+	    	    						plan.getThird().toString(), plan.getStop().toString(), plan.getTrigger().toString(), plan.getCompare(), 
+	    	    						plan.getTrigger1().toString(), plan.getCompare1(), plan.getUid(), plan.getCreateTime(), plan.getUpdateTime(), 
+	    	    						orderIds, curPrice);
 	    	    				String orders = "";
 	    	    				if(status == 1) {
 	    	    					for(String orderId : orderIds) {
@@ -81,8 +82,9 @@ public class DealState0 implements Runnable {
 	    	    				mailMapper.insertMail(mail);
 	    	    			} else if(plan.getCompare() == 1 && curPrice < plan.getTrigger()) {
 	    	    				int status = orderService.generateAndDealOrder(plan.getSymbol(), plan.getFirst().toString(), plan.getSecond().toString(), 
-	    	    						plan.getThird().toString(), plan.getStop().toString(), plan.getTrigger().toString(), plan.getCompare(), plan.getUid(), 
-	    	    						plan.getCreateTime(), plan.getUpdateTime(), orderIds, curPrice);
+	    	    						plan.getThird().toString(), plan.getStop().toString(), plan.getTrigger().toString(), plan.getCompare(), 
+	    	    						plan.getTrigger1().toString(), plan.getCompare1(), plan.getUid(), plan.getCreateTime(), plan.getUpdateTime(), 
+	    	    						orderIds, curPrice);
 	    	    				String orders = "";
 	    	    				if(status == 1) {
 	    	    					for(String orderId : orderIds) {

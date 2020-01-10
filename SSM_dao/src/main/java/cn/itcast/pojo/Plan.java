@@ -12,6 +12,8 @@ public class Plan {
 	private Float stop;
 	private Float trigger;
 	private Integer compare;
+	private Float trigger1;
+	private Integer compare1;
 	private Integer state;
 	private String createTime;
 	private String updateTime;
@@ -96,6 +98,22 @@ public class Plan {
 
 	public void setCompare(Integer compare) {
 		this.compare = compare;
+	}
+
+	public Float getTrigger1() {
+		return trigger1;
+	}
+
+	public void setTrigger1(Float trigger1) {
+		this.trigger1 = trigger1;
+	}
+
+	public Integer getCompare1() {
+		return compare1;
+	}
+
+	public void setCompare1(Integer compare1) {
+		this.compare1 = compare1;
 	}
 
 	public Integer getState() {
