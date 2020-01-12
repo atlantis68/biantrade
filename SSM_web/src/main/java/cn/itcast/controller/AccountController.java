@@ -60,12 +60,22 @@ public class AccountController {
     		float price = ToolsUtils.getCurPriceByKey(symbol);
     		User user = (User) session.getAttribute("USER_SESSION");
     		if(StringUtils.isEmpty(quantity)) {
+    			int leverage = 0;
+        		String risks = orderService.positionRisk(user.getApiKey(), user.getSecretKey());
+        		List<String> lists = JSON.parseArray(risks, String.class);
+        		for(String list : lists) {
+        			Map<String, String> risk = JSON.parseObject(list, new TypeReference<Map<String, String>>(){} );
+        			if(risk != null && StringUtils.isNotEmpty(risk.get("leverage")) 
+        					&& StringUtils.isNotEmpty(risk.get("symbol")) && risk.get("symbol").equals(symbol)) {
+        				leverage = Integer.parseInt(risk.get("leverage"));
+        				break;
+        			}       			
+        		}
     			Config config = new Config();
     			config.setUid(user.getId());
     			config.setType(symbol);
     			Config allConfig = configService.findConfigByUid(config);
-    			int number = allConfig.getMarketAmount();
-    			realQuantity = ToolsUtils.formatQuantity(symbol, number * allConfig.getRate() / price);
+    			realQuantity = ToolsUtils.formatQuantity(symbol, allConfig.getMarketAmount() * leverage / price);
     		} else {
     			realQuantity = quantity;
     			reduceOnly = "true";
@@ -94,8 +104,18 @@ public class AccountController {
 				for(Config c : allConfig) {
 					price = ToolsUtils.getCurPriceByKey(symbol);
 	        		if(StringUtils.isEmpty(quantity)) {
-		    			int number = c.getMarketAmount();
-		    			realQuantity = ToolsUtils.formatQuantity(symbol, number * c.getRate() / price);
+		    			int leverage = 0;
+		    			String risks = orderService.positionRisk(c.getType(), c.getLossWorkingType());
+		        		List<String> lists = JSON.parseArray(risks, String.class);
+		        		for(String list : lists) {
+		        			Map<String, String> risk = JSON.parseObject(list, new TypeReference<Map<String, String>>(){} );
+		        			if(risk != null && StringUtils.isNotEmpty(risk.get("leverage")) 
+		        					&& StringUtils.isNotEmpty(risk.get("symbol")) && risk.get("symbol").equals(symbol)) {
+		        				leverage = Integer.parseInt(risk.get("leverage"));
+		        				break;
+		        			}       			
+		        		}
+		    			realQuantity = ToolsUtils.formatQuantity(symbol, c.getMarketAmount() * leverage / price);
 	        		} else {
 	        			realQuantity = quantity;
 	        		}
@@ -303,23 +323,11 @@ public class AccountController {
     	String temp = null;
     	JSONObject result = new JSONObject();
     	try {
-    		StringBuffer uri = new StringBuffer();
-    		uri.append("timestamp=").append(System.currentTimeMillis());  		
-            User user = (User) session.getAttribute("USER_SESSION");
-            String signature = SHA256.HMACSHA256(uri.toString().getBytes(), user.getSecretKey().getBytes());
-    		uri.append("&signature=").append(signature);
-    		Request request = new Request.Builder()
-    			.url(HttpClient.baseUrl + "/fapi/v1/positionRisk?" + uri.toString())
-    			.header("X-MBX-APIKEY", user.getApiKey())
-    			.get().build();
-    		logger.info(request.url().toString());
-    		Call call = HttpClient.okHttpClient.newCall(request);
-			Response response = call.execute();
-			temp = response.body().string();
+    		User user = (User) session.getAttribute("USER_SESSION");
+    		temp = orderService.positionRisk(user.getApiKey(), user.getSecretKey());
 			List<String> lists = JSON.parseArray(temp, String.class);
 			result.put("status", "ok");
 			result.put("msg", temp);
-			logger.info("positionRisk = " + result);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -34,4 +34,8 @@ public interface OrderService {
   
     public String follow(Integer id, String symbol, String first, String second, String third, String stop, String trigger, 
     		Integer compare, String trigger1, Integer compare1, Integer uid, String apiKey, String secretKey, Float curPrice) throws Exception;
+    
+    public String leverage(String symbol, int leverage, String apiKey, String secretKey) throws Exception;
+    
+    public String positionRisk(String apiKey, String secretKey) throws Exception;
 }

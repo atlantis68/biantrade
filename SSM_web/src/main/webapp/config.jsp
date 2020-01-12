@@ -49,6 +49,7 @@
 	            		} else {
 	            			jsonObject = jQuery.parseJSON(jsonObject.msg);  
 	            			var str = '';
+	            			str += "<input type=\"hidden\" id=\"rate\" id=\"rate\" value=" + jsonObject.rate + " />" ;
 	            			str += "<input type=\"hidden\" id=\"id\" id=\"id\" value=" + jsonObject.id + " />" ;
 	            			str += "<tr><td><b>即时下单金额（刀）</b></td><td><input type=\"text\" id=\"marketAmount\" name=\"marketAmount\" value=" + jsonObject.marketAmount + " /></td></tr>" ;
 	            			str += "<tr><td><b>合约本金（刀）</b></td><td><input type=\"text\" id=\"limitAmount\" name=\"limitAmount\" value=" + jsonObject.limitAmount + " /></td></tr>" ;
@@ -64,7 +65,6 @@
             					+"<input type=\"radio\" name=\"autoTrade\" value=\"1\" " + isChecked(jsonObject.autoTrade, 1) + ">是</td></tr>" ;
         	            	str += "<tr><td><b>自动撤单</b></td><td><input type=\"radio\" name=\"autoCancel\" value=\"0\" " + isChecked(jsonObject.autoCancel, 0) + ">否"
             					+"<input type=\"radio\" name=\"autoCancel\" value=\"1\" " + isChecked(jsonObject.autoCancel, 1) + ">是</td></tr>" ;            					
-            				str += "<tr><td><b>杠杆倍数</b></td><td><input type=\"text\" id=\"rate\" name=\"rate\" value=" + jsonObject.rate + " /></td></tr>" ;
             				str += "<input type=\"button\" id=\"save\ name=\"save\" value=\"保存\" onclick =\"save()\"/>";
 	            			$("#config").html(str);
 	            		}

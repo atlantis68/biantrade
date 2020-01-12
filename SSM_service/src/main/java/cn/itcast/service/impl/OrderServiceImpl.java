@@ -256,8 +256,55 @@ public class OrderServiceImpl implements OrderService {
 				return 2;
 			}
 			//计算下单数量
-			Float diff = Math.abs(((firstPrice + secondPrice + thirdPrice) / 3) - stopPrice);
-			String quantity = ToolsUtils.formatQuantity(symbol, allConfig.getLimitAmount() * allConfig.getMaxLoss() / 100 / diff / 3);
+			//三档平均值
+			Float avg = (firstPrice + secondPrice + thirdPrice) / 3;
+			//止损差价
+			Float diff = Math.abs(avg - stopPrice);
+			Float threshold = diff / avg;
+			int lever = 0;
+			if(symbol.toUpperCase().equals("BTCUSDT")) {
+				if(threshold <= 0.01) {
+					lever = 100;
+				} else {
+					lever = (int)(avg / diff);
+				}
+			} else {
+				if(threshold <= 0.013) {
+					lever = 75;
+				} else {
+					lever = (int)(avg / diff);
+				}
+			}
+			if(lever == 0) {
+				lever = 1;
+			}
+			int range = 0;
+			if(symbol.toUpperCase().equals("BTCUSDT")) {
+				if(lever <= 10) {
+					range = 10000000;
+				} else if(lever <= 20) {
+					range = 5000000;
+				} else if(lever <= 50) {
+					range = 1000000;
+				} else if(lever <= 100) {
+					range = 250000;
+				} else if(lever <= 125) {
+					range = 50000;
+				}
+			} else {
+				if(lever <= 10) {
+					range = 1000000;
+				} else if(lever <= 25) {
+					range = 250000;
+				} else if(lever <= 50) {
+					range = 50000;
+				} else if(lever <= 75) {
+					range = 10000;
+				} 
+			}
+			float par1 = allConfig.getLimitAmount() * allConfig.getMaxLoss() / 100 / diff;
+			float par2 = range / ToolsUtils.getCurPriceByKey(symbol);
+			String quantity = ToolsUtils.formatQuantity(symbol, (par1 < par2 ? par1 : par2) / 3);
 			//是否立即提交
 			Float triggerPrice = null;
 			if(StringUtils.isNotEmpty(trigger)) {
@@ -273,6 +320,8 @@ public class OrderServiceImpl implements OrderService {
 				}
 			}
 			//开始执行
+			//调整杠杆
+			leverage(symbol, lever, apiKey, secretKey);
 			//操作第一档
 			String temp = trade(symbol, side, quantity, ToolsUtils.formatPrice(symbol, firstPrice), null, "LIMIT", "GTC", allConfig.getLossWorkingType(), null, apiKey, secretKey);
 			Map<String, String> tempInfo = JSON.parseObject(temp, new TypeReference<Map<String, String>>(){} );
@@ -472,5 +521,46 @@ public class OrderServiceImpl implements OrderService {
     	plan.setOrderIds(orderIds);
     	plan.setUpdateTime(format.format(new Date()));
     	return planMapper.updatePlanById(plan);
+    }
+    
+    public String leverage(String symbol, int leverage, String apiKey, String secretKey) throws Exception {
+    	String result = "";
+		StringBuffer uri = new StringBuffer();
+		uri.append("timestamp=").append(System.currentTimeMillis()).append("&leverage=").append(leverage);
+		if(StringUtils.isNotEmpty(symbol)) {
+			uri.append("&symbol=").append(symbol);
+		}
+        String signature = SHA256.HMACSHA256(uri.toString().getBytes(), secretKey.getBytes());
+		uri.append("&signature=").append(signature);
+		Request request = new Request.Builder()
+			.url(HttpClient.baseUrl + "/fapi/v1/leverage?" + uri.toString())
+			.header("X-MBX-APIKEY", apiKey)
+			.post((new FormBody.Builder()).build()).build();
+		logger.info(request.url().toString());
+		Call call = HttpClient.okHttpClient.newCall(request);
+		Response response = call.execute();
+		result = response.body().string();
+		logger.info("leverage = " + result);
+
+    	return result;
+    }
+    
+    public String positionRisk(String apiKey, String secretKey) throws Exception {
+    	String result = "";
+		StringBuffer uri = new StringBuffer();
+		uri.append("timestamp=").append(System.currentTimeMillis());
+        String signature = SHA256.HMACSHA256(uri.toString().getBytes(), secretKey.getBytes());
+		uri.append("&signature=").append(signature);
+		Request request = new Request.Builder()
+			.url(HttpClient.baseUrl + "/fapi/v1/positionRisk?" + uri.toString())
+			.header("X-MBX-APIKEY", apiKey)
+			.get().build();
+		logger.info(request.url().toString());
+		Call call = HttpClient.okHttpClient.newCall(request);
+		Response response = call.execute();
+		result = response.body().string();
+		logger.info("positionRisk = " + result);
+
+    	return result;
     }
 }
