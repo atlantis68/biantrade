@@ -112,9 +112,8 @@ public class OrderServiceImpl implements OrderService {
 			resultJson.put("id", plan.getId());
 			result = resultJson.toString();
 
-			Mail mail = new Mail();
-			mail.setUid(plan.getUid());
-			mail.setSymbol(plan.getSymbol());
+			Mail mail = ToolsUtils.generateMail(plan.getUid(), plan.getSymbol(), null, null, 
+					0, format.format(new Date()), format.format(new Date()));
 			if(status == 0) {
 				mail.setSubject(symbol + "计划单" + (plan.getThird() > plan.getStop() ? "（多单）" : "（空单）") 
 						+ first + "创建成功，不满足触发条件，未提交到币安");
@@ -130,9 +129,6 @@ public class OrderServiceImpl implements OrderService {
 						+ "，提交到币安失败");
 				mail.setContent("异常编码：" + status);
 			}
-			mail.setState(0);
-			mail.setCreateTime(format.format(new Date()));
-			mail.setUpdateTime(format.format(new Date()));
 			mailMapper.insertMail(mail);
 		} catch(Exception e) {
 			e.printStackTrace();
@@ -180,10 +176,9 @@ public class OrderServiceImpl implements OrderService {
 			resultJson.put("status", "ok");
 			resultJson.put("msg", "create plan successful");
 			result = resultJson.toString();
-			
-			Mail mail = new Mail();
-			mail.setUid(plan.getUid());
-			mail.setSymbol(plan.getSymbol());
+
+    		Mail mail = ToolsUtils.generateMail(plan.getUid(), plan.getSymbol(), null, null, 
+    				0, format.format(new Date()), format.format(new Date()));
 			if(status == 0) {
 				mail.setSubject(symbol + "计划单" + (plan.getThird() > plan.getStop() ? "（多单）" : "（空单）") 
 						+ first + "的跟单创建成功，不满足触发条件，未提交到币安");
@@ -199,9 +194,6 @@ public class OrderServiceImpl implements OrderService {
 						+ "的跟单，提交到币安失败");
 				mail.setContent("异常编码：" + status);
 			}
-			mail.setState(0);
-			mail.setCreateTime(format.format(new Date()));
-			mail.setUpdateTime(format.format(new Date()));
 			mailMapper.insertMail(mail);
 		} catch(Exception e) {
 			e.printStackTrace();
@@ -495,7 +487,7 @@ public class OrderServiceImpl implements OrderService {
     	return result;
     }
     
-    public int cancelPlan(Integer uid, String symbol, String id, String orderIds, String apiKey, String secretKey) throws Exception {
+    public int cancelPlan(Integer uid, String symbol, String id, String orderIds, int state, String apiKey, String secretKey) throws Exception {
     	if(StringUtils.isNotEmpty(orderIds)) {
     		String[] orders = orderIds.split(",");
     		for(String orderId : orders) {
@@ -505,19 +497,13 @@ public class OrderServiceImpl implements OrderService {
     	    		e.printStackTrace();
     	    	}
     		}
-    		Mail mail = new Mail();
-    		mail.setUid(uid);
-    		mail.setSymbol(symbol);
-    		mail.setSubject(symbol + "计划单" + id + "和相关挂单撤销成功");
-    		mail.setContent("关联订单：" + orderIds);
-    		mail.setState(0);
-    		mail.setCreateTime(format.format(new Date()));
-    		mail.setUpdateTime(format.format(new Date()));
+    		Mail mail = ToolsUtils.generateMail(uid, symbol, symbol + "计划单" + id + "和相关挂单撤销成功", 
+    				"关联订单：" + orderIds, 0, format.format(new Date()), format.format(new Date()));
     		mailMapper.insertMail(mail);
     	}
     	Plan plan = new Plan();
     	plan.setId(Integer.parseInt(id));
-    	plan.setState(4);
+    	plan.setState(state);
     	plan.setOrderIds(orderIds);
     	plan.setUpdateTime(format.format(new Date()));
     	return planMapper.updatePlanById(plan);
@@ -562,5 +548,16 @@ public class OrderServiceImpl implements OrderService {
 		logger.info("positionRisk = " + result);
 
     	return result;
+    }
+    
+    public int warn(String id) throws Exception {
+		List<Plan> plans = findPlansById(Integer.parseInt(id));
+		for(Plan plan : plans) {
+    		Mail mail = ToolsUtils.generateMail(plan.getUid(), plan.getSymbol(), plan.getSymbol() + "计划单" 
+    				+ (plan.getThird() > plan.getStop() ? "（多单）" : "（空单）") + plan.getFirst() + "建议止盈", 
+    				"", 0, format.format(new Date()), format.format(new Date()));
+    		mailMapper.insertMail(mail);
+		}	
+    	return plans.size();
     }
 }

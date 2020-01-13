@@ -129,12 +129,12 @@ public class OrderController {
     
     @RequestMapping(value = "/cancelPlan")
     @ResponseBody
-    public String cancelPlan(String symbol, String id, String orderIds, HttpSession session) {
+    public String cancelPlan(String symbol, String id, String state, String orderIds, HttpSession session) {
     	JSONObject result = new JSONObject();
     	try {
     		//获取配置项
     		User user = (User) session.getAttribute("USER_SESSION");
-    		int number = orderService.cancelPlan(user.getId(), symbol, id, orderIds, user.getApiKey(), user.getSecretKey());
+    		int number = orderService.cancelPlan(user.getId(), symbol, id, orderIds, Integer.parseInt(state), user.getApiKey(), user.getSecretKey());
 			if(number > 0) {
 				result.put("status", "ok");
 				result.put("msg", "canceled successful");
@@ -146,7 +146,8 @@ public class OrderController {
 				//进入关联撤单
 				List<Plan> plans = orderService.findPlansById(Integer.parseInt(id));
 				for(Plan plan : plans) {
-					ThreadPool.execute(new CancelPlanTask(orderService, plan.getUid(), plan.getId(), plan.getSymbol(), plan.getOrderIds(), plan.getCreateTime(), plan.getUpdateTime()));
+					ThreadPool.execute(new CancelPlanTask(orderService, plan.getUid(), plan.getId(), plan.getSymbol(), 
+							plan.getOrderIds(), Integer.parseInt(state), plan.getCreateTime(), plan.getUpdateTime()));
 				}				
 			}
 		} catch (Exception e) {
@@ -178,6 +179,32 @@ public class OrderController {
     			result.put("status", "error");
     			result.put("msg", "follow failed");   
     		}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+    		result.put("status", "error");
+    		result.put("msg", e.getMessage());
+		}
+    	return result.toJSONString();
+		
+    }
+    
+    @RequestMapping(value = "/warn")
+    @ResponseBody
+    public String warn(String id, HttpSession session) {
+    	JSONObject result = new JSONObject();
+    	try {
+    		//获取配置项
+    		User user = (User) session.getAttribute("USER_SESSION");
+			if(user.getRole() == 0) {
+				//通知
+				int number = orderService.warn(id);	
+				result.put("status", "ok");
+				result.put("msg", "notice " + number + " users");
+			} else {
+				result.put("status", "error");
+				result.put("msg", "you are not dashen!!!");
+			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import cn.itcast.pojo.Mail;
+
 public class ToolsUtils {
 
 	private static Map<String, Float> curPrice = new HashMap<String, Float>();
@@ -93,5 +95,18 @@ public class ToolsUtils {
 			result = decimalFormatFor2.format(value);
 		}
 		return result;
+	}
+	
+	public static Mail generateMail(Integer uid, String symbol, String subject, String content, 
+			Integer state, String createTime, String updateTime) {
+		Mail mail = new Mail();
+		mail.setUid(uid);
+		mail.setSymbol(symbol);
+		mail.setSubject(subject);
+		mail.setContent(content);
+		mail.setState(state);
+		mail.setCreateTime(createTime);
+		mail.setUpdateTime(updateTime);
+		return mail;
 	}
 }

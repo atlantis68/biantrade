@@ -45,30 +45,20 @@ public class DealState1 implements Runnable {
 	    	    	        	plan.setState(2);
 	    	    	        	plan.setUpdateTime(format.format(new Date()));
 	    	    				planMapper.updatePlanById(plan);
-	    						Mail mail = new Mail();
-	    						mail.setUid(plan.getUid());
-	    						mail.setSymbol(plan.getSymbol());
-	    						mail.setSubject(plan.getSymbol() + "计划单（多单）" + plan.getFirst() + "，预估已成交");
-	    						mail.setContent("计划单详情：第一档：" + plan.getFirst() + "，第二档：" + plan.getSecond() 
-	    								+ "，第三档：" + plan.getThird() + "，止损档：" + plan.getStop());
-	    						mail.setState(0);
-	    						mail.setCreateTime(format.format(new Date()));
-	    						mail.setUpdateTime(format.format(new Date()));
+	    	    				Mail mail = ToolsUtils.generateMail(plan.getUid(), plan.getSymbol(), plan.getSymbol() + "计划单（多单）" + plan.getFirst() + "，预估已成交", 
+	    	    						"计划单详情：第一档：" + plan.getFirst() + "，第二档：" + plan.getSecond() 
+	    								+ "，第三档：" + plan.getThird() + "，止损档：" + plan.getStop(), 
+	    	    						0, format.format(new Date()), format.format(new Date()));
 	    						mailMapper.insertMail(mail);
 	    					} 
 	    					if(plan.getThird() < plan.getStop() && plan.getFirst() < curPrice) {
 	    	    	        	plan.setState(2);
 	    	    	        	plan.setUpdateTime(format.format(new Date()));
 	    	    				planMapper.updatePlanById(plan);
-	    						Mail mail = new Mail();
-	    						mail.setUid(plan.getUid());
-	    						mail.setSymbol(plan.getSymbol());
-	    						mail.setSubject(plan.getSymbol() + "计划单（空单）" + plan.getFirst() + "，预估已成交");
-	    						mail.setContent("计划单详情：第一档：" + plan.getFirst() + "，第二档：" + plan.getSecond() 
-	    								+ "，第三档：" + plan.getThird() + "，止损档：" + plan.getStop());
-	    						mail.setState(0);
-	    						mail.setCreateTime(format.format(new Date()));
-	    						mail.setUpdateTime(format.format(new Date()));
+	    	    				Mail mail = ToolsUtils.generateMail(plan.getUid(), plan.getSymbol(), plan.getSymbol() + "计划单（空单）" + plan.getFirst() + "，预估已成交", 
+	    	    						"计划单详情：第一档：" + plan.getFirst() + "，第二档：" + plan.getSecond() 
+	    								+ "，第三档：" + plan.getThird() + "，止损档：" + plan.getStop(), 
+	    	    						0, format.format(new Date()), format.format(new Date()));
 	    						mailMapper.insertMail(mail);
 	    					} 
 	    				}

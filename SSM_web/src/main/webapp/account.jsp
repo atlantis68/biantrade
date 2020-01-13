@@ -710,8 +710,9 @@
 		            		}
 		            		for (x in list) {
 		            			i = list.length - x - 1;
-		            			var edit = "<input type=\"button\" id=\"cplan" + list[i].id + "\" name=\"cplan" + list[i].id + "\" value=\"撤销计划单\" onclick =\"cancelPlan('" + list[i].symbol + "', " + list[i].id + ", '" + list[i].orderIds + "')\"/>";
-		            			 /* + "<input type=\"button\" id=\"oplan" + list[i].id + "\" name=\"oplan" + list[i].id + "\" value=\"完成\" onclick =\"finish(" + list[i].id + ")\"/>"; */
+		            			var edit = "<input type=\"button\" id=\"warn" + list[i].id + "\" name=\"warn" + list[i].id + "\" value=\"止盈提醒\" onclick =\"warn(" + list[i].id + ")\"/>" 
+		            				+ "<select id=\"swarn" + list[i].id + "\" name=\"swarn" + list[i].id + "\"><option value =\"4\">失效</option><option value =\"5\">盈利</option><option value=\"6\">亏损</option></select>"
+		            				+ "<input type=\"button\" id=\"cplan" + list[i].id + "\" name=\"cplan" + list[i].id + "\" value=\"撤单\" onclick =\"cancelPlan('" + list[i].symbol + "', " + list[i].id + ", '" + list[i].orderIds + "')\"/>";
 		            			str += "<tr>" + 
 		            				"<td>" + list[i].symbol + "</td>" + 
 			            			"<td>" + list[i].first + "</td>" + 
@@ -783,7 +784,7 @@
 		            		}
 		            		for (x in list) {
 		            			i = list.length - x - 1;
-		            			var edit = "<input type=\"button\" id=\"fplan" + list[i].id + "\" name=\"fplan" + list[i].id + "\" value=\"跟随计划单\" onclick =\"follow(" + list[i].id + ")\"/>";
+		            			var edit = "<input type=\"button\" id=\"fplan" + list[i].id + "\" name=\"fplan" + list[i].id + "\" value=\"跟单\" onclick =\"follow(" + list[i].id + ")\"/>";
 		            			str += "<tr>" + 
 		            				"<td>" + list[i].symbol + "</td>" + 
 			            			"<td>" + list[i].first + "</td>" + 
@@ -822,10 +823,10 @@
 	    function cancelPlan(symbol, id, orderIds){  
 	    	$("#message").html('');
 	    	$("#cplan"+id).attr("disabled","true");
-	        $.ajax({  
+	    	$.ajax({   
 	            type : "get",
 	            url : "/Order/cancelPlan",
-	            data : "symbol=" + symbol + "&id="+id + "&orderIds="+orderIds,
+	            data : "symbol=" + symbol + "&id="+ id + "&state=" + $("#swarn" + id + " option:selected").val() + "&orderIds="+orderIds,
 
 	            //成功
 	            success : function(data) {
@@ -888,6 +889,41 @@
 	            } 
 	        });  
 	    }	
+	    
+	    function warn(id){  
+	    	$("#message").html('');
+	    	$("#warn"+id).attr("disabled","true");
+	        $.ajax({  
+	            type : "get",
+	            url : "/Order/warn",
+	            data : "id="+id,
+
+	            //成功
+	            success : function(data) {
+	            	if(data.indexOf("登录") > -1) {
+	            		window.location.href='User/logout';
+	            	} else {
+	            		var jsonObject= jQuery.parseJSON(data);
+	            		if(jsonObject.status == 'error') {
+	            			$("#message").html(jsonObject.msg);
+	            		} else {
+	            			findAllPlans();
+	            			$("#message").html("plan" + id + " " + jsonObject.msg);	
+	            		}
+	            	}
+	            },
+
+	            //错误情况
+	            error : function(error) {
+	                console.log("error : " + error);
+	            },
+
+	            //请求完成后回调函数 (请求成功或失败之后均调用)。
+	            complete: function(message) {
+	            	$("#warn"+id).removeAttr("disabled");
+	            } 
+	        });  
+	    }		    
 	    
 	    function finish(id){  
 	    	$("#message").html('');
@@ -1027,7 +1063,7 @@
 </tr>
 </table>
 <p>
-<input type="button" id="fllowSubmit" id="fllowSubmit" value="跟单" onclick ="fllowPlans()"/>
+<input type="button" id="fllowSubmit" id="fllowSubmit" value="跟随计划单" onclick ="fllowPlans()"/>
 <table id="followList" name="followList" width="100%" cellpadding="1" cellspacing="0" border="1"></table>
 <p>
 <input type="button" id="findAllPlansSubmit" id="findAllPlansSubmit" value="我的计划单" onclick ="findAllPlans()"/>

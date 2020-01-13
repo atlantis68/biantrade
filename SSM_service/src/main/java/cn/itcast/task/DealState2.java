@@ -34,10 +34,10 @@ public class DealState2 implements Runnable {
 	    				if(plan.getSymbol().equals(symbol)) {
 	    	    			if(plan.getCompare1() == 0 && curPrice > plan.getTrigger1()) {
 	    	    				orderService.cancelPlan(plan.getUid(), plan.getSymbol(), plan.getId().toString(), 
-	    	    						plan.getOrderIds(), plan.getCreateTime(), plan.getUpdateTime());
+	    	    						plan.getOrderIds(), 4, plan.getCreateTime(), plan.getUpdateTime());
 	    	    			} else if(plan.getCompare1() == 1 && curPrice < plan.getTrigger1()) {
 	    	    				orderService.cancelPlan(plan.getUid(), plan.getSymbol(), plan.getId().toString(), 
-	    	    						plan.getOrderIds(), plan.getCreateTime(), plan.getUpdateTime());
+	    	    						plan.getOrderIds(), 4, plan.getCreateTime(), plan.getUpdateTime());
 	    	    			}
 	    	    		}
 	    			}

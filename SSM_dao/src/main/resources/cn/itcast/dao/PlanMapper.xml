@@ -23,8 +23,8 @@
     </select>
     <select id="findPlansById" parameterType="Integer"
             resultType="cn.itcast.pojo.Plan">
-		SELECT p.id, p.uid, `symbol`, `apikey` as createTime, `secretkey` as updateTime, `orderIds` FROM `plan` p, user u, config c where p.uid = u.id 
-		and c.uid = u.id and c.type = p.symbol and c.autoCancel = 1 and p.pid = #{id} AND p.state &lt; 4
+		SELECT p.id, p.uid, `symbol`, first, second, third, stop, `apikey` as createTime, `secretkey` as updateTime, `orderIds` FROM `plan` p, user u 
+		where p.uid = u.id and p.pid = #{id} AND p.state &lt; 4
     </select>   
     <select id="findPlansByState" parameterType="String"
             resultType="cn.itcast.pojo.Plan">

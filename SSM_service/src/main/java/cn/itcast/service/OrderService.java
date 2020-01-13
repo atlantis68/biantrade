@@ -28,7 +28,7 @@ public interface OrderService {
     public String trade(String symbol, String side, String quantity, String price, String stopPrice, String type, 
     		String timeInForce, String workingType, String reduceOnly, String apiKey, String secretKey) throws Exception;
     
-    public int cancelPlan(Integer uid, String symbol, String id, String orderIds, String apiKey, String secretKey) throws Exception;
+    public int cancelPlan(Integer uid, String symbol, String id, String orderIds, int state, String apiKey, String secretKey) throws Exception;
     
     public String cancel(String symbol, String orderId, String apiKey, String secretKey) throws Exception;
   
@@ -38,4 +38,6 @@ public interface OrderService {
     public String leverage(String symbol, int leverage, String apiKey, String secretKey) throws Exception;
     
     public String positionRisk(String apiKey, String secretKey) throws Exception;
+    
+    public int warn(String id) throws Exception;
 }

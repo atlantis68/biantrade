@@ -63,9 +63,8 @@ public class DealState0 implements Runnable {
 	    	    	        	plan.setState(status == 1 ? 1 : 3);
 	    	    	        	plan.setUpdateTime(format.format(new Date()));
 	    	    				planMapper.updatePlanById(plan);
-	    	    				Mail mail = new Mail();
-	    	    				mail.setUid(plan.getUid());
-	    	    				mail.setSymbol(plan.getSymbol());
+	    	    				Mail mail = ToolsUtils.generateMail(plan.getUid(), plan.getSymbol(), null, null, 
+	    	    						0, format.format(new Date()), format.format(new Date()));
 	    	    				if(status == 1) {
 	    	    					mail.setSubject(plan.getSymbol() + "计划单" + (plan.getThird() > plan.getStop() ? "（多单）" : "（空单）")
 	    	    							+ plan.getFirst() + "，被系统提交到币安");
@@ -76,9 +75,6 @@ public class DealState0 implements Runnable {
 	    	    							+ "，提交到币安失败");
 	    	    					mail.setContent("异常编码：" + status);
 	    	    				}
-	    	    				mail.setState(0);
-	    	    				mail.setCreateTime(format.format(new Date()));
-	    	    				mail.setUpdateTime(format.format(new Date()));
 	    	    				mailMapper.insertMail(mail);
 	    	    			} else if(plan.getCompare() == 1 && curPrice < plan.getTrigger()) {
 	    	    				int status = orderService.generateAndDealOrder(plan.getSymbol(), plan.getFirst().toString(), plan.getSecond().toString(), 
@@ -96,9 +92,8 @@ public class DealState0 implements Runnable {
 	    	    	        	plan.setState(status == 1 ? 1 : 3);
 	    	    	        	plan.setUpdateTime(format.format(new Date()));
 	    	    				planMapper.updatePlanById(plan);
-	    	    				Mail mail = new Mail();
-	    	    				mail.setUid(plan.getUid());
-	    	    				mail.setSymbol(plan.getSymbol());
+	    	    				Mail mail = ToolsUtils.generateMail(plan.getUid(), plan.getSymbol(), null, null, 
+	    	    						0, format.format(new Date()), format.format(new Date()));
 	    	    				if(status == 1) {
 	    	    					mail.setSubject(plan.getSymbol() + "计划单" + (plan.getThird() > plan.getStop() ? "（多单）" : "（空单）")
 	    	    							+ plan.getFirst() + "，被系统提交到币安");
@@ -109,9 +104,6 @@ public class DealState0 implements Runnable {
 	    	    							+ "，提交到币安失败");
 	    	    					mail.setContent("异常编码：" + status);
 	    	    				}
-	    	    				mail.setState(0);
-	    	    				mail.setCreateTime(format.format(new Date()));
-	    	    				mail.setUpdateTime(format.format(new Date()));
 	    	    				mailMapper.insertMail(mail);
 	    	    			}
 	    	    		}
