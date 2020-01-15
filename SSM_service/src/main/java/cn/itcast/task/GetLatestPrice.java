@@ -32,7 +32,6 @@ public class GetLatestPrice implements Runnable {
 	public void run() {
     	while(true) {
 	    	try {
-				logger.info(request.url().toString());
 				Call call = HttpClient.okHttpClient.newCall(request);
     			Response response = call.execute();
 	    		String temp = response.body().string();
@@ -40,11 +39,12 @@ public class GetLatestPrice implements Runnable {
 	    		for(Map<String, String> price : prices) {
 	    			ToolsUtils.setCurPrice(price.get("symbol").toString(), Float.parseFloat(price.get("price").toString()));
 	    		}
+				logger.info("{}", ToolsUtils.getCurPrice());
 	    	} catch(Exception e) {
 	    		e.printStackTrace();
 	    	} finally {
 	    		try {
-					Thread.sleep(1000 * 5);
+					Thread.sleep(1000 * 3);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

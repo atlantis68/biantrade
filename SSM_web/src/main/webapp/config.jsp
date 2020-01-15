@@ -51,7 +51,7 @@
 	            			var str = '';
 	            			str += "<input type=\"hidden\" id=\"rate\" id=\"rate\" value=" + jsonObject.rate + " />" ;
 	            			str += "<input type=\"hidden\" id=\"id\" id=\"id\" value=" + jsonObject.id + " />" ;
-	            			str += "<tr><td><b>即时下单金额（刀）</b></td><td><input type=\"text\" id=\"marketAmount\" name=\"marketAmount\" value=" + jsonObject.marketAmount + " /></td></tr>" ;
+	            			str += "<tr><td><b>即时下单数量（个）</b></td><td><input type=\"text\" id=\"marketAmount\" name=\"marketAmount\" value=" + jsonObject.marketAmount + " /></td></tr>" ;
 	            			str += "<tr><td><b>合约本金（刀）</b></td><td><input type=\"text\" id=\"limitAmount\" name=\"limitAmount\" value=" + jsonObject.limitAmount + " /></td></tr>" ;
 	            			str += "<tr><td><b>最大亏损率（百分比）</b></td><td><input type=\"text\" id=\"maxLoss\" name=\"maxLoss\" value=" + jsonObject.maxLoss + " /></td></tr>" ;
 	            			str += "<tr><td><b>下单偏移量（万分比）</b></td><td><input type=\"text\" id=\"tradeOffset\" name=\"tradeOffset\" value=" + jsonObject.tradeOffset + " /></td></tr>" ;

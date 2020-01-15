@@ -60,22 +60,23 @@ public class AccountController {
     		float price = ToolsUtils.getCurPriceByKey(symbol);
     		User user = (User) session.getAttribute("USER_SESSION");
     		if(StringUtils.isEmpty(quantity)) {
-    			int leverage = 0;
-        		String risks = orderService.positionRisk(user.getApiKey(), user.getSecretKey());
-        		List<String> lists = JSON.parseArray(risks, String.class);
-        		for(String list : lists) {
-        			Map<String, String> risk = JSON.parseObject(list, new TypeReference<Map<String, String>>(){} );
-        			if(risk != null && StringUtils.isNotEmpty(risk.get("leverage")) 
-        					&& StringUtils.isNotEmpty(risk.get("symbol")) && risk.get("symbol").equals(symbol)) {
-        				leverage = Integer.parseInt(risk.get("leverage"));
-        				break;
-        			}       			
-        		}
+//    			int leverage = 0;
+//        		String risks = orderService.positionRisk(user.getApiKey(), user.getSecretKey());
+//        		List<String> lists = JSON.parseArray(risks, String.class);
+//        		for(String list : lists) {
+//        			Map<String, String> risk = JSON.parseObject(list, new TypeReference<Map<String, String>>(){} );
+//        			if(risk != null && StringUtils.isNotEmpty(risk.get("leverage")) 
+//        					&& StringUtils.isNotEmpty(risk.get("symbol")) && risk.get("symbol").equals(symbol)) {
+//        				leverage = Integer.parseInt(risk.get("leverage"));
+//        				break;
+//        			}       			
+//        		}
     			Config config = new Config();
     			config.setUid(user.getId());
     			config.setType(symbol);
     			Config allConfig = configService.findConfigByUid(config);
-    			realQuantity = ToolsUtils.formatQuantity(symbol, allConfig.getMarketAmount() * leverage / price);
+//    			realQuantity = ToolsUtils.formatQuantity(symbol, allConfig.getMarketAmount() * leverage / price);
+    			realQuantity = allConfig.getMarketAmount().toString();
     		} else {
     			realQuantity = quantity;
     			reduceOnly = "true";
@@ -104,18 +105,19 @@ public class AccountController {
 				for(Config c : allConfig) {
 					price = ToolsUtils.getCurPriceByKey(symbol);
 	        		if(StringUtils.isEmpty(quantity)) {
-		    			int leverage = 0;
-		    			String risks = orderService.positionRisk(c.getType(), c.getLossWorkingType());
-		        		List<String> lists = JSON.parseArray(risks, String.class);
-		        		for(String list : lists) {
-		        			Map<String, String> risk = JSON.parseObject(list, new TypeReference<Map<String, String>>(){} );
-		        			if(risk != null && StringUtils.isNotEmpty(risk.get("leverage")) 
-		        					&& StringUtils.isNotEmpty(risk.get("symbol")) && risk.get("symbol").equals(symbol)) {
-		        				leverage = Integer.parseInt(risk.get("leverage"));
-		        				break;
-		        			}       			
-		        		}
-		    			realQuantity = ToolsUtils.formatQuantity(symbol, c.getMarketAmount() * leverage / price);
+//		    			int leverage = 0;
+//		    			String risks = orderService.positionRisk(c.getType(), c.getLossWorkingType());
+//		        		List<String> lists = JSON.parseArray(risks, String.class);
+//		        		for(String list : lists) {
+//		        			Map<String, String> risk = JSON.parseObject(list, new TypeReference<Map<String, String>>(){} );
+//		        			if(risk != null && StringUtils.isNotEmpty(risk.get("leverage")) 
+//		        					&& StringUtils.isNotEmpty(risk.get("symbol")) && risk.get("symbol").equals(symbol)) {
+//		        				leverage = Integer.parseInt(risk.get("leverage"));
+//		        				break;
+//		        			}       			
+//		        		}
+//		    			realQuantity = ToolsUtils.formatQuantity(symbol, c.getMarketAmount() * leverage / price);
+		    			realQuantity = c.getMarketAmount().toString();
 	        		} else {
 	        			realQuantity = quantity;
 	        		}
