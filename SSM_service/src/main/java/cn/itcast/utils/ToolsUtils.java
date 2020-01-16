@@ -81,7 +81,8 @@ public class ToolsUtils {
 		String result;
 		if(symbol.toUpperCase().equals("TRXUSDT")) {
 			result = "" + (value.intValue());
-		} else if(symbol.toUpperCase().equals("XRPUSDT") || symbol.toUpperCase().equals("EOSUSDT")) {
+		} else if(symbol.toUpperCase().equals("XRPUSDT") || symbol.toUpperCase().equals("EOSUSDT")
+				|| symbol.toUpperCase().equals("ETCUSDT")) {
 			result = decimalFormatFor1.format(value);
 		} else {
 			result = decimalFormatFor3.format(value);
@@ -95,7 +96,7 @@ public class ToolsUtils {
 			result = decimalFormatFor5.format(value);
 		} else if(symbol.toUpperCase().equals("XRPUSDT")) {
 			result = decimalFormatFor4.format(value);
-		} else if(symbol.toUpperCase().equals("EOSUSDT")) {
+		} else if(symbol.toUpperCase().equals("EOSUSDT") || symbol.toUpperCase().equals("ETCUSDT")) {
 			result = decimalFormatFor3.format(value);
 		} else {
 			result = decimalFormatFor2.format(value);

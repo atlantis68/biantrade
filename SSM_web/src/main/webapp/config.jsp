@@ -171,6 +171,7 @@
 <input type="radio" name="symbol" value="EOSUSDT">EOSUSDT
 <input type="radio" name="symbol" value="LTCUSDT">LTCUSDT
 <input type="radio" name="symbol" value="TRXUSDT">TRXUSDT
+<input type="radio" name="symbol" value="ETCUSDT">ETCUSDT
 <input type="button" id="findConfigSubmit" id="findConfigSubmit" value="查询配置" onclick ="findConfig()"/>
 <table id="config" name="config" width="100%" cellpadding="1" cellspacing="0" border="1"></table>
 <p>
