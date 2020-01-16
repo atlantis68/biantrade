@@ -17,6 +17,8 @@ public class ToolsUtils {
 
 	private static int offset;
 	
+	private static DecimalFormat decimalFormatFor5 = new DecimalFormat("0.00000");
+	
 	private static DecimalFormat decimalFormatFor4 = new DecimalFormat("0.0000");
 	
 	private static DecimalFormat decimalFormatFor3 = new DecimalFormat("0.000");
@@ -77,7 +79,9 @@ public class ToolsUtils {
 	
 	public static String formatQuantity(String symbol, Float value) {
 		String result;
-		if(symbol.toUpperCase().equals("XRPUSDT") || symbol.toUpperCase().equals("EOSUSDT")) {
+		if(symbol.toUpperCase().equals("TRXUSDT")) {
+			result = "" + (value.intValue());
+		} else if(symbol.toUpperCase().equals("XRPUSDT") || symbol.toUpperCase().equals("EOSUSDT")) {
 			result = decimalFormatFor1.format(value);
 		} else {
 			result = decimalFormatFor3.format(value);
@@ -87,7 +91,9 @@ public class ToolsUtils {
 	
 	public static String formatPrice(String symbol, Float value) {
 		String result;
-		if(symbol.toUpperCase().equals("XRPUSDT")) {
+		if(symbol.toUpperCase().equals("TRXUSDT")) {
+			result = decimalFormatFor5.format(value);
+		} else if(symbol.toUpperCase().equals("XRPUSDT")) {
 			result = decimalFormatFor4.format(value);
 		} else if(symbol.toUpperCase().equals("EOSUSDT")) {
 			result = decimalFormatFor3.format(value);

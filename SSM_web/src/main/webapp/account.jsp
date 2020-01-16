@@ -8,7 +8,7 @@
     window.setInterval(getPrice, 5000); 
     
     function validateFloat(val){
-   	 var patten = /^-?\d+\.?\d{0,4}$/;
+   	 var patten = /^-?\d+\.?\d{0,5}$/;
    	 return patten.test(val);
 	}    
 
@@ -615,19 +615,19 @@
 	    function tradePlan(){  
 	    	$("#message").html('');
 			if(!validateFloat($("#first").val())) {
-				$("#message").html("“第一档”必须是小数点后四位以内的小数");
+				$("#message").html("“第一档”必须是小数点后五位以内的小数");
 				$("#first").focus();
 				return;
 			} else if(!validateFloat($("#second").val())) {
-				$("#message").html("“第二档”必须是小数点后四位以内的小数");
+				$("#message").html("“第二档”必须是小数点后五位以内的小数");
 				$("#second").focus();
 				return;
 			} else if(!validateFloat($("#third").val())) {
-				$("#message").html("“第三档”必须是小数点后四位以内的小数");
+				$("#message").html("“第三档”必须是小数点后五位以内的小数");
 				$("#third").focus();
 				return;
 			} else if(!validateFloat($("#stop").val())) {
-				$("#message").html("“止损档”必须是小数点后四位以内的小数");
+				$("#message").html("“止损档”必须是小数点后五位以内的小数");
 				$("#stop").focus();
 				return;
 			} 
@@ -981,6 +981,7 @@
 <input type="radio" name="symbol" value="XRPUSDT">XRPUSDT
 <input type="radio" name="symbol" value="EOSUSDT">EOSUSDT
 <input type="radio" name="symbol" value="LTCUSDT">LTCUSDT
+<input type="radio" name="symbol" value="TRXUSDT">TRXUSDT
 范围：
 <input type="radio" name="startTime" value="1">一天
 <input type="radio" name="startTime" value="3">三天
@@ -996,6 +997,7 @@
 <input type="radio" name="symbol1" value="XRPUSDT">XRPUSDT
 <input type="radio" name="symbol1" value="EOSUSDT">EOSUSDT
 <input type="radio" name="symbol1" value="LTCUSDT">LTCUSDT
+<input type="radio" name="symbol1" value="TRXUSDT">TRXUSDT
 <input type="button" value="开多" id="market1" name="market1" onclick ="tradeMarket1('BUY', 1)"/>
 <input type="button" value="开空" id="market2" name="market2" onclick ="tradeMarket1('SELL', 2)"/>
 <p>
@@ -1007,6 +1009,7 @@
 <input type="radio" name="symbol2" value="XRPUSDT">XRPUSDT
 <input type="radio" name="symbol2" value="EOSUSDT">EOSUSDT
 <input type="radio" name="symbol2" value="LTCUSDT">LTCUSDT
+<input type="radio" name="symbol2" value="TRXUSDT">TRXUSDT
 <input type="button" value="开单" id="plan" name="plan" onclick ="tradePlan()"/>
 <table id="positionRiskList" name="positionRiskList" width="100%" cellpadding="1" cellspacing="0" border="1">
 <tr>

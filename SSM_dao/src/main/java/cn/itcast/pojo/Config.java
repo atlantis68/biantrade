@@ -5,7 +5,7 @@ public class Config {
 	private Integer id;
 	private Integer uid;
 	private String type;
-	private Integer marketAmount;
+	private Float marketAmount;
 	private Integer limitAmount;
 	private Float maxLoss;
 	private Float tradeOffset;
@@ -41,11 +41,11 @@ public class Config {
 		this.type = type;
 	}
 
-	public Integer getMarketAmount() {
+	public Float getMarketAmount() {
 		return marketAmount;
 	}
 
-	public void setMarketAmount(Integer marketAmount) {
+	public void setMarketAmount(Float marketAmount) {
 		this.marketAmount = marketAmount;
 	}
 

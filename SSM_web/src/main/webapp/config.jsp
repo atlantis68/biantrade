@@ -23,6 +23,11 @@
     	 var patten = /^-?\d+\.?\d{0,2}$/;
     	 return patten.test(val);
 	}    
+    
+    function validateFloat3(val){
+   	 var patten = /^-?\d+\.?\d{0,3}$/;
+   	 return patten.test(val);
+	} 
 
     function validateInteger(val){
     	var patten = /^\d+$/;
@@ -87,8 +92,8 @@
 
 	    function save(){  
 	    	$("#message").html('');
-			if(!validateInteger($("#marketAmount").val())) {
-				$("#message").html("“市价单合约金额”必须是整数");
+			if(!validateFloat3($("#marketAmount").val())) {
+				$("#message").html("“即时下单数量”必须是小数点后三位的小数");
 				$("#marketAmount").focus();
 				return;
 			} else if(!validateInteger($("#limitAmount").val())) {
@@ -165,6 +170,7 @@
 <input type="radio" name="symbol" value="XRPUSDT">XRPUSDT
 <input type="radio" name="symbol" value="EOSUSDT">EOSUSDT
 <input type="radio" name="symbol" value="LTCUSDT">LTCUSDT
+<input type="radio" name="symbol" value="TRXUSDT">TRXUSDT
 <input type="button" id="findConfigSubmit" id="findConfigSubmit" value="查询配置" onclick ="findConfig()"/>
 <table id="config" name="config" width="100%" cellpadding="1" cellspacing="0" border="1"></table>
 <p>

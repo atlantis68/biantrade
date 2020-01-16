@@ -59,7 +59,7 @@ public class ConfigController {
     	try {
 			Config config = new Config();
 			config.setId(Integer.parseInt(id));
-			config.setMarketAmount(Integer.parseInt(marketAmount));
+			config.setMarketAmount(Float.parseFloat(marketAmount));
 			config.setLimitAmount(Integer.parseInt(limitAmount));
 			config.setMaxLoss(Float.parseFloat(maxLoss));
 			config.setTradeOffset(Float.parseFloat(tradeOffset));

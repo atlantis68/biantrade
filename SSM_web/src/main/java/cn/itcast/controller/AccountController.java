@@ -81,7 +81,8 @@ public class AccountController {
     			realQuantity = quantity;
     			reduceOnly = "true";
     		}
-    		String temp = orderService.trade(symbol, side, realQuantity, null, null, "MARKET", null, null, reduceOnly, user.getApiKey(), user.getSecretKey());
+    		String temp = orderService.trade(symbol, side, ToolsUtils.formatQuantity(symbol, Float.parseFloat(realQuantity)), 
+    				null, null, "MARKET", null, null, reduceOnly, user.getApiKey(), user.getSecretKey());
 			Map<String, String> tempInfo = JSON.parseObject(temp, new TypeReference<Map<String, String>>(){} );
 			if(tempInfo != null && StringUtils.isNotEmpty(tempInfo.get("orderId"))) {
 				result.put("status", "ok");
