@@ -21,6 +21,7 @@ import cn.itcast.client.HttpClient;
 import cn.itcast.client.SHA256;
 import cn.itcast.dao.MailMapper;
 import cn.itcast.dao.PlanMapper;
+import cn.itcast.model.Result;
 import cn.itcast.pojo.Config;
 import cn.itcast.pojo.Mail;
 import cn.itcast.pojo.Plan;
@@ -79,7 +80,7 @@ public class OrderServiceImpl implements OrderService {
 		String result = "";
 		try {
 			List<String> orderIds = new ArrayList<String>();
-			int status = generateAndDealOrder(symbol, first, second, third, stop, trigger, compare, 
+			Result res = generateAndDealOrder(symbol, first, second, third, stop, trigger, compare, 
 					trigger1, compare1, uid, apiKey, secretKey, orderIds, curPrice);
 			Plan plan = new Plan();
 			plan.setUid(uid);
@@ -93,12 +94,12 @@ public class OrderServiceImpl implements OrderService {
 			plan.setCompare(compare);
 			plan.setTrigger1(StringUtils.isNotEmpty(trigger1) ? Float.parseFloat(trigger1) : 0f);
 			plan.setCompare1(compare1);
-			plan.setState(status < 2 ? status : 3);
+			plan.setState(res.getState() < 2 ? res.getState() : 3);
 			plan.setCreateTime(format.format(new Date()));
 			plan.setUpdateTime(format.format(new Date()));
 			plan.setType(0);
 			String orders = "";
-			if(status == 1) {
+			if(res.getState() == 1) {
 				for(String orderId : orderIds) {
 					orders += orderId + ",";
 				}
@@ -114,20 +115,20 @@ public class OrderServiceImpl implements OrderService {
 
 			Mail mail = ToolsUtils.generateMail(plan.getUid(), plan.getSymbol(), null, null, 
 					0, format.format(new Date()), format.format(new Date()));
-			if(status == 0) {
+			if(res.getState() == 0) {
 				mail.setSubject(symbol + "计划单" + (plan.getThird() > plan.getStop() ? "（多单）" : "（空单）") 
-						+ first + "创建成功，不满足触发条件，未提交到币安");
+						+ first + "创建成功，不满足触发条件，未提交到币安：" + res.getMsg());
 				mail.setContent("计划单详情：第一档：" + plan.getFirst() + "，第二档：" + plan.getSecond() 
 						+ "，第三档：" + plan.getThird() + "，止损档：" + plan.getStop());	    
-			} else if(status == 1) {
+			} else if(res.getState() == 1) {
 				mail.setSubject(symbol + "计划单" + (plan.getThird() > plan.getStop() ? "（多单）" : "（空单）") 
 						+ first + "创建成功，已提交到币安");
 				mail.setContent("计划单详情：第一档：" + plan.getFirst() + "，第二档：" + plan.getSecond() 
 						+ "，第三档：" + plan.getThird() + "，止损档：" + plan.getStop());	    	    					
 			} else {
 				mail.setSubject(plan.getSymbol() + "计划单" + (plan.getThird() > plan.getStop() ? "（多单）" : "（空单）")
-						+ "，提交到币安失败");
-				mail.setContent("异常编码：" + status);
+						+ "，提交到币安失败，异常编码：" + res.getState());
+				mail.setContent("异常详情：" + res.getMsg());
 			}
 			mailMapper.insertMail(mail);
 		} catch(Exception e) {
@@ -145,7 +146,7 @@ public class OrderServiceImpl implements OrderService {
 		String result = "";
 		try {
 			List<String> orderIds = new ArrayList<String>();
-			int status = generateAndDealOrder(symbol, first, second, third, stop, trigger, compare, 
+			Result res = generateAndDealOrder(symbol, first, second, third, stop, trigger, compare, 
 					trigger1, compare1, uid, apiKey, secretKey, orderIds, curPrice);
 			Plan plan = new Plan();
 			plan.setUid(uid);
@@ -159,12 +160,12 @@ public class OrderServiceImpl implements OrderService {
 			plan.setCompare(compare);
 			plan.setTrigger1(StringUtils.isNotEmpty(trigger1) ? Float.parseFloat(trigger1) : 0f);
 			plan.setCompare1(compare1);
-			plan.setState(status < 2 ? status : 3);
+			plan.setState(res.getState() < 2 ? res.getState() : 3);
 			plan.setCreateTime(format.format(new Date()));
 			plan.setUpdateTime(format.format(new Date()));
 			plan.setType(1);
 			String orders = "";
-			if(status == 1) {
+			if(res.getState() == 1) {
 				for(String orderId : orderIds) {
 					orders += orderId + ",";
 				}
@@ -179,20 +180,20 @@ public class OrderServiceImpl implements OrderService {
 
     		Mail mail = ToolsUtils.generateMail(plan.getUid(), plan.getSymbol(), null, null, 
     				0, format.format(new Date()), format.format(new Date()));
-			if(status == 0) {
+			if(res.getState() == 0) {
 				mail.setSubject(symbol + "计划单" + (plan.getThird() > plan.getStop() ? "（多单）" : "（空单）") 
-						+ first + "的跟单创建成功，不满足触发条件，未提交到币安");
+						+ first + "的跟单创建成功，不满足触发条件，未提交到币安：" + res.getMsg());
 				mail.setContent("计划单详情：第一档：" + plan.getFirst() + "，第二档：" + plan.getSecond() 
 						+ "，第三档：" + plan.getThird() + "，止损档：" + plan.getStop());	    
-			} else if(status == 1) {
+			} else if(res.getState() == 1) {
 				mail.setSubject(symbol + "计划单" + (plan.getThird() > plan.getStop() ? "（多单）" : "（空单）") 
 						+ first + "的跟单创建成功，已提交到币安");
 				mail.setContent("计划单详情：第一档：" + plan.getFirst() + "，第二档：" + plan.getSecond() 
 						+ "，第三档：" + plan.getThird() + "，止损档：" + plan.getStop());	    	    					
 			} else {
 				mail.setSubject(plan.getSymbol() + "计划单" + (plan.getThird() > plan.getStop() ? "（多单）" : "（空单）")
-						+ "的跟单，提交到币安失败");
-				mail.setContent("异常编码：" + status);
+						+ "的跟单，提交到币安失败，异常编码：" + res.getState());
+				mail.setContent("异常详情：" + res.getMsg());
 			}
 			mailMapper.insertMail(mail);
 		} catch(Exception e) {
@@ -210,8 +211,10 @@ public class OrderServiceImpl implements OrderService {
 	//2：价格设置不正确
 	//3：满足触发条件，提交币安未全部成功但是回滚成功
 	//4：满足触发条件，提交币安未全部成功，回滚也未全部成功，需要人工操作
-	public int generateAndDealOrder(String symbol, String first, String second, String third, String stop, String trigger, 
+	public Result generateAndDealOrder(String symbol, String first, String second, String third, String stop, String trigger, 
 			Integer compare, String trigger1, Integer compare1, Integer uid, String apiKey, String secretKey, List<String> orderIds, Float curPrice) {
+		int state = 1;
+		String msg = "成功";
 		int seq = 0;
     	try {
     		//获取配置项
@@ -245,7 +248,7 @@ public class OrderServiceImpl implements OrderService {
 				entrustPrice = stopPrice * (1 + allConfig.getLossEntrustOffset() / 10000);
 			}
 			if(StringUtils.isEmpty(side)) {
-				return 2;
+				return new Result(2, "价格设置不合理");
 			}
 			//计算下单数量
 			//三档平均值
@@ -303,11 +306,11 @@ public class OrderServiceImpl implements OrderService {
 				triggerPrice = Float.parseFloat(trigger);
 				if(compare == 0) {
 					if(triggerPrice > curPrice) {
-						return 0;
+						return new Result(0, "现价低于触发价");
 					}	
 				} else {
 					if(triggerPrice < curPrice) {
-						return 0;
+						return new Result(0, "现价高于触发价");
 					}	
 				}
 			}
@@ -315,84 +318,111 @@ public class OrderServiceImpl implements OrderService {
 			//调整杠杆
 			leverage(symbol, lever, apiKey, secretKey);
 			//操作第一档
-			String temp = trade(symbol, side, quantity, ToolsUtils.formatPrice(symbol, firstPrice), null, "LIMIT", "GTC", allConfig.getLossWorkingType(), null, apiKey, secretKey);
+			String temp = trade(symbol, side, quantity, ToolsUtils.formatPrice(symbol, firstPrice), 
+					null, "LIMIT", "GTC", allConfig.getLossWorkingType(), null, apiKey, secretKey);
 			Map<String, String> tempInfo = JSON.parseObject(temp, new TypeReference<Map<String, String>>(){} );
 			if(tempInfo != null && StringUtils.isNotEmpty(tempInfo.get("orderId"))) {
 				orderIds.add(tempInfo.get("orderId"));
-			} 
+			} else {
+				msg = temp;
+			}
 			seq++;
 			if(orderIds.size() == seq) {
 				//操作第二档
-				temp = trade(symbol, side, quantity, ToolsUtils.formatPrice(symbol, secondPrice), null, "LIMIT", "GTC", allConfig.getLossWorkingType(), null, apiKey, secretKey);
+				temp = trade(symbol, side, quantity, ToolsUtils.formatPrice(symbol, secondPrice), 
+						null, "LIMIT", "GTC", allConfig.getLossWorkingType(), null, apiKey, secretKey);
 				tempInfo = JSON.parseObject(temp, new TypeReference<Map<String, String>>(){} );
 				if(tempInfo != null && StringUtils.isNotEmpty(tempInfo.get("orderId"))) {
 					orderIds.add(tempInfo.get("orderId"));
-				} 				
+				} else {
+					msg = temp;
+				}			
 			}
 			seq++;
 			if(orderIds.size() == seq) {
 				//操作第三档
-				temp = trade(symbol, side, quantity, ToolsUtils.formatPrice(symbol, thirdPrice), null, "LIMIT", "GTC", allConfig.getLossWorkingType(), null, apiKey, secretKey);
+				temp = trade(symbol, side, quantity, ToolsUtils.formatPrice(symbol, thirdPrice), 
+						null, "LIMIT", "GTC", allConfig.getLossWorkingType(), null, apiKey, secretKey);
 				tempInfo = JSON.parseObject(temp, new TypeReference<Map<String, String>>(){} );
 				if(tempInfo != null && StringUtils.isNotEmpty(tempInfo.get("orderId"))) {
 					orderIds.add(tempInfo.get("orderId"));
-				} 				
+				} else {
+					msg = temp;
+				}	
 			}
 			seq++;
 			
 			if(allConfig.getLossType() == 0) {
 				if(orderIds.size() == seq) {
 					//操作止损单1
-					temp = trade(symbol, stopSide, quantity, ToolsUtils.formatPrice(symbol, entrustPrice), ToolsUtils.formatPrice(symbol, stopPrice), "STOP", "GTC", allConfig.getLossWorkingType(), null, apiKey, secretKey);
+					temp = trade(symbol, stopSide, quantity, ToolsUtils.formatPrice(symbol, entrustPrice), 
+							ToolsUtils.formatPrice(symbol, stopPrice), "STOP", "GTC", allConfig.getLossWorkingType(), null, apiKey, secretKey);
 					tempInfo = JSON.parseObject(temp, new TypeReference<Map<String, String>>(){} );
 					if(tempInfo != null && StringUtils.isNotEmpty(tempInfo.get("orderId"))) {
 						orderIds.add(tempInfo.get("orderId"));
-					} 
+					} else {
+						msg = temp;
+					}
 				}
 				seq++;
 				if(orderIds.size() == seq) {
 					//操作止损单2
-					temp = trade(symbol, stopSide, quantity, ToolsUtils.formatPrice(symbol, entrustPrice), ToolsUtils.formatPrice(symbol, stopPrice), "STOP", "GTC", allConfig.getLossWorkingType(), null, apiKey, secretKey);
+					temp = trade(symbol, stopSide, quantity, ToolsUtils.formatPrice(symbol, entrustPrice), 
+							ToolsUtils.formatPrice(symbol, stopPrice), "STOP", "GTC", allConfig.getLossWorkingType(), null, apiKey, secretKey);
 					tempInfo = JSON.parseObject(temp, new TypeReference<Map<String, String>>(){} );
 					if(tempInfo != null && StringUtils.isNotEmpty(tempInfo.get("orderId"))) {
 						orderIds.add(tempInfo.get("orderId"));
-					} 
+					} else {
+						msg = temp;
+					}
 				}
 				seq++;
 				if(orderIds.size() == seq) {
 					//操作止损单3
-					temp = trade(symbol, stopSide, quantity, ToolsUtils.formatPrice(symbol, entrustPrice), ToolsUtils.formatPrice(symbol, stopPrice), "STOP", "GTC", allConfig.getLossWorkingType(), null, apiKey, secretKey);
+					temp = trade(symbol, stopSide, quantity, ToolsUtils.formatPrice(symbol, entrustPrice), 
+							ToolsUtils.formatPrice(symbol, stopPrice), "STOP", "GTC", allConfig.getLossWorkingType(), null, apiKey, secretKey);
 					tempInfo = JSON.parseObject(temp, new TypeReference<Map<String, String>>(){} );
 					if(tempInfo != null && StringUtils.isNotEmpty(tempInfo.get("orderId"))) {
 						orderIds.add(tempInfo.get("orderId"));
-					} 
+					} else {
+						msg = temp;
+					}
 				}
 				seq++;
 			} else {
 				if(orderIds.size() == seq) {
 					//操作止损单1
-					temp = trade(symbol, stopSide, quantity, null, ToolsUtils.formatPrice(symbol, stopPrice), "STOP_MARKET", null, allConfig.getLossWorkingType(), null, apiKey, secretKey);
+					temp = trade(symbol, stopSide, quantity, null, ToolsUtils.formatPrice(symbol, stopPrice), 
+							"STOP_MARKET", null, allConfig.getLossWorkingType(), null, apiKey, secretKey);
 					tempInfo = JSON.parseObject(temp, new TypeReference<Map<String, String>>(){} );
 					if(tempInfo != null && StringUtils.isNotEmpty(tempInfo.get("orderId"))) {
 						orderIds.add(tempInfo.get("orderId"));
+					} else {
+						msg = temp;
 					}
 				}
 				seq++;
 				if(orderIds.size() == seq) {
 					//操作止损单2
-					temp = trade(symbol, stopSide, quantity, null, ToolsUtils.formatPrice(symbol, stopPrice), "STOP_MARKET", null, allConfig.getLossWorkingType(), null, apiKey, secretKey);
+					temp = trade(symbol, stopSide, quantity, null, ToolsUtils.formatPrice(symbol, stopPrice), 
+							"STOP_MARKET", null, allConfig.getLossWorkingType(), null, apiKey, secretKey);
 					tempInfo = JSON.parseObject(temp, new TypeReference<Map<String, String>>(){} );
 					if(tempInfo != null && StringUtils.isNotEmpty(tempInfo.get("orderId"))) {
 						orderIds.add(tempInfo.get("orderId"));
+					} else {
+						msg = temp;
 					}
 				}
 				seq++;
 				if(orderIds.size() == seq) {
 					//操作止损单3
-					temp = trade(symbol, stopSide, quantity, null, ToolsUtils.formatPrice(symbol, stopPrice), "STOP_MARKET", null, allConfig.getLossWorkingType(), null, apiKey, secretKey);
+					temp = trade(symbol, stopSide, quantity, null, ToolsUtils.formatPrice(symbol, stopPrice), 
+							"STOP_MARKET", null, allConfig.getLossWorkingType(), null, apiKey, secretKey);
 					tempInfo = JSON.parseObject(temp, new TypeReference<Map<String, String>>(){} );
 					if(tempInfo != null && StringUtils.isNotEmpty(tempInfo.get("orderId"))) {
 						orderIds.add(tempInfo.get("orderId"));
+					} else {
+						msg = temp;
 					}
 				}
 				seq++;
@@ -407,12 +437,12 @@ public class OrderServiceImpl implements OrderService {
 				try {
 					cancel(symbol, orderId, apiKey, secretKey);						
 				} catch(Exception e) {
-					return 4;
+					state = 4;
 				}
 			}
-			return 3;
+			state = 3;
 		}
-    	return 1;
+    	return new Result(state, msg);
     }
 	  
     public String trade(String symbol, String side, String quantity, String price, String stopPrice, String type, 

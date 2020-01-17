@@ -146,6 +146,61 @@ public class AccountController {
     	return result.toJSONString();
     }
     
+    @RequestMapping("/profitOrLoss")
+    @ResponseBody
+    public String profitOrLoss(String symbol, String side, String quantity, String rate, 
+    		String type, String price, HttpSession session) {
+    	JSONObject result = new JSONObject();
+    	Float stopPrice = null;
+    	try {
+    		float entryPrice = Float.parseFloat(price);
+    		float curRate = Float.parseFloat(rate);
+    		User user = (User) session.getAttribute("USER_SESSION");
+    		if(side.toUpperCase().equals("BUY")) {
+    			if(type.toUpperCase().equals("TAKE_PROFIT_MARKET")) {
+    				stopPrice = entryPrice * (1 - curRate / 100);
+    			} else if(type.toUpperCase().equals("STOP_MARKET")) {
+    				stopPrice = entryPrice * (1 + curRate / 100);
+    			}
+    		} else if(side.toUpperCase().equals("SELL")) {
+    			if(type.toUpperCase().equals("TAKE_PROFIT_MARKET")) {
+    				stopPrice = entryPrice * (1 + curRate / 100);
+    			} else if(type.toUpperCase().equals("STOP_MARKET")) {
+    				stopPrice = entryPrice * (1 - curRate / 100);
+    			}
+    		}
+    		if(stopPrice != null) {
+    			String temp = orderService.trade(symbol, side, ToolsUtils.formatQuantity(symbol, Float.parseFloat(quantity)), 
+    					null, ToolsUtils.formatPrice(symbol, stopPrice), type, null, "CONTRACT_PRICE", "true", user.getApiKey(), user.getSecretKey());
+    			Map<String, String> tempInfo = JSON.parseObject(temp, new TypeReference<Map<String, String>>(){} );
+    			if(tempInfo != null && StringUtils.isNotEmpty(tempInfo.get("orderId"))) {
+    				result.put("status", "ok");
+    				Mail mail = new Mail();
+    				mail.setUid(user.getId());
+    				mail.setSymbol(symbol);
+    				mail.setSubject(symbol + "止盈/止损单创建成功，挂单价格" + stopPrice + "，已提交到币安");
+    				mail.setContent("提交数量：" + quantity);
+    				mail.setState(0);
+    				mail.setCreateTime(format.format(new Date()));
+    				mail.setUpdateTime(format.format(new Date()));
+    				orderService.insertMail(mail);
+    			} else {
+    				result.put("status", "error");
+    			}
+    			result.put("msg", JSON.toJSONString(temp));
+    		} else {
+        		result.put("status", "error");
+        		result.put("msg", "parameter error");
+    		}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+    		result.put("status", "error");
+    		result.put("msg", e.getMessage());
+		}
+    	return result.toJSONString();
+    }
+    
     @RequestMapping("/trade")
     @ResponseBody
     public String trade(String symbol, String side, String quantity, String price, String stopPrice, String type, 

@@ -2,6 +2,7 @@ package cn.itcast.service;
 
 import java.util.List;
 
+import cn.itcast.model.Result;
 import cn.itcast.pojo.Mail;
 import cn.itcast.pojo.Plan;
 
@@ -19,7 +20,7 @@ public interface OrderService {
     
     public int insertMail(Mail mail);
     
-	public int generateAndDealOrder(String symbol, String first, String second, String third, String stop, String trigger, 
+	public Result generateAndDealOrder(String symbol, String first, String second, String third, String stop, String trigger, 
 			Integer compare, String trigger1, Integer compare1, Integer uid, String apiKey, String secretKey, List<String> orderIds, Float curPrice);
 			
     public String plan(String symbol, String first, String second, String third, String stop, String trigger, 
