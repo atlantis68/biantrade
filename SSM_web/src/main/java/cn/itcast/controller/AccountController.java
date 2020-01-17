@@ -153,20 +153,31 @@ public class AccountController {
     	JSONObject result = new JSONObject();
     	Float stopPrice = null;
     	try {
+    		User user = (User) session.getAttribute("USER_SESSION");
     		float entryPrice = Float.parseFloat(price);
     		float curRate = Float.parseFloat(rate);
-    		User user = (User) session.getAttribute("USER_SESSION");
+			int leverage = 0;
+			String risks = orderService.positionRisk(user.getApiKey(), user.getSecretKey());
+    		List<String> lists = JSON.parseArray(risks, String.class);
+    		for(String list : lists) {
+    			Map<String, String> risk = JSON.parseObject(list, new TypeReference<Map<String, String>>(){} );
+    			if(risk != null && StringUtils.isNotEmpty(risk.get("leverage")) 
+    					&& StringUtils.isNotEmpty(risk.get("symbol")) && risk.get("symbol").equals(symbol)) {
+    				leverage = Integer.parseInt(risk.get("leverage"));
+    				break;
+    			}       			
+    		}
     		if(side.toUpperCase().equals("BUY")) {
     			if(type.toUpperCase().equals("TAKE_PROFIT_MARKET")) {
-    				stopPrice = entryPrice * (1 - curRate / 100);
+    				stopPrice = entryPrice * (1 - curRate / 100 / leverage);
     			} else if(type.toUpperCase().equals("STOP_MARKET")) {
-    				stopPrice = entryPrice * (1 + curRate / 100);
+    				stopPrice = entryPrice * (1 + curRate / 100 / leverage);
     			}
     		} else if(side.toUpperCase().equals("SELL")) {
     			if(type.toUpperCase().equals("TAKE_PROFIT_MARKET")) {
-    				stopPrice = entryPrice * (1 + curRate / 100);
+    				stopPrice = entryPrice * (1 + curRate / 100 / leverage);
     			} else if(type.toUpperCase().equals("STOP_MARKET")) {
-    				stopPrice = entryPrice * (1 - curRate / 100);
+    				stopPrice = entryPrice * (1 - curRate / 100 / leverage);
     			}
     		}
     		if(stopPrice != null) {
