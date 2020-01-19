@@ -8,11 +8,15 @@
     </insert>
     <select id="findPlanByUid" parameterType="String"
             resultType="cn.itcast.pojo.Plan">
-        select * from `plan` where uid = #{uid} and state &lt; 4;
+        select * from `plan` where uid = #{uid} and state &lt; 4 order by createTime;
     </select>         
+    <select id="findPlanByTime" parameterType="Integer"
+            resultType="cn.itcast.pojo.Plan">
+        SELECT p.* FROM plan p, USER u WHERE u.id = p.uid AND u.role = 0 AND createTime > DATE_SUB(NOW(),INTERVAL #{time} MONTH) and state &gt; 3 order by createTime;
+    </select>     
     <select id="findFllowPlans" parameterType="String"
             resultType="cn.itcast.pojo.Plan">
-        SELECT p.* FROM plan p, USER u WHERE state &lt; 4 AND u.id = p.uid AND u.role = 0;
+        SELECT p.* FROM plan p, USER u WHERE state &lt; 4 AND u.id = p.uid AND u.role = 0 order by createTime;
     </select>        
     <update id="updatePlanById" parameterType="cn.itcast.pojo.Plan">
         update `plan` set state = #{state}, updateTime = #{updateTime}, orderIds = #{orderIds} where id = #{id};

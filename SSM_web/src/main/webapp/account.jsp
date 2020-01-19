@@ -204,7 +204,13 @@
 			result = "发送失败";
 			break;
 		case 4 :
-			result = "已过期";
+			result = "失效";
+			break;
+		case 5 :
+			result = "盈利";
+			break;
+		case 6 :
+			result = "亏损";
 			break;
 		}
     	return result;
@@ -242,6 +248,18 @@
     		result = value;
     	}
     	return result;
+    }
+    
+    function showAll(){  
+    	$("#showAllSubmit").attr("disabled","true");
+    	balance();
+    	positionRisk();
+    	findAllOrders();
+    	fllowPlans();
+    	findAllPlans();
+    	setTimeout(function (){
+    		$("#showAllSubmit").removeAttr("disabled");
+        }, 10000);    	 
     }
     
     function getPrice(){  
@@ -441,7 +459,7 @@
 		            			var edit = "";
 		            		   	if(list[i].positionAmt < 0) {
 		            		   		edit = "<input type=\"type\" value=" + Math.abs(list[i].positionAmt) + " id=\"position" + list[i].symbol + "\" name=\"position" + list[i].symbol + "\")\" size=5/>" 
-		            		   			+ "<input type=\"button\" value=\"平仓\" id=\"market" + list[i].symbol + "\" name=\"market" + list[i].symbol + "\" onclick =\"tradeMarket2('BUY', '" + list[i].symbol + "')\"/>"
+		            		   			+ "&nbsp&nbsp<input type=\"button\" value=\"平仓\" id=\"market" + list[i].symbol + "\" name=\"market" + list[i].symbol + "\" onclick =\"tradeMarket2('BUY', '" + list[i].symbol + "')\"/>"
 		            		   			+ "<input type=\"type\" value=50 id=\"prate" + list[i].symbol + "\" name=\"prate" + list[i].symbol + "\")\" size=5/>%" 
 		            		   			+ "<input type=\"button\" value=\"止盈\" id=\"profit" + list[i].symbol + "\" name=\"profit" + list[i].symbol + "\" onclick =\"tradeMarket3('BUY', 'TAKE_PROFIT_MARKET', '" + list[i].symbol + "', '" + list[i].entryPrice + "')\"/>"
 		            		   			+ "<input type=\"type\" value=50 id=\"lrate" + list[i].symbol + "\" name=\"lrate" + list[i].symbol + "\")\" size=5/>%" 
@@ -449,9 +467,9 @@
 		            		    } else if(list[i].positionAmt > 0) {
 		            		    	edit = "<input type=\"type\" value=" + Math.abs(list[i].positionAmt) + " id=\"position" + list[i].symbol + "\" name=\"position" + list[i].symbol + "\")\" size=5/>" 
 		            		    		+ "<input type=\"button\" value=\"平仓\" id=\"market" + list[i].symbol + "\" name=\"market" + list[i].symbol + "\" onclick =\"tradeMarket2('SELL', '" + list[i].symbol + "')\"/>"
-		            		   			+ "<input type=\"type\" value=50 id=\"prate" + list[i].symbol + "\" name=\"prate" + list[i].symbol + "\")\" size=5/>%" 
+		            		   			+ "&nbsp&nbsp<input type=\"type\" value=50 id=\"prate" + list[i].symbol + "\" name=\"prate" + list[i].symbol + "\")\" size=5/>%" 
 		            		   			+ "<input type=\"button\" value=\"止盈\" id=\"profit" + list[i].symbol + "\" name=\"profit" + list[i].symbol + "\" onclick =\"tradeMarket3('SELL', 'TAKE_PROFIT_MARKET', '" + list[i].symbol + "', '" + list[i].entryPrice + "')\"/>"
-		            		   			+ "<input type=\"type\" value=50 id=\"lrate" + list[i].symbol + "\" name=\"lrate" + list[i].symbol + "\")\" size=5/>%" 
+		            		   			+ "&nbsp&nbsp<input type=\"type\" value=50 id=\"lrate" + list[i].symbol + "\" name=\"lrate" + list[i].symbol + "\")\" size=5/>%" 
 		            		   			+ "<input type=\"button\" value=\"止损\" id=\"loss" + list[i].symbol + "\" name=\"loss" + list[i].symbol + "\" onclick =\"tradeMarket4('SELL', 'STOP_MARKET', '" + list[i].symbol + "', '" + list[i].entryPrice + "')\"/>" ;
 		            		    }
 		            			str += "<tr>" + 
@@ -736,6 +754,9 @@
 	    }	
 	    
 	    function tradePlan(){  
+	    	if(!confirm("是否开单")) {
+	    		return;
+	    	}	    	
 	    	$("#message").html('');
 			if(!validateFloat($("#first").val())) {
 				$("#message").html("“第一档”必须是小数点后五位以内的小数");
@@ -804,7 +825,7 @@
 	        $.ajax({  
 	            type : "get",
 	            url : "/Order/findAllPlans",
-	            data : "symbol="+$('input[name="symbol2"]:checked').val(),
+	            data : '',
 
 	            //成功
 	            success : function(data) {
@@ -834,7 +855,7 @@
 		            		for (x in list) {
 		            			i = list.length - x - 1;
 		            			var edit = "<input type=\"button\" id=\"warn" + list[i].id + "\" name=\"warn" + list[i].id + "\" value=\"止盈提醒\" onclick =\"warn(" + list[i].id + ")\"/>" 
-		            				+ "<select id=\"swarn" + list[i].id + "\" name=\"swarn" + list[i].id + "\"><option value =\"4\">失效</option><option value =\"5\">盈利</option><option value=\"6\">亏损</option></select>"
+		            				+ "&nbsp&nbsp<select id=\"swarn" + list[i].id + "\" name=\"swarn" + list[i].id + "\"><option value =\"4\">失效</option><option value =\"5\">盈利</option><option value=\"6\">亏损</option></select>"
 		            				+ "<input type=\"button\" id=\"cplan" + list[i].id + "\" name=\"cplan" + list[i].id + "\" value=\"撤单\" onclick =\"cancelPlan('" + list[i].symbol + "', " + list[i].id + ", '" + list[i].orderIds + "')\"/>";
 		            			str += "<tr>" + 
 		            				"<td>" + list[i].symbol + "</td>" + 
@@ -871,6 +892,76 @@
 	        });  
 	    } 	 
 	    
+	    function historyOrders(){  
+	    	$("#message").html('');
+	    	$("#historyOrdersSubmit").attr("disabled","true");
+	    	$("#plansList").html("");
+	        $.ajax({  
+	            type : "get",
+	            url : "/Order/historyOrders",
+	            data : "&startTime="+$('input[name="startTime1"]:checked').val(),
+
+	            //成功
+	            success : function(data) {
+	            	if(data.indexOf("登录") > -1) {
+	            		window.location.href='User/logout';
+	            	} else {
+	            		var jsonObject= jQuery.parseJSON(data);  
+	            		if(jsonObject.status == 'ok') {
+	            			var list = JSON.parse(jsonObject.msg);
+		            		if(list.length > 0) {
+		            			var str = "<tr>" + 
+		            				"<td><b>类型</b></td>" +
+			            			"<td><b>第一档</b></td>" + 
+			            			"<td><b>第二档</b></td>" + 
+			            			"<td><b>第三档</b></td>" + 
+			            			"<td><b>止损档</b></td>" + 
+			            			"<td><b>开单触发价</b></td>" + 
+			            			"<td><b>撤单触发价</b></td>" + 	
+			            			"<td><b>状态</b></td>" + 
+			            			"<td><b>来源</b></td>" + 
+			            			"<td><b>操作时间</b></td>" + 
+			            			"<td><b>更新时间</b></td>" + 
+			            			"<td><b>操作</b></td>" + 
+			            			"</tr>";
+		            		}
+		            		for (x in list) {
+		            			i = list.length - x - 1;
+		            			var edit = "<input type=\"button\" id=\"rplan" + list[i].id + "\" name=\"rplan" + list[i].id + "\" value=\"复用\" onclick =\"repeat(" + list[i].id + ")\"/>";
+		            			str += "<tr>" + 
+		            				"<td>" + list[i].symbol + "</td>" + 
+			            			"<td>" + list[i].first + "</td>" + 
+			            			"<td>" + list[i].second + "</td>" + 
+			            			"<td>" + list[i].third + "</td>" + 
+			            			"<td>" + list[i].stop + "</td>" + 
+			            			"<td>" + translateCompare(list[i].compare) + translateNull(list[i].trigger) + "</td>" + 
+			            			"<td>" + translateCompare(list[i].compare1) + translateNull(list[i].trigger1) + "</td>" + 			            			
+			            			"<td>" + translateState(list[i].state) + "</td>" +  
+			            			"<td>" + translateFrom(list[i].type) + "</td>" +
+			            			"<td>" + getFormatDateByLong(list[i].createTime) + "</td>" + 
+			            			"<td>" + getFormatDateByLong(list[i].updateTime) + "</td>" + 
+			            			"<td>" + edit + "</td>" + 
+			            			"</tr>";
+		            		}
+	            			$("#plansList").html(str);
+	            		} else {
+	            			$("#message").html(jsonObject.msg);
+	            		}
+	            	}
+	            },
+
+	            //错误情况
+	            error : function(error) {
+	                console.log("error : " + error);
+	            },
+
+	            //请求完成后回调函数 (请求成功或失败之后均调用)。
+	            complete: function(message) {
+	            	$("#historyOrdersSubmit").removeAttr("disabled");
+	            } 
+	        });  
+	    } 		    
+	    
 	    function fllowPlans(){  
 	    	$("#message").html('');
 	    	$("#fllowSubmit").attr("disabled","true");
@@ -899,7 +990,6 @@
 			            			"<td><b>撤单触发价</b></td>" + 			            			
 			            			"<td><b>状态</b></td>" + 
 			            			"<td><b>来源</b></td>" + 
-			            			"<td><b>关联订单号</b></td>" + 
 			            			"<td><b>操作时间</b></td>" + 
 			            			"<td><b>更新时间</b></td>" + 
 			            			"<td><b>操作</b></td>" + 
@@ -918,7 +1008,6 @@
 			            			"<td>" + translateCompare(list[i].compare1) + translateNull(list[i].trigger1) + "</td>" + 			            			
 			            			"<td>" + translateState(list[i].state) + "</td>" +  
 			            			"<td>" + translateFrom(list[i].type) + "</td>" +
-			            			"<td>" + list[i].orderIds + "</td>" +
 			            			"<td>" + getFormatDateByLong(list[i].createTime) + "</td>" + 
 			            			"<td>" + getFormatDateByLong(list[i].updateTime) + "</td>" + 
 			            			"<td>" + edit + "</td>" + 
@@ -944,6 +1033,9 @@
 	    } 		    
 	    
 	    function cancelPlan(symbol, id, orderIds){  
+	    	if(!confirm("是否撤单")) {
+	    		return;
+	    	}
 	    	$("#message").html('');
 	    	$("#cplan"+id).attr("disabled","true");
 	    	$.ajax({   
@@ -979,6 +1071,9 @@
 	    }
 	    
 	    function follow(id){  
+	    	if(!confirm("是否跟单")) {
+	    		return;
+	    	}
 	    	$("#message").html('');
 	    	$("#fplan"+id).attr("disabled","true");
 	        $.ajax({  
@@ -1013,7 +1108,48 @@
 	        });  
 	    }	
 	    
+	    function repeat(id){  
+	    	if(!confirm("是否复用")) {
+	    		return;
+	    	}
+	    	$("#message").html('');
+	    	$("#rplan"+id).attr("disabled","true");
+	        $.ajax({  
+	            type : "get",
+	            url : "/Order/repeat",
+	            data : "id="+id,
+
+	            //成功
+	            success : function(data) {
+	            	if(data.indexOf("登录") > -1) {
+	            		window.location.href='User/logout';
+	            	} else {
+	            		var jsonObject= jQuery.parseJSON(data);
+	            		if(jsonObject.status == 'error') {
+	            			$("#message").html(jsonObject.msg);
+	            		} else {
+	            			findAllPlans();
+	            			$("#message").html("plan:" + id + " " + jsonObject.msg);	
+	            		}
+	            	}
+	            },
+
+	            //错误情况
+	            error : function(error) {
+	                console.log("error : " + error);
+	            },
+
+	            //请求完成后回调函数 (请求成功或失败之后均调用)。
+	            complete: function(message) {
+	            	$("#rplan"+id).removeAttr("disabled");
+	            } 
+	        });  
+	    }		    
+	    
 	    function warn(id){  
+	    	if(!confirm("是否提醒所有人")) {
+	    		return;
+	    	}
 	    	$("#message").html('');
 	    	$("#warn"+id).attr("disabled","true");
 	        $.ajax({  
@@ -1047,47 +1183,15 @@
 	            } 
 	        });  
 	    }		    
-	    
-	    function finish(id){  
-	    	$("#message").html('');
-	    	$("#oplan"+id).attr("disabled","true");
-	        $.ajax({  
-	            type : "get",
-	            url : "/Order/finish",
-	            data : "id="+id,
-
-	            //成功
-	            success : function(data) {
-	            	if(data.indexOf("登录") > -1) {
-	            		window.location.href='User/logout';
-	            	} else {
-	            		var jsonObject= jQuery.parseJSON(data);
-	            		if(jsonObject.status == 'error') {
-	            			$("#message").html(jsonObject.msg);
-	            		} else {
-	            			findAllPlans();
-	            			$("#message").html("plan" + id + " " + jsonObject.msg);	
-	            		}
-	            	}
-	            },
-
-	            //错误情况
-	            error : function(error) {
-	                console.log("error : " + error);
-	            },
-
-	            //请求完成后回调函数 (请求成功或失败之后均调用)。
-	            complete: function(message) {
-	            	$("#oplan"+id).removeAttr("disabled");
-	            } 
-	        });  
-	    }	    
+   
     </script>
 </head>
 <font color="red">
     <%-- 提示信息--%>
     <span id="message" name="message"></span>
 </font>
+<p>
+<input type="button" id="showAllSubmit" id="showAllSubmit" value="显示所有" onclick ="showAll()"/><p>
 <p>
 <table id="showList" name="showList" width="100%" cellpadding="1" cellspacing="0" border="1"></table>
 <p>
@@ -1097,7 +1201,7 @@
 <input type="button" id="positionRiskSubmit" id="positionRiskSubmit" value="刷新持仓" onclick ="positionRisk()"/><p>
 <table id="positionRiskList" name="positionRiskList" width="100%" cellpadding="1" cellspacing="0" border="1"></table>
 <p>
-类型：
+<font color="red">类型</font>
 <input type="radio" name="symbol" value="BTCUSDT" checked>BTCUSDT
 <input type="radio" name="symbol" value="ETHUSDT">ETHUSDT
 <input type="radio" name="symbol" value="BCHUSDT">BCHUSDT
@@ -1106,15 +1210,15 @@
 <input type="radio" name="symbol" value="LTCUSDT">LTCUSDT
 <input type="radio" name="symbol" value="TRXUSDT">TRXUSDT
 <input type="radio" name="symbol" value="ETCUSDT">ETCUSDT
-范围：
-<input type="radio" name="startTime" value="1">一天
-<input type="radio" name="startTime" value="3">三天
-<input type="radio" name="startTime" value="7" checked>七天
-<input type="button" id="findAllOrdersSubmit" id="findAllOrdersSubmit" value="查询订单" onclick ="findAllOrders()"/>
-<input type="button" id="cancelAllSubmit" id="cancelAllSubmit" value="撤销此类型全部订单" onclick ="cancelAll()"/><p>
+<font color="red">&nbsp&nbsp范围</font>
+<input type="radio" name="startTime" value="1">一天内
+<input type="radio" name="startTime" value="3">三天内
+<input type="radio" name="startTime" value="7" checked>七天内
+&nbsp&nbsp<input type="button" id="findAllOrdersSubmit" id="findAllOrdersSubmit" value="查询订单" onclick ="findAllOrders()"/>
+&nbsp&nbsp<input type="button" id="cancelAllSubmit" id="cancelAllSubmit" value="撤销此类型全部订单" onclick ="cancelAll()"/><p>
 <table id="ordersList" name="ordersList" width="100%" cellpadding="1" cellspacing="0" border="1"></table>
 <p>
-即时单：
+<font color="red">即时单</font>
 <input type="radio" name="symbol1" value="BTCUSDT" checked>BTCUSDT
 <input type="radio" name="symbol1" value="ETHUSDT">ETHUSDT
 <input type="radio" name="symbol1" value="BCHUSDT">BCHUSDT
@@ -1123,11 +1227,11 @@
 <input type="radio" name="symbol1" value="LTCUSDT">LTCUSDT
 <input type="radio" name="symbol1" value="TRXUSDT">TRXUSDT
 <input type="radio" name="symbol1" value="ETCUSDT">ETCUSDT
-<input type="button" value="开多" id="market1" name="market1" onclick ="tradeMarket1('BUY', 1)"/>
-<input type="button" value="开空" id="market2" name="market2" onclick ="tradeMarket1('SELL', 2)"/>
+&nbsp&nbsp<input type="button" value="开多" id="market1" name="market1" onclick ="tradeMarket1('BUY', 1)"/>
+&nbsp&nbsp<input type="button" value="开空" id="market2" name="market2" onclick ="tradeMarket1('SELL', 2)"/>
 <p>
 <p>
-计划单：
+<font color="red">计划单</font>
 <input type="radio" name="symbol2" value="BTCUSDT" checked>BTCUSDT
 <input type="radio" name="symbol2" value="ETHUSDT">ETHUSDT
 <input type="radio" name="symbol2" value="BCHUSDT">BCHUSDT
@@ -1136,7 +1240,7 @@
 <input type="radio" name="symbol2" value="LTCUSDT">LTCUSDT
 <input type="radio" name="symbol2" value="TRXUSDT">TRXUSDT
 <input type="radio" name="symbol2" value="ETCUSDT">ETCUSDT
-<input type="button" value="开单" id="plan" name="plan" onclick ="tradePlan()"/>
+&nbsp&nbsp<input type="button" value="开单" id="plan" name="plan" onclick ="tradePlan()"/>
 <table id="positionRiskList" name="positionRiskList" width="100%" cellpadding="1" cellspacing="0" border="1">
 <tr>
 <td>
@@ -1196,6 +1300,11 @@
 <table id="followList" name="followList" width="100%" cellpadding="1" cellspacing="0" border="1"></table>
 <p>
 <input type="button" id="findAllPlansSubmit" id="findAllPlansSubmit" value="我的计划单" onclick ="findAllPlans()"/>
+&nbsp&nbsp<font color="red">范围</font>
+<input type="radio" name="startTime1" value="1" checked>一个月
+<input type="radio" name="startTime1" value="3">三个月
+<input type="radio" name="startTime1" value="6">六个月
+&nbsp&nbsp<input type="button" id="historyOrdersSubmit" id="historyOrdersSubmit" value="历史计划单" onclick ="historyOrders()"/>
 <table id="plansList" name="plansList" width="100%" cellpadding="1" cellspacing="0" border="1"></table>
 <p>
 <a href="${pageContext.request.contextPath}/User/index">用户页面</a>

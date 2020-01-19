@@ -50,8 +50,8 @@ public class OrderServiceImpl implements OrderService {
 	
 	private static SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	
-	public List<Plan> findPlanByUid(Integer uid, String symbol) {
-		return planMapper.findPlanByUid(uid.toString(), symbol);
+	public List<Plan> findPlanByUid(Integer uid) {
+		return planMapper.findPlanByUid(uid.toString());
 	}
 	
 	public List<Plan> findFllowPlans(String symbol) {
@@ -72,6 +72,10 @@ public class OrderServiceImpl implements OrderService {
 	
 	public int insertMail(Mail mail) {
 		return mailMapper.insertMail(mail);
+	}
+	
+	public List<Plan> findPlanByTime(Integer time) {
+		return planMapper.findPlanByTime(time);
 	}
 
 	//需要保证事务
@@ -264,8 +268,8 @@ public class OrderServiceImpl implements OrderService {
 					lever = (int)(avg / diff);
 				}
 			} else {
-				if(threshold <= 0.013) {
-					lever = 75;
+				if(threshold <= 0.02) {
+					lever = 50;
 				} else {
 					lever = (int)(avg / diff);
 				}
@@ -293,8 +297,6 @@ public class OrderServiceImpl implements OrderService {
 					range = 250000;
 				} else if(lever <= 50) {
 					range = 50000;
-				} else if(lever <= 75) {
-					range = 10000;
 				} 
 			}
 			float par1 = allConfig.getLimitAmount() * allConfig.getMaxLoss() / 100 / diff;

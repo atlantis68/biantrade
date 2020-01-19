@@ -12,7 +12,7 @@ public interface PlanMapper {
 
 	public int updatePlanById(Plan plan);
 
-	public List<Plan> findPlanByUid(@Param("uid") String uid, @Param("symbol") String symbol);
+	public List<Plan> findPlanByUid(@Param("uid") String uid);
 	
 	public List<Plan> findFllowPlans(@Param("symbol") String symbol);
 	
@@ -23,4 +23,6 @@ public interface PlanMapper {
 	public List<Plan> findPlansByState(@Param("state") String state);
 	
 	public List<Plan> findPlansByState1();
+	
+	public List<Plan> findPlanByTime(@Param("time") Integer time);
 }

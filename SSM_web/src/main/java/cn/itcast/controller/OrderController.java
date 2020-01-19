@@ -85,12 +85,32 @@ public class OrderController {
 
     @RequestMapping(value = "/findAllPlans")
     @ResponseBody
-    public String findAllPlans(String symbol, HttpSession session) {
+    public String findAllPlans(HttpSession session) {
     	JSONObject result = new JSONObject();
     	try {
     		//获取配置项
     		User user = (User) session.getAttribute("USER_SESSION");
-    		List<Plan> plans = orderService.findPlanByUid(user.getId(), symbol);
+    		List<Plan> plans = orderService.findPlanByUid(user.getId());
+        	result.put("status", "ok");
+        	result.put("msg", JSON.toJSONString(plans));
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+    		result.put("status", "error");
+    		result.put("msg", e.getMessage());
+		}
+    	return result.toJSONString();
+		
+    }
+    
+    @RequestMapping(value = "/historyOrders")
+    @ResponseBody
+    public String historyOrders(Integer startTime, HttpSession session) {
+    	JSONObject result = new JSONObject();
+    	try {
+    		//获取配置项
+    		User user = (User) session.getAttribute("USER_SESSION");
+    		List<Plan> plans = orderService.findPlanByTime(startTime);
         	result.put("status", "ok");
         	result.put("msg", JSON.toJSONString(plans));
 		} catch (Exception e) {
@@ -178,6 +198,33 @@ public class OrderController {
     		} else {
     			result.put("status", "error");
     			result.put("msg", "follow failed");   
+    		}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+    		result.put("status", "error");
+    		result.put("msg", e.getMessage());
+		}
+    	return result.toJSONString();
+		
+    }
+    
+    @RequestMapping(value = "/repeat")
+    @ResponseBody
+    public String repeat(Integer id, HttpSession session) {
+    	JSONObject result = new JSONObject();
+    	try {
+    		//获取配置项
+    		User user = (User) session.getAttribute("USER_SESSION");
+    		Plan plan = orderService.findPlanById(id);
+    		if(plan != null) {
+				String temp = plan(plan.getSymbol(), plan.getFirst().toString(), plan.getSecond().toString(), 
+    					plan.getThird().toString(), plan.getStop().toString(), plan.getTrigger().toString(), plan.getCompare(), 
+    					plan.getTrigger1().toString(), plan.getCompare1(), session);
+				result = JSONObject.parseObject(temp); 
+    		} else {
+    			result.put("status", "error");
+    			result.put("msg", "repeat failed");   
     		}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

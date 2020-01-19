@@ -8,7 +8,7 @@ import cn.itcast.pojo.Plan;
 
 public interface OrderService {
     
-    public List<Plan> findPlanByUid(Integer uid, String symbol);
+    public List<Plan> findPlanByUid(Integer uid);
     
     public List<Plan> findFllowPlans(String symbol);
     
@@ -19,6 +19,8 @@ public interface OrderService {
     public int updatePlanById(Plan plan);
     
     public int insertMail(Mail mail);
+    
+    public List<Plan> findPlanByTime(Integer time);
     
 	public Result generateAndDealOrder(String symbol, String first, String second, String third, String stop, String trigger, 
 			Integer compare, String trigger1, Integer compare1, Integer uid, String apiKey, String secretKey, List<String> orderIds, Float curPrice);
