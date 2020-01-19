@@ -13,4 +13,8 @@
     <update id="updateUserById" parameterType="cn.itcast.pojo.User">
 		UPDATE `user` SET `password` = #{password}, `apiKey` = #{apiKey}, `secretKey` = #{secretKey}, `mail` = #{mail}  WHERE `id` = #{id};
     </update> 
+    <select id="findUserByUid" parameterType="Integer"
+            resultType="cn.itcast.pojo.User">
+        SELECT u.* FROM USER u, plan p WHERE p.`uid` = u.id AND p.pid = #{uid};
+    </select>      
 </mapper>

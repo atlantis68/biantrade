@@ -123,7 +123,7 @@ public class OrderController {
 		
     }
     
-    @RequestMapping(value = "/fllowPlans")
+    @RequestMapping(value = "/fllowPlans", produces="text/html;charset=UTF-8")
     @ResponseBody
     public String fllowPlans(String symbol, HttpSession session) {
     	JSONObject result = new JSONObject();
@@ -135,7 +135,7 @@ public class OrderController {
         		result.put("msg", JSON.toJSONString(plans));
     		} else {
     			result.put("status", "error");
-    			result.put("msg", "you are dashen!!!");
+    			result.put("msg", "只有跟单人才能操作");
     		}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -236,7 +236,7 @@ public class OrderController {
 		
     }
     
-    @RequestMapping(value = "/warn")
+    @RequestMapping(value = "/warn", produces="text/html;charset=UTF-8")
     @ResponseBody
     public String warn(String id, HttpSession session) {
     	JSONObject result = new JSONObject();
@@ -250,7 +250,7 @@ public class OrderController {
 				result.put("msg", "notice " + number + " users");
 			} else {
 				result.put("status", "error");
-				result.put("msg", "you are not dashen!!!");
+				result.put("msg", "只有带单人才能操作");
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

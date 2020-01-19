@@ -1,5 +1,7 @@
 package cn.itcast.controller;
 
+import java.util.List;
+
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.StringUtils;
@@ -93,5 +95,21 @@ public class UserController {
     		result.put("msg", e.getMessage());
     	}
         return result.toJSONString();
+    }
+    
+    @RequestMapping(value = "/findUserByUid", produces="text/html;charset=UTF-8")
+    @ResponseBody
+    public String findUserByUid(Integer uid, HttpSession session) {
+    	JSONObject result = new JSONObject();
+    	try {
+    		List<User> userInfos = userService.findUserByUid(uid);    	
+        	result.put("status", "ok");
+        	result.put("msg", JSON.toJSONString(userInfos));
+    	} catch(Exception e) {
+    		e.printStackTrace();
+    		result.put("status", "error");
+    		result.put("msg", e.getMessage());
+    	}
+    	return result.toJSONString();
     }
 }

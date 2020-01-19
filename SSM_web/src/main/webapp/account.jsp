@@ -461,16 +461,16 @@
 		            		   		edit = "<input type=\"type\" value=" + Math.abs(list[i].positionAmt) + " id=\"position" + list[i].symbol + "\" name=\"position" + list[i].symbol + "\")\" size=5/>" 
 		            		   			+ "&nbsp&nbsp<input type=\"button\" value=\"平仓\" id=\"market" + list[i].symbol + "\" name=\"market" + list[i].symbol + "\" onclick =\"tradeMarket2('BUY', '" + list[i].symbol + "')\"/>"
 		            		   			+ "<input type=\"type\" value=50 id=\"prate" + list[i].symbol + "\" name=\"prate" + list[i].symbol + "\")\" size=5/>%" 
-		            		   			+ "<input type=\"button\" value=\"止盈\" id=\"profit" + list[i].symbol + "\" name=\"profit" + list[i].symbol + "\" onclick =\"tradeMarket3('BUY', 'TAKE_PROFIT_MARKET', '" + list[i].symbol + "', '" + list[i].entryPrice + "')\"/>"
+		            		   			+ "<input type=\"button\" value=\"止盈\" id=\"profit" + list[i].symbol + "\" name=\"profit" + list[i].symbol + "\" onclick =\"tradeMarket3('BUY', 'TAKE_PROFIT_MARKET', '" + list[i].symbol + "', '" + list[i].entryPrice + "', '" + list[i].leverage + "')\"/>"
 		            		   			+ "<input type=\"type\" value=50 id=\"lrate" + list[i].symbol + "\" name=\"lrate" + list[i].symbol + "\")\" size=5/>%" 
-		            		   			+ "<input type=\"button\" value=\"止损\" id=\"loss" + list[i].symbol + "\" name=\"loss" + list[i].symbol + "\" onclick =\"tradeMarket4('BUY', 'STOP_MARKET', '" + list[i].symbol + "', '" + list[i].entryPrice + "')\"/>" ;		            		   			
+		            		   			+ "<input type=\"button\" value=\"止损\" id=\"loss" + list[i].symbol + "\" name=\"loss" + list[i].symbol + "\" onclick =\"tradeMarket4('BUY', 'STOP_MARKET', '" + list[i].symbol + "', '" + list[i].entryPrice + "', '" + list[i].leverage + "')\"/>"            		   			
 		            		    } else if(list[i].positionAmt > 0) {
 		            		    	edit = "<input type=\"type\" value=" + Math.abs(list[i].positionAmt) + " id=\"position" + list[i].symbol + "\" name=\"position" + list[i].symbol + "\")\" size=5/>" 
 		            		    		+ "<input type=\"button\" value=\"平仓\" id=\"market" + list[i].symbol + "\" name=\"market" + list[i].symbol + "\" onclick =\"tradeMarket2('SELL', '" + list[i].symbol + "')\"/>"
 		            		   			+ "&nbsp&nbsp<input type=\"type\" value=50 id=\"prate" + list[i].symbol + "\" name=\"prate" + list[i].symbol + "\")\" size=5/>%" 
-		            		   			+ "<input type=\"button\" value=\"止盈\" id=\"profit" + list[i].symbol + "\" name=\"profit" + list[i].symbol + "\" onclick =\"tradeMarket3('SELL', 'TAKE_PROFIT_MARKET', '" + list[i].symbol + "', '" + list[i].entryPrice + "')\"/>"
+		            		   			+ "<input type=\"button\" value=\"止盈\" id=\"profit" + list[i].symbol + "\" name=\"profit" + list[i].symbol + "\" onclick =\"tradeMarket3('SELL', 'TAKE_PROFIT_MARKET', '" + list[i].symbol + "', '" + list[i].entryPrice + "', '" + list[i].leverage + "')\"/>"
 		            		   			+ "&nbsp&nbsp<input type=\"type\" value=50 id=\"lrate" + list[i].symbol + "\" name=\"lrate" + list[i].symbol + "\")\" size=5/>%" 
-		            		   			+ "<input type=\"button\" value=\"止损\" id=\"loss" + list[i].symbol + "\" name=\"loss" + list[i].symbol + "\" onclick =\"tradeMarket4('SELL', 'STOP_MARKET', '" + list[i].symbol + "', '" + list[i].entryPrice + "')\"/>" ;
+		            		   			+ "<input type=\"button\" value=\"止损\" id=\"loss" + list[i].symbol + "\" name=\"loss" + list[i].symbol + "\" onclick =\"tradeMarket4('SELL', 'STOP_MARKET', '" + list[i].symbol + "', '" + list[i].entryPrice + "', '" + list[i].leverage + "')\"/>"
 		            		    }
 		            			str += "<tr>" + 
 			            			"<td>" + list[i].symbol + "</td>" + 
@@ -655,10 +655,7 @@
 	        }); 
 	    }	  
 	    
-	    function tradeMarket3(side, type, symbol, price) { 
-	    	if(!confirm("是否" + translateSide1(side) + "止盈")) {
-	    		return;
-	    	}
+	    function tradeMarket3(side, type, symbol, price, rate) { 
 	     	$("#message").html('');
     		if(!validateFloat($("#position" + symbol).val())) {
     			$("#message").html("“止盈数量”必须是小数点后五位以内的小数");
@@ -669,13 +666,22 @@
 				$("#prate" + symbol).focus();
 				return;
     		}
+    		var stopPrice;
+    		if(side == 'BUY') {
+    			stopPrice = parseFloat(price) * (1 - parseFloat($("#prate" + symbol).val()) / 100 / parseFloat(rate));
+    		} else {
+    			stopPrice = parseFloat(price) * (1 + parseFloat($("#prate" + symbol).val()) / 100 / parseFloat(rate));
+    		}
+	    	if(!confirm("是否" + translateSide1(side) + "止盈，点位：" + stopPrice)) {
+	    		return;
+	    	}
 	    	$("#profit"+symbol).attr("disabled","true");
 	    	
 	        $.ajax({  
 	            type : "get",
 	            url : "/Account/profitOrLoss",
 	            data : "symbol=" + symbol + "&side=" + side + "&quantity=" + $("#position" + symbol).val() 
-	            	+ "&rate=" + $("#prate" + symbol).val() + "&type=" + type + "&price=" + price,
+	            	+ "&rate=" + $("#prate" + symbol).val() + "&type=" + type + "&stopPrice=" + stopPrice,
 
 	            //成功
 	            success : function(data) {
@@ -704,10 +710,7 @@
 	        }); 
 	    }
 	    
-	    function tradeMarket4(side, type, symbol, price) { 
-	    	if(!confirm("是否" + translateSide1(side) + "止损")) {
-	    		return;
-	    	}
+	    function tradeMarket4(side, type, symbol, price, rate) {  
 	     	$("#message").html('');
     		if(!validateFloat($("#position" + symbol).val())) {
     			$("#message").html("“止损数量”必须是小数点后五位以内的小数");
@@ -718,13 +721,22 @@
 				$("#lrate" + symbol).focus();
 				return;
     		}
-	    	$("#profit"+symbol).attr("disabled","true");
+    		var stopPrice;
+    		if(side == 'SELL') {
+    			stopPrice = parseFloat(price) * (1 - parseFloat($("#lrate" + symbol).val()) / 100 / parseFloat(rate));
+    		} else {
+    			stopPrice = parseFloat(price) * (1 + parseFloat($("#lrate" + symbol).val()) / 100 / parseFloat(rate));
+    		}
+	    	if(!confirm("是否" + translateSide1(side) + "止损，点位：" + stopPrice)) {
+	    		return;
+	    	}
+	    	$("#loss"+symbol).attr("disabled","true");
 	    	
 	        $.ajax({  
 	            type : "get",
 	            url : "/Account/profitOrLoss",
 	            data : "symbol=" + symbol + "&side=" + side + "&quantity=" + $("#position" + symbol).val() 
-	            	+ "&rate=" + $("#lrate" + symbol).val() + "&type=" + type + "&price=" + price,
+	            	+ "&rate=" + $("#lrate" + symbol).val() + "&type=" + type + "&stopPrice=" + stopPrice,
 
 	            //成功
 	            success : function(data) {
@@ -748,7 +760,7 @@
 
 	            //请求完成后回调函数 (请求成功或失败之后均调用)。
 	            complete: function(message) {
-	            	$("#lrate"+symbol).removeAttr("disabled");
+	            	$("#loss"+symbol).removeAttr("disabled");
 	            } 
 	        }); 
 	    }	
@@ -856,7 +868,8 @@
 		            			i = list.length - x - 1;
 		            			var edit = "<input type=\"button\" id=\"warn" + list[i].id + "\" name=\"warn" + list[i].id + "\" value=\"止盈提醒\" onclick =\"warn(" + list[i].id + ")\"/>" 
 		            				+ "&nbsp&nbsp<select id=\"swarn" + list[i].id + "\" name=\"swarn" + list[i].id + "\"><option value =\"4\">失效</option><option value =\"5\">盈利</option><option value=\"6\">亏损</option></select>"
-		            				+ "<input type=\"button\" id=\"cplan" + list[i].id + "\" name=\"cplan" + list[i].id + "\" value=\"撤单\" onclick =\"cancelPlan('" + list[i].symbol + "', " + list[i].id + ", '" + list[i].orderIds + "')\"/>";
+		            				+ "<input type=\"button\" id=\"cplan" + list[i].id + "\" name=\"cplan" + list[i].id + "\" value=\"撤单\" onclick =\"cancelPlan('" + list[i].symbol + "', " + list[i].id + ", '" + list[i].orderIds + "')\"/>"
+		            				+ "&nbsp&nbsp<input type=\"button\" id=\"fusers" + list[i].id + "\" name=\"fusers" + list[i].id + "\" value=\"跟单人员\" onclick =\"findUserByUid(" + list[i].id + ")\"/>";
 		            			str += "<tr>" + 
 		            				"<td>" + list[i].symbol + "</td>" + 
 			            			"<td>" + list[i].first + "</td>" + 
@@ -927,7 +940,8 @@
 		            		}
 		            		for (x in list) {
 		            			i = list.length - x - 1;
-		            			var edit = "<input type=\"button\" id=\"rplan" + list[i].id + "\" name=\"rplan" + list[i].id + "\" value=\"复用\" onclick =\"repeat(" + list[i].id + ")\"/>";
+		            			var edit = "<input type=\"button\" id=\"rplan" + list[i].id + "\" name=\"rplan" + list[i].id + "\" value=\"再次下单\" onclick =\"repeat(" + list[i].id + ")\"/>"
+		            				+ "&nbsp&nbsp<input type=\"button\" id=\"fusers" + list[i].id + "\" name=\"fusers" + list[i].id + "\" value=\"跟单人员\" onclick =\"findUserByUid(" + list[i].id + ")\"/>";
 		            			str += "<tr>" + 
 		            				"<td>" + list[i].symbol + "</td>" + 
 			            			"<td>" + list[i].first + "</td>" + 
@@ -958,6 +972,45 @@
 	            //请求完成后回调函数 (请求成功或失败之后均调用)。
 	            complete: function(message) {
 	            	$("#historyOrdersSubmit").removeAttr("disabled");
+	            } 
+	        });  
+	    } 		
+	    
+	    function findUserByUid(uid){  
+	    	$("#message").html('');
+	    	$("#fusers"+uid).attr("disabled","true");
+	        $.ajax({  
+	            type : "get",
+	            url : "/User/findUserByUid",
+	            data : "uid="+uid,
+
+	            //成功
+	            success : function(data) {
+	            	if(data.indexOf("登录") > -1) {
+	            		window.location.href='User/logout';
+	            	} else {
+	            		var jsonObject= jQuery.parseJSON(data);  
+	            		if(jsonObject.status == 'ok') {
+	            			var list = JSON.parse(jsonObject.msg);
+	            			var users = '';
+		            		for (x in list) {
+		            			users += list[x].nickname + "（" + list[x].username + "),";
+		            		}
+	            			$("#message").html(users);
+	            		} else {
+	            			$("#message").html(jsonObject.msg);
+	            		}
+	            	}
+	            },
+
+	            //错误情况
+	            error : function(error) {
+	                console.log("error : " + error);
+	            },
+
+	            //请求完成后回调函数 (请求成功或失败之后均调用)。
+	            complete: function(message) {
+	            	$("#fusers"+uid).removeAttr("disabled");
 	            } 
 	        });  
 	    } 		    
@@ -997,7 +1050,8 @@
 		            		}
 		            		for (x in list) {
 		            			i = list.length - x - 1;
-		            			var edit = "<input type=\"button\" id=\"fplan" + list[i].id + "\" name=\"fplan" + list[i].id + "\" value=\"跟单\" onclick =\"follow(" + list[i].id + ")\"/>";
+		            			var edit = "<input type=\"button\" id=\"fplan" + list[i].id + "\" name=\"fplan" + list[i].id + "\" value=\"跟单\" onclick =\"follow(" + list[i].id + ")\"/>"
+			            			+ "&nbsp&nbsp<input type=\"button\" id=\"fusers" + list[i].id + "\" name=\"fusers" + list[i].id + "\" value=\"跟单人员\" onclick =\"findUserByUid(" + list[i].id + ")\"/>";
 		            			str += "<tr>" + 
 		            				"<td>" + list[i].symbol + "</td>" + 
 			            			"<td>" + list[i].first + "</td>" + 
@@ -1109,7 +1163,7 @@
 	    }	
 	    
 	    function repeat(id){  
-	    	if(!confirm("是否复用")) {
+	    	if(!confirm("是否再次下单")) {
 	    		return;
 	    	}
 	    	$("#message").html('');
