@@ -20,11 +20,11 @@
 				str += "<tr>";
 			}
 			if(seq == 0) {
-				str += "<td><font id=\"c" + coins[x] + "\" name=\"c" + coins[x] + "\" color=\"green\"><input type=\"radio\" name=\"symbol\" value=\"" + coins[x] + "\" checked>" + coins[x] + "</font></td>" 
-					+ "<td><input type=\"text\" id=\"" + coins[x] + "\" name=\"" + coins[x] + "\" readonly=\"readonly\"></td>";
+				str += "<td><input type=\"radio\" name=\"symbol\" value=\"" + coins[x] + "\" checked>" + coins[x] + "</td>" 
+				+ "<td><span id=\"" + coins[x] + "\" name=\"" + coins[x] + "\"></span></td>";
 			} else {
-				str += "<td><font id=\"c" + coins[x] + "\" name=\"c" + coins[x] + "\" color=\"green\"><input type=\"radio\" name=\"symbol\" value=\"" + coins[x] + "\">" + coins[x] + "</font></td>" 
-				+ "<td><input type=\"text\" id=\"" + coins[x] + "\" name=\"" + coins[x] + "\" readonly=\"readonly\"></td>";
+				str += "<td><input type=\"radio\" name=\"symbol\" value=\"" + coins[x] + "\">" + coins[x] + "</td>" 
+				+ "<td><span id=\"" + coins[x] + "\" name=\"" + coins[x] + "\"></span></td>";
 			}
 			seq += 1;
 			if(seq % number == 0) {
@@ -32,6 +32,12 @@
 			}
 		}
 		$("#showList").html(str); 	
+		$('input[type=radio][name=symbol]').change(function() {
+			for (x in coins) {
+				$("#" + coins[x]).removeAttr("style");
+			}
+			$("#" + this.value).attr("style","color:red;font-weight:bold;");
+	    });
     });
 
     window.setInterval(getPrice, 5000); 
@@ -309,7 +315,7 @@
             		if(jsonObject.status == 'ok') {
  	            		var prices = JSON.parse(jsonObject.msg);
 	            		for (x in prices) {
-	            			$("#" + x).attr("value", prices[x]);
+	            			$("#" + x).text(prices[x]);
 	            		}
             		}
             	}
