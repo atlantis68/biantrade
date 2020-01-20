@@ -869,6 +869,7 @@
 		            			var edit = "<input type=\"button\" id=\"warn" + list[i].id + "\" name=\"warn" + list[i].id + "\" value=\"止盈提醒\" onclick =\"warn(" + list[i].id + ")\"/>" 
 		            				+ "&nbsp&nbsp<select id=\"swarn" + list[i].id + "\" name=\"swarn" + list[i].id + "\"><option value =\"4\">失效</option><option value =\"5\">盈利</option><option value=\"6\">亏损</option></select>"
 		            				+ "<input type=\"button\" id=\"cplan" + list[i].id + "\" name=\"cplan" + list[i].id + "\" value=\"撤单\" onclick =\"cancelPlan('" + list[i].symbol + "', " + list[i].id + ", '" + list[i].orderIds + "')\"/>"
+		            				+ "&nbsp&nbsp<input type=\"button\" id=\"detail" + list[i].id + "\" name=\"detail" + list[i].id + "\" value=\"预览\" onclick =\"showDetail(" + list[i].id + ")\"/>"
 		            				+ "&nbsp&nbsp<input type=\"button\" id=\"fusers" + list[i].id + "\" name=\"fusers" + list[i].id + "\" value=\"跟单人员\" onclick =\"findUserByUid(" + list[i].id + ")\"/>";
 		            			str += "<tr>" + 
 		            				"<td>" + list[i].symbol + "</td>" + 
@@ -941,6 +942,7 @@
 		            		for (x in list) {
 		            			i = list.length - x - 1;
 		            			var edit = "<input type=\"button\" id=\"rplan" + list[i].id + "\" name=\"rplan" + list[i].id + "\" value=\"再次下单\" onclick =\"repeat(" + list[i].id + ")\"/>"
+		            				+ "&nbsp&nbsp<input type=\"button\" id=\"detail" + list[i].id + "\" name=\"detail" + list[i].id + "\" value=\"预览\" onclick =\"showDetail(" + list[i].id + ")\"/>"		            			
 		            				+ "&nbsp&nbsp<input type=\"button\" id=\"fusers" + list[i].id + "\" name=\"fusers" + list[i].id + "\" value=\"跟单人员\" onclick =\"findUserByUid(" + list[i].id + ")\"/>";
 		            			str += "<tr>" + 
 		            				"<td>" + list[i].symbol + "</td>" + 
@@ -1283,8 +1285,8 @@
 		            			"<td>" + detail.quantity * 3 + "</td>" + 			            			
 		            			"<td>" + detail.lever + "</td>" + 
 		            			"<td>" + detail.margin + "</td>" + 
-		            			"<td>" + detail.lossrate + "</td>" + 
-		            			"<td>" + detail.losspredict + "</td>" + 
+		            			"<td><font color=\"red\">" + detail.lossrate + "</font></td>" + 
+		            			"<td><font color=\"red\">" + detail.losspredict + "</font></td>" + 
 		            			"</tr>";	
 	            			$("#detailList").html(str);
 	            		} else {
