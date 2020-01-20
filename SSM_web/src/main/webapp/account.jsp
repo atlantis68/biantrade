@@ -4,6 +4,35 @@
 <head>
     <title>主页</title>
     <script type="text/javascript">  
+    var role = 1;
+    var number = 5;
+    var coins = ["BTCUSDT","ETHUSDT","BCHUSDT","LTCUSDT","EOSUSDT","ETCUSDT","XRPUSDT","TRXUSDT","LINKUSDT"];
+    
+    $(document).ready(function(){
+    	role = ${role};
+    	if(role == 0) {
+    		$('#followDiv').css('display','none'); 
+    	}
+    	var str = "";
+    	var seq = 0;
+		for (x in coins) {
+			if(seq % number == 0) {
+				str += "<tr>";
+			}
+			if(seq == 0) {
+				str += "<td><font id=\"c" + coins[x] + "\" name=\"c" + coins[x] + "\" color=\"green\"><input type=\"radio\" name=\"symbol\" value=\"" + coins[x] + "\" checked>" + coins[x] + "</font></td>" 
+					+ "<td><input type=\"text\" id=\"" + coins[x] + "\" name=\"" + coins[x] + "\" readonly=\"readonly\"></td>";
+			} else {
+				str += "<td><font id=\"c" + coins[x] + "\" name=\"c" + coins[x] + "\" color=\"green\"><input type=\"radio\" name=\"symbol\" value=\"" + coins[x] + "\">" + coins[x] + "</font></td>" 
+				+ "<td><input type=\"text\" id=\"" + coins[x] + "\" name=\"" + coins[x] + "\" readonly=\"readonly\"></td>";
+			}
+			seq += 1;
+			if(seq % number == 0) {
+				str += "</tr>";
+			}
+		}
+		$("#showList").html(str); 	
+    });
 
     window.setInterval(getPrice, 5000); 
     
@@ -255,8 +284,11 @@
     	balance();
     	positionRisk();
     	findAllOrders();
-    	fllowPlans();
+    	if(role > 0) {
+    		fllowPlans();    		
+    	}
     	findAllPlans();
+    	historyOrders();
     	setTimeout(function (){
     		$("#showAllSubmit").removeAttr("disabled");
         }, 10000);    	 
@@ -275,13 +307,10 @@
             	} else {
             		var jsonObject= jQuery.parseJSON(data);  
             		if(jsonObject.status == 'ok') {
-	            		var prices = JSON.parse(jsonObject.msg);
-	            		var str = "<tr>";
+ 	            		var prices = JSON.parse(jsonObject.msg);
 	            		for (x in prices) {
-	            			str += "<td>" + x + "：" + prices[x] + "</td>";
+	            			$("#" + x).attr("value", prices[x]);
 	            		}
-	            		str += "</tr>";
-            			$("#showList").html(str);
             		}
             	}
             },
@@ -400,12 +429,15 @@
 			            			"</tr>";
 		            		}
 		            		for (i in list) {
-		            			str += "<tr>" + 
-			            			"<td>" + list[i].asset + "</td>" + 
-			            			"<td>" + list[i].balance + "</td>" + 
-			            			"<td>" + list[i].withdrawAvailable + "</td>" + 
-			            			"<td>" + getFormatDateByLong(list[i].updateTime) + "</td>" + 
-			            			"</tr>";
+		            			if(list[i].asset == "USDT") {
+			            			str += "<tr>" + 
+				            			"<td>" + list[i].asset + "</td>" + 
+				            			"<td>" + list[i].balance + "</td>" + 
+				            			"<td>" + list[i].withdrawAvailable + "</td>" + 
+				            			"<td>" + getFormatDateByLong(list[i].updateTime) + "</td>" + 
+				            			"</tr>";
+		            			}
+
 		            		}	
 	            			$("#balanceList").html(str);
 	            		} else {
@@ -456,32 +488,34 @@
 			            			"</tr>";
 		            		}
 		            		for (i in list) {
-		            			var edit = "";
-		            		   	if(list[i].positionAmt < 0) {
-		            		   		edit = "<input type=\"type\" value=" + Math.abs(list[i].positionAmt) + " id=\"position" + list[i].symbol + "\" name=\"position" + list[i].symbol + "\")\" size=5/>" 
-		            		   			+ "&nbsp&nbsp<input type=\"button\" value=\"平仓\" id=\"market" + list[i].symbol + "\" name=\"market" + list[i].symbol + "\" onclick =\"tradeMarket2('BUY', '" + list[i].symbol + "')\"/>"
-		            		   			+ "<input type=\"type\" value=50 id=\"prate" + list[i].symbol + "\" name=\"prate" + list[i].symbol + "\")\" size=5/>%" 
-		            		   			+ "<input type=\"button\" value=\"止盈\" id=\"profit" + list[i].symbol + "\" name=\"profit" + list[i].symbol + "\" onclick =\"tradeMarket3('BUY', 'TAKE_PROFIT_MARKET', '" + list[i].symbol + "', '" + list[i].entryPrice + "', '" + list[i].leverage + "')\"/>"
-		            		   			+ "<input type=\"type\" value=50 id=\"lrate" + list[i].symbol + "\" name=\"lrate" + list[i].symbol + "\")\" size=5/>%" 
-		            		   			+ "<input type=\"button\" value=\"止损\" id=\"loss" + list[i].symbol + "\" name=\"loss" + list[i].symbol + "\" onclick =\"tradeMarket4('BUY', 'STOP_MARKET', '" + list[i].symbol + "', '" + list[i].entryPrice + "', '" + list[i].leverage + "')\"/>"            		   			
-		            		    } else if(list[i].positionAmt > 0) {
-		            		    	edit = "<input type=\"type\" value=" + Math.abs(list[i].positionAmt) + " id=\"position" + list[i].symbol + "\" name=\"position" + list[i].symbol + "\")\" size=5/>" 
-		            		    		+ "<input type=\"button\" value=\"平仓\" id=\"market" + list[i].symbol + "\" name=\"market" + list[i].symbol + "\" onclick =\"tradeMarket2('SELL', '" + list[i].symbol + "')\"/>"
-		            		   			+ "&nbsp&nbsp<input type=\"type\" value=50 id=\"prate" + list[i].symbol + "\" name=\"prate" + list[i].symbol + "\")\" size=5/>%" 
-		            		   			+ "<input type=\"button\" value=\"止盈\" id=\"profit" + list[i].symbol + "\" name=\"profit" + list[i].symbol + "\" onclick =\"tradeMarket3('SELL', 'TAKE_PROFIT_MARKET', '" + list[i].symbol + "', '" + list[i].entryPrice + "', '" + list[i].leverage + "')\"/>"
-		            		   			+ "&nbsp&nbsp<input type=\"type\" value=50 id=\"lrate" + list[i].symbol + "\" name=\"lrate" + list[i].symbol + "\")\" size=5/>%" 
-		            		   			+ "<input type=\"button\" value=\"止损\" id=\"loss" + list[i].symbol + "\" name=\"loss" + list[i].symbol + "\" onclick =\"tradeMarket4('SELL', 'STOP_MARKET', '" + list[i].symbol + "', '" + list[i].entryPrice + "', '" + list[i].leverage + "')\"/>"
-		            		    }
-		            			str += "<tr>" + 
-			            			"<td>" + list[i].symbol + "</td>" + 
-			            			"<td>" + list[i].positionAmt + "</td>" + 
-			            			"<td>" + list[i].entryPrice + "</td>" + 
-			            			"<td>" + list[i].markPrice + "</td>" + 
-			            			"<td>" + list[i].unRealizedProfit + "</td>" + 
-			            			"<td>" + list[i].liquidationPrice + "</td>" +
-			            			"<td>" + list[i].leverage + "</td>" +
-			            			"<td>" + edit + "</td>" + 
-			            			"</tr>";
+		            			if(parseFloat(list[i].positionAmt) > 0) {
+			            			var edit = "";
+			            		   	if(list[i].positionAmt < 0) {
+			            		   		edit = "<input type=\"type\" value=" + Math.abs(list[i].positionAmt) + " id=\"position" + list[i].symbol + "\" name=\"position" + list[i].symbol + "\")\" size=5/>" 
+			            		   			+ "&nbsp&nbsp<input type=\"button\" value=\"平仓\" id=\"market" + list[i].symbol + "\" name=\"market" + list[i].symbol + "\" onclick =\"tradeMarket2('BUY', '" + list[i].symbol + "')\"/>"
+			            		   			+ "<input type=\"type\" value=50 id=\"prate" + list[i].symbol + "\" name=\"prate" + list[i].symbol + "\")\" size=5/>%" 
+			            		   			+ "<input type=\"button\" value=\"止盈\" id=\"profit" + list[i].symbol + "\" name=\"profit" + list[i].symbol + "\" onclick =\"tradeMarket3('BUY', 'TAKE_PROFIT_MARKET', '" + list[i].symbol + "', '" + list[i].entryPrice + "', '" + list[i].leverage + "')\"/>"
+			            		   			+ "<input type=\"type\" value=50 id=\"lrate" + list[i].symbol + "\" name=\"lrate" + list[i].symbol + "\")\" size=5/>%" 
+			            		   			+ "<input type=\"button\" value=\"止损\" id=\"loss" + list[i].symbol + "\" name=\"loss" + list[i].symbol + "\" onclick =\"tradeMarket4('BUY', 'STOP_MARKET', '" + list[i].symbol + "', '" + list[i].entryPrice + "', '" + list[i].leverage + "')\"/>"            		   			
+			            		    } else if(list[i].positionAmt > 0) {
+			            		    	edit = "<input type=\"type\" value=" + Math.abs(list[i].positionAmt) + " id=\"position" + list[i].symbol + "\" name=\"position" + list[i].symbol + "\")\" size=5/>" 
+			            		    		+ "<input type=\"button\" value=\"平仓\" id=\"market" + list[i].symbol + "\" name=\"market" + list[i].symbol + "\" onclick =\"tradeMarket2('SELL', '" + list[i].symbol + "')\"/>"
+			            		   			+ "&nbsp&nbsp<input type=\"type\" value=50 id=\"prate" + list[i].symbol + "\" name=\"prate" + list[i].symbol + "\")\" size=5/>%" 
+			            		   			+ "<input type=\"button\" value=\"止盈\" id=\"profit" + list[i].symbol + "\" name=\"profit" + list[i].symbol + "\" onclick =\"tradeMarket3('SELL', 'TAKE_PROFIT_MARKET', '" + list[i].symbol + "', '" + list[i].entryPrice + "', '" + list[i].leverage + "')\"/>"
+			            		   			+ "&nbsp&nbsp<input type=\"type\" value=50 id=\"lrate" + list[i].symbol + "\" name=\"lrate" + list[i].symbol + "\")\" size=5/>%" 
+			            		   			+ "<input type=\"button\" value=\"止损\" id=\"loss" + list[i].symbol + "\" name=\"loss" + list[i].symbol + "\" onclick =\"tradeMarket4('SELL', 'STOP_MARKET', '" + list[i].symbol + "', '" + list[i].entryPrice + "', '" + list[i].leverage + "')\"/>"
+			            		    }
+			            			str += "<tr>" + 
+				            			"<td>" + list[i].symbol + "</td>" + 
+				            			"<td>" + list[i].positionAmt + "</td>" + 
+				            			"<td>" + list[i].entryPrice + "</td>" + 
+				            			"<td>" + list[i].markPrice + "</td>" + 
+				            			"<td>" + list[i].unRealizedProfit + "</td>" + 
+				            			"<td>" + list[i].liquidationPrice + "</td>" +
+				            			"<td>" + list[i].leverage + "</td>" +
+				            			"<td>" + edit + "</td>" + 
+				            			"</tr>";
+		            			}
 		            		}
 	            			$("#positionRiskList").html(str);
 	            		} else {
@@ -573,7 +607,7 @@
 	    }
 	    
 	    function tradeMarket1(side, seq) { 
-	    	if(!confirm($('input[name="symbol1"]:checked').val() + "：是否" + translateSide(side))) {
+	    	if(!confirm($('input[name="symbol"]:checked').val() + "：是否" + translateSide(side))) {
 	    		return;
 	    	}
 	     	$("#message").html('');
@@ -582,7 +616,7 @@
 	        $.ajax({  
 	            type : "get",
 	            url : "/Account/tradeMarket",
-	            data : "symbol=" + $('input[name="symbol1"]:checked').val() + "&side=" + side,
+	            data : "symbol=" + $('input[name="symbol"]:checked').val() + "&side=" + side,
 
 	            //成功
 	            success : function(data) {
@@ -766,7 +800,7 @@
 	    }	
 	    
 	    function tradePlan(){  
-	    	if(!confirm($('input[name="symbol2"]:checked').val() + "：是否开单")) {
+	    	if(!confirm($('input[name="symbol"]:checked').val() + "：是否开单")) {
 	    		return;
 	    	}	    	
 	    	$("#message").html('');
@@ -796,7 +830,7 @@
 		            data : "first=" + $("#first").val() + "&second=" + $("#second").val() + "&third=" + $("#third").val() + "&stop=" + $("#stop").val() 
 		            	+ "&compare=" + +$('input[name="compare"]:checked').val() + "&trigger=" + $("#trigger").val() 
 		            	+ "&compare1=" + +$('input[name="compare1"]:checked').val() + "&trigger1=" + $("#trigger1").val() 
-		            	+ "&symbol="+$('input[name="symbol2"]:checked').val(),
+		            	+ "&symbol="+$('input[name="symbol"]:checked').val(),
 
 		            //成功
 		            success : function(data) {
@@ -808,7 +842,7 @@
 		            			$("#message").html(jsonObject.msg);
 		            		} else {
 		            			findAllPlans();
-		            			$("#message").html($('input[name="symbol2"]:checked').val() + "的计划单已提交");	 
+		            			$("#message").html($('input[name="symbol"]:checked').val() + "的计划单已提交");	 
 		            		}
 		            	}
 		            },
@@ -866,11 +900,16 @@
 		            		}
 		            		for (x in list) {
 		            			i = list.length - x - 1;
-		            			var edit = "<input type=\"button\" id=\"warn" + list[i].id + "\" name=\"warn" + list[i].id + "\" value=\"止盈提醒\" onclick =\"warn(" + list[i].id + ")\"/>" 
-		            				+ "&nbsp&nbsp<select id=\"swarn" + list[i].id + "\" name=\"swarn" + list[i].id + "\"><option value =\"4\">失效</option><option value =\"5\">盈利</option><option value=\"6\">亏损</option></select>"
+		            			var edit = '';
+		            			if(role == 0) {
+		            				edit = "<input type=\"button\" id=\"warn" + list[i].id + "\" name=\"warn" + list[i].id + "\" value=\"止盈提醒\" onclick =\"warn(" + list[i].id + ")\"/>" 
+		            			}
+		            			edit += "&nbsp&nbsp<select id=\"swarn" + list[i].id + "\" name=\"swarn" + list[i].id + "\"><option value =\"4\">失效</option><option value =\"5\">盈利</option><option value=\"6\">亏损</option></select>"
 		            				+ "<input type=\"button\" id=\"cplan" + list[i].id + "\" name=\"cplan" + list[i].id + "\" value=\"撤单\" onclick =\"cancelPlan('" + list[i].symbol + "', " + list[i].id + ", '" + list[i].orderIds + "')\"/>"
-		            				+ "&nbsp&nbsp<input type=\"button\" id=\"detail" + list[i].id + "\" name=\"detail" + list[i].id + "\" value=\"预览\" onclick =\"showDetail(" + list[i].id + ")\"/>"
-		            				+ "&nbsp&nbsp<input type=\"button\" id=\"fusers" + list[i].id + "\" name=\"fusers" + list[i].id + "\" value=\"跟单人员\" onclick =\"findUserByUid(" + list[i].id + ")\"/>";
+		            				+ "&nbsp&nbsp<input type=\"button\" id=\"detail" + list[i].id + "\" name=\"detail" + list[i].id + "\" value=\"预览\" onclick =\"showDetail(" + list[i].id + ")\"/>";
+	            				if(role == 0) {
+		            				edit += "&nbsp&nbsp<input type=\"button\" id=\"fusers" + list[i].id + "\" name=\"fusers" + list[i].id + "\" value=\"跟单人员\" onclick =\"findUserByUid(" + list[i].id + ")\"/>"; 
+		            			}
 		            			str += "<tr>" + 
 		            				"<td>" + list[i].symbol + "</td>" + 
 			            			"<td>" + list[i].first + "</td>" + 
@@ -909,7 +948,7 @@
 	    function historyOrders(){  
 	    	$("#message").html('');
 	    	$("#historyOrdersSubmit").attr("disabled","true");
-	    	$("#plansList").html("");
+	    	$("#historyList").html("");
 	        $.ajax({  
 	            type : "get",
 	            url : "/Order/historyOrders",
@@ -959,7 +998,7 @@
 			            			"<td>" + edit + "</td>" + 
 			            			"</tr>";
 		            		}
-	            			$("#plansList").html(str);
+	            			$("#historyList").html(str);
 	            		} else {
 	            			$("#message").html(jsonObject.msg);
 	            		}
@@ -1024,7 +1063,7 @@
 	        $.ajax({  
 	            type : "get",
 	            url : "/Order/fllowPlans",
-	            data : "symbol="+$('input[name="symbol2"]:checked').val(),
+	            data : "symbol="+$('input[name="symbol"]:checked').val(),
 
 	            //成功
 	            success : function(data) {
@@ -1315,25 +1354,15 @@
 <p>
 <input type="button" id="showAllSubmit" id="showAllSubmit" value="显示所有" onclick ="showAll()"/><p>
 <p>
-<table id="showList" name="showList" width="100%" cellpadding="1" cellspacing="0" border="1"></table>
-<p>
 <input type="button" id="balanceSubmit" id="balanceSubmit" value="刷新账户" onclick ="balance()"/><p>
 <table id="balanceList" name="balanceList" width="100%" cellpadding="1" cellspacing="0" border="1"></table>
 <p>
 <input type="button" id="positionRiskSubmit" id="positionRiskSubmit" value="刷新持仓" onclick ="positionRisk()"/><p>
 <table id="positionRiskList" name="positionRiskList" width="100%" cellpadding="1" cellspacing="0" border="1"></table>
 <p>
-<font color="red">类型</font>
-<input type="radio" name="symbol" value="BTCUSDT" checked>BTCUSDT
-<input type="radio" name="symbol" value="ETHUSDT">ETHUSDT
-<input type="radio" name="symbol" value="BCHUSDT">BCHUSDT
-<input type="radio" name="symbol" value="XRPUSDT">XRPUSDT
-<input type="radio" name="symbol" value="EOSUSDT">EOSUSDT
-<input type="radio" name="symbol" value="LTCUSDT">LTCUSDT
-<input type="radio" name="symbol" value="TRXUSDT">TRXUSDT
-<input type="radio" name="symbol" value="ETCUSDT">ETCUSDT
-<input type="radio" name="symbol" value="LINKUSDT">LINKUSDT
-<font color="red">&nbsp&nbsp范围</font>
+<table id="showList" name="showList" width="100%" cellpadding="1" cellspacing="0" border="1"></table>
+<p>
+<font color="red">交易所挂单</font>
 <input type="radio" name="startTime" value="3">三天内
 <input type="radio" name="startTime" value="7" checked>七天内
 &nbsp&nbsp<input type="button" id="findAllOrdersSubmit" id="findAllOrdersSubmit" value="查询订单" onclick ="findAllOrders()"/>
@@ -1341,29 +1370,11 @@
 <table id="ordersList" name="ordersList" width="100%" cellpadding="1" cellspacing="0" border="1"></table>
 <p>
 <font color="red">即时单</font>
-<input type="radio" name="symbol1" value="BTCUSDT" checked>BTCUSDT
-<input type="radio" name="symbol1" value="ETHUSDT">ETHUSDT
-<input type="radio" name="symbol1" value="BCHUSDT">BCHUSDT
-<input type="radio" name="symbol1" value="XRPUSDT">XRPUSDT
-<input type="radio" name="symbol1" value="EOSUSDT">EOSUSDT
-<input type="radio" name="symbol1" value="LTCUSDT">LTCUSDT
-<input type="radio" name="symbol1" value="TRXUSDT">TRXUSDT
-<input type="radio" name="symbol1" value="ETCUSDT">ETCUSDT
-<input type="radio" name="symbol1" value="LINKUSDT">LINKUSDT
 &nbsp&nbsp<input type="button" value="开多" id="market1" name="market1" onclick ="tradeMarket1('BUY', 1)"/>
 &nbsp&nbsp<input type="button" value="开空" id="market2" name="market2" onclick ="tradeMarket1('SELL', 2)"/>
 <p>
 <p>
 <font color="red">计划单</font>
-<input type="radio" name="symbol2" value="BTCUSDT" checked>BTCUSDT
-<input type="radio" name="symbol2" value="ETHUSDT">ETHUSDT
-<input type="radio" name="symbol2" value="BCHUSDT">BCHUSDT
-<input type="radio" name="symbol2" value="XRPUSDT">XRPUSDT
-<input type="radio" name="symbol2" value="EOSUSDT">EOSUSDT
-<input type="radio" name="symbol2" value="LTCUSDT">LTCUSDT
-<input type="radio" name="symbol2" value="TRXUSDT">TRXUSDT
-<input type="radio" name="symbol2" value="ETCUSDT">ETCUSDT
-<input type="radio" name="symbol2" value="LINKUSDT">LINKUSDT
 &nbsp&nbsp<input type="button" value="开单" id="plan" name="plan" onclick ="tradePlan()"/>
 <table id="positionRiskList" name="positionRiskList" width="100%" cellpadding="1" cellspacing="0" border="1">
 <tr>
@@ -1420,18 +1431,23 @@
 </tr>
 </table>
 <p>
+<font color="red">预览详情</font>
+<table id="detailList" name="detailList" width="100%" cellpadding="1" cellspacing="0" border="1"></table>
+<p>
+<div id="followDiv">
 <input type="button" id="fllowSubmit" id="fllowSubmit" value="跟随计划单" onclick ="fllowPlans()"/>
 <table id="followList" name="followList" width="100%" cellpadding="1" cellspacing="0" border="1"></table>
 <p>
-<table id="detailList" name="detailList" width="100%" cellpadding="1" cellspacing="0" border="1"></table>
-<p>
+</div>
 <input type="button" id="findAllPlansSubmit" id="findAllPlansSubmit" value="我的计划单" onclick ="findAllPlans()"/>
-&nbsp&nbsp<font color="red">范围</font>
+<table id="plansList" name="plansList" width="100%" cellpadding="1" cellspacing="0" border="1"></table>
+<p>
+<font color="red">历史计划单</font>
 <input type="radio" name="startTime1" value="1" checked>一个月
 <input type="radio" name="startTime1" value="3">三个月
 <input type="radio" name="startTime1" value="6">六个月
-&nbsp&nbsp<input type="button" id="historyOrdersSubmit" id="historyOrdersSubmit" value="历史计划单" onclick ="historyOrders()"/>
-<table id="plansList" name="plansList" width="100%" cellpadding="1" cellspacing="0" border="1"></table>
+&nbsp&nbsp<input type="button" id="historyOrdersSubmit" id="historyOrdersSubmit" value="查询历史单" onclick ="historyOrders()"/>
+<table id="historyList" name="historyList" width="100%" cellpadding="1" cellspacing="0" border="1"></table>
 <p>
 <a href="${pageContext.request.contextPath}/User/index">用户页面</a>
 <a href="${pageContext.request.contextPath}/Config/index">配置页面</a>

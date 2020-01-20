@@ -24,7 +24,9 @@ public class UserController {
     private UserService userService;
 
     @RequestMapping("/index")
-    public String index() {
+    public String index(Model model, HttpSession session) {
+    	User user = (User) session.getAttribute("USER_SESSION");
+    	model.addAttribute("role", user.getRole());
         return "user";
     }
 
@@ -36,6 +38,7 @@ public class UserController {
         	session.setMaxInactiveInterval(-1);
             session.setAttribute("USER_SESSION", user);
             if(StringUtils.isNotEmpty(user.getApiKey()) && StringUtils.isNotEmpty(user.getSecretKey())) {
+            	model.addAttribute("role", user.getRole());
             	return "account";            	
             } else {
             	return "user";
