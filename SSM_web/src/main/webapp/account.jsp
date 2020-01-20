@@ -21,7 +21,7 @@
 			}
 			if(seq == 0) {
 				str += "<td><input type=\"radio\" name=\"symbol\" value=\"" + coins[x] + "\" checked>" + coins[x] + "</td>" 
-				+ "<td><span id=\"" + coins[x] + "\" name=\"" + coins[x] + "\"></span></td>";
+				+ "<td><span id=\"" + coins[x] + "\" name=\"" + coins[x] + "\" style=\"color:red;font-weight:bold;\"></span></td>";
 			} else {
 				str += "<td><input type=\"radio\" name=\"symbol\" value=\"" + coins[x] + "\">" + coins[x] + "</td>" 
 				+ "<td><span id=\"" + coins[x] + "\" name=\"" + coins[x] + "\"></span></td>";
@@ -912,7 +912,7 @@
 		            			}
 		            			edit += "&nbsp&nbsp<select id=\"swarn" + list[i].id + "\" name=\"swarn" + list[i].id + "\"><option value =\"4\">失效</option><option value =\"5\">盈利</option><option value=\"6\">亏损</option></select>"
 		            				+ "<input type=\"button\" id=\"cplan" + list[i].id + "\" name=\"cplan" + list[i].id + "\" value=\"撤单\" onclick =\"cancelPlan('" + list[i].symbol + "', " + list[i].id + ", '" + list[i].orderIds + "')\"/>"
-		            				+ "&nbsp&nbsp<input type=\"button\" id=\"detail" + list[i].id + "\" name=\"detail" + list[i].id + "\" value=\"预览\" onclick =\"showDetail(" + list[i].id + ")\"/>";
+		            				+ "&nbsp&nbsp<input type=\"button\" id=\"detail" + list[i].id + "\" name=\"detail" + list[i].id + "\" value=\"预览\" onclick =\"showDetail(" + list[i].id + ", '" + list[i].symbol + "')\"/>";
 	            				if(role == 0) {
 		            				edit += "&nbsp&nbsp<input type=\"button\" id=\"fusers" + list[i].id + "\" name=\"fusers" + list[i].id + "\" value=\"跟单人员\" onclick =\"findUserByUid(" + list[i].id + ")\"/>"; 
 		            			}
@@ -987,7 +987,7 @@
 		            		for (x in list) {
 		            			i = list.length - x - 1;
 		            			var edit = "<input type=\"button\" id=\"rplan" + list[i].id + "\" name=\"rplan" + list[i].id + "\" value=\"再次下单\" onclick =\"repeat(" + list[i].id + ")\"/>"
-		            				+ "&nbsp&nbsp<input type=\"button\" id=\"detail" + list[i].id + "\" name=\"detail" + list[i].id + "\" value=\"预览\" onclick =\"showDetail(" + list[i].id + ")\"/>"		            			
+		            				+ "&nbsp&nbsp<input type=\"button\" id=\"detail" + list[i].id + "\" name=\"detail" + list[i].id + "\" value=\"预览\" onclick =\"showDetail(" + list[i].id + ", '" + list[i].symbol + "')\"/>"		            			
 		            				+ "&nbsp&nbsp<input type=\"button\" id=\"fusers" + list[i].id + "\" name=\"fusers" + list[i].id + "\" value=\"跟单人员\" onclick =\"findUserByUid(" + list[i].id + ")\"/>";
 		            			str += "<tr>" + 
 		            				"<td>" + list[i].symbol + "</td>" + 
@@ -1098,7 +1098,7 @@
 		            		for (x in list) {
 		            			i = list.length - x - 1;
 		            			var edit = "<input type=\"button\" id=\"fplan" + list[i].id + "\" name=\"fplan" + list[i].id + "\" value=\"跟单\" onclick =\"follow(" + list[i].id + ")\"/>"
-		            				+ "&nbsp&nbsp<input type=\"button\" id=\"detail" + list[i].id + "\" name=\"detail" + list[i].id + "\" value=\"预览\" onclick =\"showDetail(" + list[i].id + ")\"/>"
+		            				+ "&nbsp&nbsp<input type=\"button\" id=\"detail" + list[i].id + "\" name=\"detail" + list[i].id + "\" value=\"预览\" onclick =\"showDetail(" + list[i].id + ", '" + list[i].symbol + "')\"/>"
 			            			+ "&nbsp&nbsp<input type=\"button\" id=\"fusers" + list[i].id + "\" name=\"fusers" + list[i].id + "\" value=\"跟单人员\" onclick =\"findUserByUid(" + list[i].id + ")\"/>";
 		            			str += "<tr>" + 
 		            				"<td>" + list[i].symbol + "</td>" + 
@@ -1286,7 +1286,7 @@
 	        });  
 	    }		    
    
-	    function showDetail(id){  
+	    function showDetail(id, symbol){  
 	    	$("#message").html('');
 	    	$("#detail"+id).attr("disabled","true");
 	    	$("#detailList").html("");
@@ -1304,6 +1304,7 @@
 	            		if(jsonObject.status == 'ok') {
 	            			var detail = JSON.parse(jsonObject.msg);
 	            			var str = "<tr>" + 
+	            				"<td><b>类型</b></td>" +	            			
 		            			"<td><b>一档点位</b></td>" + 
 		            			"<td><b>一档数量</b></td>" + 
 		            			"<td><b>二档点位</b></td>" + 
@@ -1319,6 +1320,7 @@
 		            			"<td><b>预计亏损</b></td>" + 
 		            			"</tr>";	 
 		            		str += "<tr>" + 
+		            			"<td>" + symbol + "</td>" + 
 		            			"<td>" + detail.fisrt + "</td>" + 
 		            			"<td>" + detail.quantity + "</td>" + 
 		            			"<td>" + detail.second + "</td>" + 
@@ -1366,6 +1368,7 @@
 <input type="button" id="positionRiskSubmit" id="positionRiskSubmit" value="刷新持仓" onclick ="positionRisk()"/><p>
 <table id="positionRiskList" name="positionRiskList" width="100%" cellpadding="1" cellspacing="0" border="1"></table>
 <p>
+<font color="red">合约类型</font>
 <table id="showList" name="showList" width="100%" cellpadding="1" cellspacing="0" border="1"></table>
 <p>
 <font color="red">交易所挂单</font>
@@ -1379,7 +1382,7 @@
 &nbsp&nbsp<input type="button" value="开多" id="market1" name="market1" onclick ="tradeMarket1('BUY', 1)"/>
 &nbsp&nbsp<input type="button" value="开空" id="market2" name="market2" onclick ="tradeMarket1('SELL', 2)"/>
 <p>
-<p>
+<hr>
 <font color="red">计划单</font>
 &nbsp&nbsp<input type="button" value="开单" id="plan" name="plan" onclick ="tradePlan()"/>
 <table id="positionRiskList" name="positionRiskList" width="100%" cellpadding="1" cellspacing="0" border="1">
