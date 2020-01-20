@@ -15,6 +15,6 @@
     </update> 
     <select id="findUserByUid" parameterType="Integer"
             resultType="cn.itcast.pojo.User">
-        SELECT u.* FROM USER u, plan p WHERE p.`uid` = u.id AND p.pid = #{uid};
+        SELECT DISTINCT p.`state` as username, u.`nickname` FROM USER u, plan p WHERE p.`uid` = u.id AND p.pid = #{uid};
     </select>      
 </mapper>

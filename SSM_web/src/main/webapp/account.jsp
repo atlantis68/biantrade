@@ -994,7 +994,7 @@
 	            			var list = JSON.parse(jsonObject.msg);
 	            			var users = '';
 		            		for (x in list) {
-		            			users += list[x].nickname + "（" + list[x].username + "),";
+		            			users += list[x].nickname + "（" + translateState(parseInt(list[x].username)) + "),";
 		            		}
 	            			$("#message").html(users);
 	            		} else {
@@ -1051,6 +1051,7 @@
 		            		for (x in list) {
 		            			i = list.length - x - 1;
 		            			var edit = "<input type=\"button\" id=\"fplan" + list[i].id + "\" name=\"fplan" + list[i].id + "\" value=\"跟单\" onclick =\"follow(" + list[i].id + ")\"/>"
+		            				+ "&nbsp&nbsp<input type=\"button\" id=\"detail" + list[i].id + "\" name=\"detail" + list[i].id + "\" value=\"预览\" onclick =\"showDetail(" + list[i].id + ")\"/>"
 			            			+ "&nbsp&nbsp<input type=\"button\" id=\"fusers" + list[i].id + "\" name=\"fusers" + list[i].id + "\" value=\"跟单人员\" onclick =\"findUserByUid(" + list[i].id + ")\"/>";
 		            			str += "<tr>" + 
 		            				"<td>" + list[i].symbol + "</td>" + 
@@ -1238,6 +1239,71 @@
 	        });  
 	    }		    
    
+	    function showDetail(id){  
+	    	$("#message").html('');
+	    	$("#detail"+id).attr("disabled","true");
+	    	$("#detailList").html("");
+	        $.ajax({  
+	            type : "get",
+	            url : "/Order/predict",
+	            data : "id="+id,
+
+	            //成功
+	            success : function(data) {
+	            	if(data.indexOf("登录") > -1) {
+	            		window.location.href='User/logout';
+	            	} else {
+	            		var jsonObject= jQuery.parseJSON(data);
+	            		if(jsonObject.status == 'ok') {
+	            			var detail = JSON.parse(jsonObject.msg);
+	            			var str = "<tr>" + 
+		            			"<td><b>一档点位</b></td>" + 
+		            			"<td><b>一档数量</b></td>" + 
+		            			"<td><b>二档点位</b></td>" + 
+		            			"<td><b>二档数量</b></td>" + 
+		            			"<td><b>三档点位</b></td>" + 
+		            			"<td><b>三档数量</b></td>" + 
+		            			"<td><b>止损档</b></td>" + 
+		            			"<td><b>开单均价</b></td>" + 
+		            			"<td><b>开单总数</b></td>" + 			            			
+		            			"<td><b>杠杆</b></td>" + 
+		            			"<td><b>保证金</b></td>" + 
+		            			"<td><b>止损比例</b></td>" + 
+		            			"<td><b>预计亏损</b></td>" + 
+		            			"</tr>";	 
+		            		str += "<tr>" + 
+		            			"<td>" + detail.fisrt + "</td>" + 
+		            			"<td>" + detail.quantity + "</td>" + 
+		            			"<td>" + detail.second + "</td>" + 
+		            			"<td>" + detail.quantity + "</td>" + 
+		            			"<td>" + detail.third + "</td>" + 
+		            			"<td>" + detail.quantity + "</td>" + 
+		            			"<td>" + detail.stop + "</td>" + 
+		            			"<td>" + detail.avg + "</td>" + 
+		            			"<td>" + detail.quantity * 3 + "</td>" + 			            			
+		            			"<td>" + detail.lever + "</td>" + 
+		            			"<td>" + detail.margin + "</td>" + 
+		            			"<td>" + detail.lossrate + "</td>" + 
+		            			"<td>" + detail.losspredict + "</td>" + 
+		            			"</tr>";	
+	            			$("#detailList").html(str);
+	            		} else {
+							$("#message").html(jsonObject.msg);	            			
+	            		}
+	            	}
+	            },
+
+	            //错误情况
+	            error : function(error) {
+	                console.log("error : " + error);
+	            },
+
+	            //请求完成后回调函数 (请求成功或失败之后均调用)。
+	            complete: function(message) {
+	            	$("#detail"+id).removeAttr("disabled");
+	            } 
+	        });  
+	    }	
     </script>
 </head>
 <font color="red">
@@ -1264,8 +1330,8 @@
 <input type="radio" name="symbol" value="LTCUSDT">LTCUSDT
 <input type="radio" name="symbol" value="TRXUSDT">TRXUSDT
 <input type="radio" name="symbol" value="ETCUSDT">ETCUSDT
+<input type="radio" name="symbol" value="LINKUSDT">LINKUSDT
 <font color="red">&nbsp&nbsp范围</font>
-<input type="radio" name="startTime" value="1">一天内
 <input type="radio" name="startTime" value="3">三天内
 <input type="radio" name="startTime" value="7" checked>七天内
 &nbsp&nbsp<input type="button" id="findAllOrdersSubmit" id="findAllOrdersSubmit" value="查询订单" onclick ="findAllOrders()"/>
@@ -1281,6 +1347,7 @@
 <input type="radio" name="symbol1" value="LTCUSDT">LTCUSDT
 <input type="radio" name="symbol1" value="TRXUSDT">TRXUSDT
 <input type="radio" name="symbol1" value="ETCUSDT">ETCUSDT
+<input type="radio" name="symbol1" value="LINKUSDT">LINKUSDT
 &nbsp&nbsp<input type="button" value="开多" id="market1" name="market1" onclick ="tradeMarket1('BUY', 1)"/>
 &nbsp&nbsp<input type="button" value="开空" id="market2" name="market2" onclick ="tradeMarket1('SELL', 2)"/>
 <p>
@@ -1294,6 +1361,7 @@
 <input type="radio" name="symbol2" value="LTCUSDT">LTCUSDT
 <input type="radio" name="symbol2" value="TRXUSDT">TRXUSDT
 <input type="radio" name="symbol2" value="ETCUSDT">ETCUSDT
+<input type="radio" name="symbol2" value="LINKUSDT">LINKUSDT
 &nbsp&nbsp<input type="button" value="开单" id="plan" name="plan" onclick ="tradePlan()"/>
 <table id="positionRiskList" name="positionRiskList" width="100%" cellpadding="1" cellspacing="0" border="1">
 <tr>
@@ -1352,6 +1420,8 @@
 <p>
 <input type="button" id="fllowSubmit" id="fllowSubmit" value="跟随计划单" onclick ="fllowPlans()"/>
 <table id="followList" name="followList" width="100%" cellpadding="1" cellspacing="0" border="1"></table>
+<p>
+<table id="detailList" name="detailList" width="100%" cellpadding="1" cellspacing="0" border="1"></table>
 <p>
 <input type="button" id="findAllPlansSubmit" id="findAllPlansSubmit" value="我的计划单" onclick ="findAllPlans()"/>
 &nbsp&nbsp<font color="red">范围</font>

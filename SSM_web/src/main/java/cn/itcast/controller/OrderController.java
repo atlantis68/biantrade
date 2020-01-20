@@ -18,6 +18,7 @@ import com.alibaba.fastjson.JSONObject;
 import cn.itcast.back.CancelPlanTask;
 import cn.itcast.back.FollowPlanTask;
 import cn.itcast.back.ThreadPool;
+import cn.itcast.model.Result;
 import cn.itcast.pojo.Config;
 import cn.itcast.pojo.Plan;
 import cn.itcast.pojo.User;
@@ -262,4 +263,37 @@ public class OrderController {
 		
     }
     
+    @RequestMapping(value = "/predict")
+    @ResponseBody
+    public String predict(Integer id, HttpSession session) {
+    	JSONObject result = new JSONObject();
+    	try {
+    		//获取配置项
+    		User user = (User) session.getAttribute("USER_SESSION");
+    		Plan plan = orderService.findPlanById(id);
+    		if(plan != null) {
+    			Result temp = orderService.generateAndDealOrder(plan.getSymbol(), plan.getFirst().toString(), plan.getSecond().toString(), 
+    					plan.getThird().toString(), plan.getStop().toString(), plan.getTrigger().toString(), plan.getCompare(), 
+    					plan.getTrigger1().toString(), plan.getCompare1(), user.getId(), user.getApiKey(), user.getSecretKey(), 
+    					null, ToolsUtils.getCurPriceByKey(plan.getSymbol()), true);
+    			if(temp.getState() == -1) {
+        			result.put("status", "ok");
+        			result.put("msg", temp.getMsg());  
+    			} else {
+        			result.put("status", "error");
+        			result.put("msg", "show detail failed");  	
+    			}
+    		} else {
+    			result.put("status", "error");
+    			result.put("msg", "show detail failed");   
+    		}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+    		result.put("status", "error");
+    		result.put("msg", e.getMessage());
+		}
+    	return result.toJSONString();
+		
+    }
 }

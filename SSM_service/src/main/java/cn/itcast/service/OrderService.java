@@ -22,8 +22,9 @@ public interface OrderService {
     
     public List<Plan> findPlanByTime(Integer time);
     
-	public Result generateAndDealOrder(String symbol, String first, String second, String third, String stop, String trigger, 
-			Integer compare, String trigger1, Integer compare1, Integer uid, String apiKey, String secretKey, List<String> orderIds, Float curPrice);
+	public Result generateAndDealOrder(String symbol, String first, String second, String third, String stop, 
+			String trigger, Integer compare, String trigger1, Integer compare1, Integer uid, String apiKey, String secretKey, 
+			List<String> orderIds, Float curPrice, boolean mock);
 			
     public String plan(String symbol, String first, String second, String third, String stop, String trigger, 
     		Integer compare, String trigger1, Integer compare1, Integer uid, String apiKey, String secretKey, Float curPrice);

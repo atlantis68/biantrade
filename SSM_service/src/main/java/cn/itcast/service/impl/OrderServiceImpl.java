@@ -85,7 +85,7 @@ public class OrderServiceImpl implements OrderService {
 		try {
 			List<String> orderIds = new ArrayList<String>();
 			Result res = generateAndDealOrder(symbol, first, second, third, stop, trigger, compare, 
-					trigger1, compare1, uid, apiKey, secretKey, orderIds, curPrice);
+					trigger1, compare1, uid, apiKey, secretKey, orderIds, curPrice, false);
 			Plan plan = new Plan();
 			plan.setUid(uid);
 			plan.setPid(0);
@@ -151,7 +151,7 @@ public class OrderServiceImpl implements OrderService {
 		try {
 			List<String> orderIds = new ArrayList<String>();
 			Result res = generateAndDealOrder(symbol, first, second, third, stop, trigger, compare, 
-					trigger1, compare1, uid, apiKey, secretKey, orderIds, curPrice);
+					trigger1, compare1, uid, apiKey, secretKey, orderIds, curPrice, false);
 			Plan plan = new Plan();
 			plan.setUid(uid);
 			plan.setPid(id);
@@ -215,8 +215,9 @@ public class OrderServiceImpl implements OrderService {
 	//2：价格设置不正确
 	//3：满足触发条件，提交币安未全部成功但是回滚成功
 	//4：满足触发条件，提交币安未全部成功，回滚也未全部成功，需要人工操作
-	public Result generateAndDealOrder(String symbol, String first, String second, String third, String stop, String trigger, 
-			Integer compare, String trigger1, Integer compare1, Integer uid, String apiKey, String secretKey, List<String> orderIds, Float curPrice) {
+	public Result generateAndDealOrder(String symbol, String first, String second, String third, String stop, 
+			String trigger, Integer compare, String trigger1, Integer compare1, Integer uid, String apiKey, String secretKey, 
+			List<String> orderIds, Float curPrice, boolean mock) {
 		int state = 1;
 		String msg = "成功";
 		int seq = 0;
@@ -315,6 +316,20 @@ public class OrderServiceImpl implements OrderService {
 						return new Result(0, "现价高于触发价");
 					}	
 				}
+			}
+			if(mock) {
+				JSONObject json = new JSONObject();
+				json.put("fisrt", ToolsUtils.formatPrice(symbol, firstPrice));
+				json.put("second", ToolsUtils.formatPrice(symbol, secondPrice));
+				json.put("third", ToolsUtils.formatPrice(symbol, thirdPrice));
+				json.put("stop", ToolsUtils.formatPrice(symbol, stopPrice));
+				json.put("avg", ToolsUtils.formatPrice(symbol, avg));
+				json.put("quantity", Float.parseFloat(quantity));
+				json.put("lever", lever);
+				json.put("margin", ToolsUtils.formatPrice(symbol, avg * Float.parseFloat(quantity) * 3 / lever));
+				json.put("lossrate", ToolsUtils.formatPrice("BTCUSDT", threshold * lever * 100) + "%");
+				json.put("losspredict", ToolsUtils.formatPrice("BTCUSDT", diff * Float.parseFloat(quantity) * 3));
+				return new Result(-1, json.toJSONString());
 			}
 			//开始执行
 			//调整杠杆

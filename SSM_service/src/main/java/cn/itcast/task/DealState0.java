@@ -52,7 +52,7 @@ public class DealState0 implements Runnable {
 	    	    				Result res = orderService.generateAndDealOrder(plan.getSymbol(), plan.getFirst().toString(), plan.getSecond().toString(), 
 	    	    						plan.getThird().toString(), plan.getStop().toString(), plan.getTrigger().toString(), plan.getCompare(), 
 	    	    						plan.getTrigger1().toString(), plan.getCompare1(), plan.getUid(), plan.getCreateTime(), plan.getUpdateTime(), 
-	    	    						orderIds, curPrice);
+	    	    						orderIds, curPrice, false);
 	    	    				String orders = "";
 	    	    				if(res.getState() == 1) {
 	    	    					for(String orderId : orderIds) {
@@ -81,7 +81,7 @@ public class DealState0 implements Runnable {
 	    	    				Result res = orderService.generateAndDealOrder(plan.getSymbol(), plan.getFirst().toString(), plan.getSecond().toString(), 
 	    	    						plan.getThird().toString(), plan.getStop().toString(), plan.getTrigger().toString(), plan.getCompare(), 
 	    	    						plan.getTrigger1().toString(), plan.getCompare1(), plan.getUid(), plan.getCreateTime(), plan.getUpdateTime(), 
-	    	    						orderIds, curPrice);
+	    	    						orderIds, curPrice, false);
 	    	    				String orders = "";
 	    	    				if(res.getState() == 1) {
 	    	    					for(String orderId : orderIds) {
