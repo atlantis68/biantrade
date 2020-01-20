@@ -573,7 +573,7 @@
 	    }
 	    
 	    function tradeMarket1(side, seq) { 
-	    	if(!confirm("是否" + translateSide(side))) {
+	    	if(!confirm($('input[name="symbol1"]:checked').val() + "：是否" + translateSide(side))) {
 	    		return;
 	    	}
 	     	$("#message").html('');
@@ -612,7 +612,7 @@
 	    }
 	    
 	    function tradeMarket2(side, symbol) { 
-	    	if(!confirm("是否" + translateSide1(side) + "平仓")) {
+	    	if(!confirm(symbol + "：是否" + translateSide1(side) + "平仓")) {
 	    		return;
 	    	}
 	     	$("#message").html('');
@@ -672,7 +672,7 @@
     		} else {
     			stopPrice = parseFloat(price) * (1 + parseFloat($("#prate" + symbol).val()) / 100 / parseFloat(rate));
     		}
-	    	if(!confirm("是否" + translateSide1(side) + "止盈，点位：" + stopPrice)) {
+	    	if(!confirm(symbol + "：是否" + translateSide1(side) + "止盈，点位：" + stopPrice)) {
 	    		return;
 	    	}
 	    	$("#profit"+symbol).attr("disabled","true");
@@ -727,7 +727,7 @@
     		} else {
     			stopPrice = parseFloat(price) * (1 + parseFloat($("#lrate" + symbol).val()) / 100 / parseFloat(rate));
     		}
-	    	if(!confirm("是否" + translateSide1(side) + "止损，点位：" + stopPrice)) {
+	    	if(!confirm(symbol + "：是否" + translateSide1(side) + "止损，点位：" + stopPrice)) {
 	    		return;
 	    	}
 	    	$("#loss"+symbol).attr("disabled","true");
@@ -766,7 +766,7 @@
 	    }	
 	    
 	    function tradePlan(){  
-	    	if(!confirm("是否开单")) {
+	    	if(!confirm($('input[name="symbol2"]:checked').val() + "：是否开单")) {
 	    		return;
 	    	}	    	
 	    	$("#message").html('');
