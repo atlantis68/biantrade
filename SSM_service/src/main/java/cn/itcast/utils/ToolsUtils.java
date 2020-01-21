@@ -79,7 +79,7 @@ public class ToolsUtils {
 	
 	public static String formatQuantity(String symbol, Float value) {
 		String result;
-		if(symbol.toUpperCase().equals("TRXUSDT")) {
+		if(symbol.toUpperCase().equals("TRXUSDT") || symbol.toUpperCase().equals("XLMUSDT")) {
 			result = "" + (value.intValue());
 		} else if(symbol.toUpperCase().equals("XRPUSDT") || symbol.toUpperCase().equals("EOSUSDT")
 				|| symbol.toUpperCase().equals("ETCUSDT") || symbol.toUpperCase().equals("LINKUSDT")) {
@@ -92,7 +92,7 @@ public class ToolsUtils {
 	
 	public static String formatPrice(String symbol, Float value) {
 		String result;
-		if(symbol.toUpperCase().equals("TRXUSDT")) {
+		if(symbol.toUpperCase().equals("TRXUSDT") || symbol.toUpperCase().equals("XLMUSDT")) {
 			result = decimalFormatFor5.format(value);
 		} else if(symbol.toUpperCase().equals("XRPUSDT")) {
 			result = decimalFormatFor4.format(value);

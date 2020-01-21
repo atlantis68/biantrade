@@ -6,7 +6,7 @@
     <script type="text/javascript">  
     var role = 1;
     var number = 5;
-    var coins = ["BTCUSDT","ETHUSDT","BCHUSDT","LTCUSDT","EOSUSDT","ETCUSDT","XRPUSDT","TRXUSDT","LINKUSDT"];
+    var coins = ["BTCUSDT","ETHUSDT","BCHUSDT","LTCUSDT","EOSUSDT","ETCUSDT","XRPUSDT","TRXUSDT","XLMUSDT","LINKUSDT"];
     
     $(document).ready(function(){
     	role = ${role};
