@@ -7,6 +7,8 @@ import cn.itcast.pojo.Config;
 public interface ConfigService {
     public Config findConfigByUid(Config config);
     
+    public List<Config> findConfigsByUid(Integer uid);
+    
     public List<Config> findConfigFlag2(Config config);
     
 	public List<Config> findConfigFlag12(Config config);

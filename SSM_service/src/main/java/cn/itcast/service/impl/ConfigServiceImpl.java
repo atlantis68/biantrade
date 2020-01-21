@@ -21,6 +21,12 @@ public class ConfigServiceImpl implements ConfigService {
 		// TODO Auto-generated method stub
 		return configMapper.findConfigByUid(config);
 	}
+	
+	@Override
+	public List<Config> findConfigsByUid(Integer uid) {
+		// TODO Auto-generated method stub
+		return configMapper.findConfigsByUid(uid);
+	}
 
 	@Override
 	public int updateConfig(Config config) {

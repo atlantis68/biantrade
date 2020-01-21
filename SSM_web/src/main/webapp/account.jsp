@@ -13,8 +13,8 @@
     	if(role == 0) {
     		$('#followDiv').css('display','none'); 
     	}
-    	var str = "";
     	var seq = 0;
+    	var str = "<tr><td colspan=\"10\" align=\"center\"><span style=\"color:red;font-weight:bold;\">实时报价</span></td></tr>";
 		for (x in coins) {
 			if(seq % number == 0) {
 				str += "<tr>";
@@ -37,6 +37,7 @@
 				$("#" + coins[x]).removeAttr("style");
 			}
 			$("#" + this.value).attr("style","color:red;font-weight:bold;");
+			$("#title").text(this.value);
 	    });
     });
 
@@ -350,21 +351,22 @@
 	            		if(jsonObject.status == 'ok') {
 		            		var list = JSON.parse(jsonObject.msg);
 		            		if(list.length > 0) {
-		            			var str = "<tr>" + 
-			            			"<td><b>订单号</b></td>" + 
-			            			"<td><b>订单状态</b></td>" + 
-			            			"<td><b>挂单价格</b></td>" + 
-			            			"<td><b>挂单数量</b></td>" + 
-			            			"<td><b>成交数量</b></td>" + 
-			            			"<td><b>成交策略</b></td>" + 
-			            			"<td><b>订单类型</b></td>" + 
-			            			"<td><b>只能减少</b></td>" + 
-			            			"<td><b>订单方向</b></td>" + 
-			            			"<td><b>触发价格</b></td>" + 
-			            			"<td><b>触发类型</b></td>" + 
-			            			"<td><b>操作时间</b></td>" + 
-			            			"<td><b>更新时间</b></td>" + 
-			            			"<td><b>操作</b></td>" + 
+		            			var str = '';
+		            			str += "<tr>" + 
+			            			"<td align=\"center\"><b>订单号</b></td>" + 
+			            			"<td align=\"center\"><b>订单状态</b></td>" + 
+			            			"<td align=\"center\"><b>挂单价格</b></td>" + 
+			            			"<td align=\"center\"><b>挂单数量</b></td>" + 
+			            			"<td align=\"center\"><b>成交数量</b></td>" + 
+			            			"<td align=\"center\"><b>成交策略</b></td>" + 
+			            			"<td align=\"center\"><b>订单类型</b></td>" + 
+			            			"<td align=\"center\"><b>只能减少</b></td>" + 
+			            			"<td align=\"center\"><b>订单方向</b></td>" + 
+			            			"<td align=\"center\"><b>触发价格</b></td>" + 
+			            			"<td align=\"center\"><b>触发类型</b></td>" + 
+			            			"<td align=\"center\"><b>操作时间</b></td>" + 
+			            			"<td align=\"center\"><b>更新时间</b></td>" + 
+			            			"<td align=\"center\"><b>操作</b></td>" + 
 			            			"</tr>";
 		            		}
 		            		for (x in list) {
@@ -427,19 +429,20 @@
 	            		if(jsonObject.status == 'ok') {
 	            			var list = JSON.parse(jsonObject.msg);
 		            		if(list.length > 0) {
-		            			var str = "<tr>" + 
-			            			"<td><b>资金类型</b></td>" + 
-			            			"<td><b>资金数量</b></td>" + 
-			            			"<td><b>可用资金</b></td>" + 
-			            			"<td><b>更新时间</b></td>" + 
+	            				var str = "<tr><td colspan=\"4\" align=\"center\"><span style=\"color:red;font-weight:bold;\">账户信息</span></td></tr>";
+		            			str += "<tr>" + 
+			            			"<td align=\"center\"><b>资金类型</b></td>" + 
+			            			"<td align=\"center\"><b>资金数量</b></td>" + 
+			            			"<td align=\"center\"><b>可用资金</b></td>" + 
+			            			"<td align=\"center\"><b>更新时间</b></td>" + 
 			            			"</tr>";
 		            		}
 		            		for (i in list) {
 		            			if(list[i].asset == "USDT") {
 			            			str += "<tr>" + 
 				            			"<td>" + list[i].asset + "</td>" + 
-				            			"<td>" + list[i].balance + "</td>" + 
-				            			"<td>" + list[i].withdrawAvailable + "</td>" + 
+				            			"<td>" + Number(list[i].balance.match(/^\d+(?:\.\d{0,4})?/)) + "</td>" + 
+				            			"<td>" + Number(list[i].withdrawAvailable.match(/^\d+(?:\.\d{0,4})?/)) + "</td>" + 
 				            			"<td>" + getFormatDateByLong(list[i].updateTime) + "</td>" + 
 				            			"</tr>";
 		            			}
@@ -482,15 +485,16 @@
 	            		if(jsonObject.status == 'ok') {
 		            		var list = JSON.parse(jsonObject.msg);
 		            		if(list.length > 0) {
-		            			var str = "<tr>" + 
-			            			"<td><b>资金类型</b></td>" + 
-			            			"<td><b>持仓</b></td>" + 
-			            			"<td><b>买入价格</b></td>" + 
-			            			"<td><b>标记价格</b></td>" + 
-			            			"<td><b>盈利</b></td>" + 		            			
-			            			"<td><b>爆仓价格</b></td>" + 
-			            			"<td><b>杠杆</b></td>" + 
-			            			"<td><b>操作</b></td>" + 
+		            			str = "<tr><td colspan=\"8\" align=\"center\"><span style=\"color:red;font-weight:bold;\">用户持仓</span></td></tr>";
+		            			str += "<tr>" + 
+			            			"<td align=\"center\"><b>资金类型</b></td>" + 
+			            			"<td align=\"center\"><b>持仓</b></td>" + 
+			            			"<td align=\"center\"><b>买入价格</b></td>" + 
+			            			"<td align=\"center\"><b>标记价格</b></td>" + 
+			            			"<td align=\"center\"><b>盈利</b></td>" + 		            			
+			            			"<td align=\"center\"><b>爆仓价格</b></td>" + 
+			            			"<td align=\"center\"><b>杠杆</b></td>" + 
+			            			"<td align=\"center\"><b>操作</b></td>" + 
 			            			"</tr>";
 		            		}
 		            		for (i in list) {
@@ -513,11 +517,11 @@
 			            		    }
 			            			str += "<tr>" + 
 				            			"<td>" + list[i].symbol + "</td>" + 
-				            			"<td>" + list[i].positionAmt + "</td>" + 
-				            			"<td>" + list[i].entryPrice + "</td>" + 
-				            			"<td>" + list[i].markPrice + "</td>" + 
-				            			"<td>" + list[i].unRealizedProfit + "</td>" + 
-				            			"<td>" + list[i].liquidationPrice + "</td>" +
+				            			"<td>" + Number(list[i].positionAmt.match(/^\d+(?:\.\d{0,4})?/)) + "</td>" + 
+				            			"<td>" + Number(list[i].entryPrice.match(/^\d+(?:\.\d{0,4})?/)) + "</td>" + 
+				            			"<td>" + Number(list[i].markPrice.match(/^\d+(?:\.\d{0,4})?/)) + "</td>" + 
+				            			"<td>" + Number(list[i].unRealizedProfit.match(/^\d+(?:\.\d{0,4})?/)) + "</td>" + 
+				            			"<td><span style=\"color:red;font-weight:bold;\">" + Number(list[i].liquidationPrice.match(/^\d+(?:\.\d{0,4})?/)) + "</span></td>" +
 				            			"<td>" + list[i].leverage + "</td>" +
 				            			"<td>" + edit + "</td>" + 
 				            			"</tr>";
@@ -888,20 +892,21 @@
 	            		if(jsonObject.status == 'ok') {
 	            			var list = JSON.parse(jsonObject.msg);
 		            		if(list.length > 0) {
-		            			var str = "<tr>" + 
-		            				"<td><b>类型</b></td>" +
-			            			"<td><b>第一档</b></td>" + 
-			            			"<td><b>第二档</b></td>" + 
-			            			"<td><b>第三档</b></td>" + 
-			            			"<td><b>止损档</b></td>" + 
-			            			"<td><b>开单触发价</b></td>" + 
-			            			"<td><b>撤单触发价</b></td>" + 	
-			            			"<td><b>状态</b></td>" + 
-			            			"<td><b>来源</b></td>" + 
-			            			"<td><b>关联订单号</b></td>" + 
-			            			"<td><b>操作时间</b></td>" + 
-			            			"<td><b>更新时间</b></td>" + 
-			            			"<td><b>操作</b></td>" + 
+		            			var str = "";
+		            			str += "<tr>" + 
+		            				"<td align=\"center\"><b>类型</b></td>" +
+			            			"<td align=\"center\"><b>第一档</b></td>" + 
+			            			"<td align=\"center\"><b>第二档</b></td>" + 
+			            			"<td align=\"center\"><b>第三档</b></td>" + 
+			            			"<td align=\"center\"><b>止损档</b></td>" + 
+			            			"<td align=\"center\"><b>开单触发价</b></td>" + 
+			            			"<td align=\"center\"><b>撤单触发价</b></td>" + 	
+			            			"<td align=\"center\"><b>状态</b></td>" + 
+			            			"<td align=\"center\"><b>来源</b></td>" + 
+			            			"<td align=\"center\"><b>关联订单号</b></td>" + 
+			            			"<td align=\"center\"><b>操作时间</b></td>" + 
+			            			"<td align=\"center\"><b>更新时间</b></td>" + 
+			            			"<td align=\"center\"><b>操作</b></td>" + 
 			            			"</tr>";
 		            		}
 		            		for (x in list) {
@@ -969,19 +974,20 @@
 	            		if(jsonObject.status == 'ok') {
 	            			var list = JSON.parse(jsonObject.msg);
 		            		if(list.length > 0) {
-		            			var str = "<tr>" + 
-		            				"<td><b>类型</b></td>" +
-			            			"<td><b>第一档</b></td>" + 
-			            			"<td><b>第二档</b></td>" + 
-			            			"<td><b>第三档</b></td>" + 
-			            			"<td><b>止损档</b></td>" + 
-			            			"<td><b>开单触发价</b></td>" + 
-			            			"<td><b>撤单触发价</b></td>" + 	
-			            			"<td><b>状态</b></td>" + 
-			            			"<td><b>来源</b></td>" + 
-			            			"<td><b>操作时间</b></td>" + 
-			            			"<td><b>更新时间</b></td>" + 
-			            			"<td><b>操作</b></td>" + 
+		            			var str = "";
+		            			str += "<tr>" + 
+		            				"<td align=\"center\"><b>类型</b></td>" +
+			            			"<td align=\"center\"><b>第一档</b></td>" + 
+			            			"<td align=\"center\"><b>第二档</b></td>" + 
+			            			"<td align=\"center\"><b>第三档</b></td>" + 
+			            			"<td align=\"center\"><b>止损档</b></td>" + 
+			            			"<td align=\"center\"><b>开单触发价</b></td>" + 
+			            			"<td align=\"center\"><b>撤单触发价</b></td>" + 	
+			            			"<td align=\"center\"><b>状态</b></td>" + 
+			            			"<td align=\"center\"><b>来源</b></td>" + 
+			            			"<td align=\"center\"><b>操作时间</b></td>" + 
+			            			"<td align=\"center\"><b>更新时间</b></td>" + 
+			            			"<td align=\"center\"><b>操作</b></td>" + 
 			            			"</tr>";
 		            		}
 		            		for (x in list) {
@@ -1080,19 +1086,20 @@
 	            		if(jsonObject.status == 'ok') {
 	            			var list = JSON.parse(jsonObject.msg);
 		            		if(list.length > 0) {
-		            			var str = "<tr>" + 
-		            				"<td><b>类型</b></td>" +
-			            			"<td><b>第一档</b></td>" + 
-			            			"<td><b>第二档</b></td>" + 
-			            			"<td><b>第三档</b></td>" + 
-			            			"<td><b>止损档</b></td>" + 
-			            			"<td><b>开单触发价</b></td>" + 
-			            			"<td><b>撤单触发价</b></td>" + 			            			
-			            			"<td><b>状态</b></td>" + 
-			            			"<td><b>来源</b></td>" + 
-			            			"<td><b>操作时间</b></td>" + 
-			            			"<td><b>更新时间</b></td>" + 
-			            			"<td><b>操作</b></td>" + 
+		            			var str = "";
+		            			str = "<tr>" + 
+		            				"<td align=\"center\"><b>类型</b></td>" +
+			            			"<td align=\"center\"><b>第一档</b></td>" + 
+			            			"<td align=\"center\"><b>第二档</b></td>" + 
+			            			"<td align=\"center\"><b>第三档</b></td>" + 
+			            			"<td align=\"center\"><b>止损档</b></td>" + 
+			            			"<td align=\"center\"><b>开单触发价</b></td>" + 
+			            			"<td align=\"center\"><b>撤单触发价</b></td>" + 			            			
+			            			"<td align=\"center\"><b>状态</b></td>" + 
+			            			"<td align=\"center\"><b>来源</b></td>" + 
+			            			"<td align=\"center\"><b>操作时间</b></td>" + 
+			            			"<td align=\"center\"><b>更新时间</b></td>" + 
+			            			"<td align=\"center\"><b>操作</b></td>" + 
 			            			"</tr>";
 		            		}
 		            		for (x in list) {
@@ -1303,21 +1310,22 @@
 	            		var jsonObject= jQuery.parseJSON(data);
 	            		if(jsonObject.status == 'ok') {
 	            			var detail = JSON.parse(jsonObject.msg);
-	            			var str = "<tr>" + 
-	            				"<td><b>类型</b></td>" +	            			
-		            			"<td><b>一档点位</b></td>" + 
-		            			"<td><b>一档数量</b></td>" + 
-		            			"<td><b>二档点位</b></td>" + 
-		            			"<td><b>二档数量</b></td>" + 
-		            			"<td><b>三档点位</b></td>" + 
-		            			"<td><b>三档数量</b></td>" + 
-		            			"<td><b>止损档</b></td>" + 
-		            			"<td><b>开单均价</b></td>" + 
-		            			"<td><b>开单总数</b></td>" + 			            			
-		            			"<td><b>杠杆</b></td>" + 
-		            			"<td><b>保证金</b></td>" + 
-		            			"<td><b>止损比例</b></td>" + 
-		            			"<td><b>预计亏损</b></td>" + 
+	            			var str = "<tr><td colspan=\"14\" align=\"center\"><span style=\"color:red;font-weight:bold;\">预览详情 </span></td></tr>";
+	            			str += "<tr>" + 
+	            				"<td align=\"center\"><b>类型</b></td>" +	            			
+		            			"<td align=\"center\"><b>一档点位</b></td>" + 
+		            			"<td align=\"center\"><b>一档数量</b></td>" + 
+		            			"<td align=\"center\"><b>二档点位</b></td>" + 
+		            			"<td align=\"center\"><b>二档数量</b></td>" + 
+		            			"<td align=\"center\"><b>三档点位</b></td>" + 
+		            			"<td align=\"center\"><b>三档数量</b></td>" + 
+		            			"<td align=\"center\"><b>止损档</b></td>" + 
+		            			"<td align=\"center\"><b>开单均价</b></td>" + 
+		            			"<td align=\"center\"><b>开单总数</b></td>" + 			            			
+		            			"<td align=\"center\"><b>杠杆</b></td>" + 
+		            			"<td align=\"center\"><b>保证金</b></td>" + 
+		            			"<td align=\"center\"><b>止损比例</b></td>" + 
+		            			"<td align=\"center\"><b>预计亏损</b></td>" + 
 		            			"</tr>";	 
 		            		str += "<tr>" + 
 		            			"<td>" + symbol + "</td>" + 
@@ -1332,8 +1340,8 @@
 		            			"<td>" + detail.quantity * 3 + "</td>" + 			            			
 		            			"<td>" + detail.lever + "</td>" + 
 		            			"<td>" + detail.margin + "</td>" + 
-		            			"<td><font color=\"red\">" + detail.lossrate + "</font></td>" + 
-		            			"<td><font color=\"red\">" + detail.losspredict + "</font></td>" + 
+		            			"<td><span style=\"color:red;font-weight:bold;\">" + detail.lossrate + "</span></td>" + 
+		            			"<td><span style=\"color:red;font-weight:bold;\">" + detail.losspredict + "</span></td>" + 
 		            			"</tr>";	
 	            			$("#detailList").html(str);
 	            		} else {
@@ -1355,35 +1363,38 @@
 	    }	
     </script>
 </head>
-<font color="red">
+<span style="color:red;font-weight:bold;">
     <%-- 提示信息--%>
     <span id="message" name="message"></span>
-</font>
+</span>
 <p>
-<input type="button" id="showAllSubmit" id="showAllSubmit" value="显示所有" onclick ="showAll()"/><p>
-<p>
-<input type="button" id="balanceSubmit" id="balanceSubmit" value="刷新账户" onclick ="balance()"/><p>
+<span style="float:right;"><input type="button" id="showAllSubmit" id="showAllSubmit" value="显示所有" onclick ="showAll()"/></span>
+<input type="button" id="balanceSubmit" id="balanceSubmit" value="刷新账户" onclick ="balance()"/>
+&nbsp&nbsp<input type="button" id="positionRiskSubmit" id="positionRiskSubmit" value="刷新持仓" onclick ="positionRisk()"/><p>
 <table id="balanceList" name="balanceList" width="100%" cellpadding="1" cellspacing="0" border="1"></table>
 <p>
-<input type="button" id="positionRiskSubmit" id="positionRiskSubmit" value="刷新持仓" onclick ="positionRisk()"/><p>
 <table id="positionRiskList" name="positionRiskList" width="100%" cellpadding="1" cellspacing="0" border="1"></table>
 <p>
-<font color="red">合约类型</font>
 <table id="showList" name="showList" width="100%" cellpadding="1" cellspacing="0" border="1"></table>
 <p>
-<font color="red">交易所挂单</font>
+<div style="width:100%">
+    <span id='title' name='title' style="font-weight:bold;font-size:25px;text-align:center;display:block;position: relative;color:red;">BTCUSDT</span>
+</div>
+<p>
+<span style="color:red;font-weight:bold;">交易所挂单</span>
 <input type="radio" name="startTime" value="3">三天内
 <input type="radio" name="startTime" value="7" checked>七天内
 &nbsp&nbsp<input type="button" id="findAllOrdersSubmit" id="findAllOrdersSubmit" value="查询订单" onclick ="findAllOrders()"/>
 &nbsp&nbsp<input type="button" id="cancelAllSubmit" id="cancelAllSubmit" value="撤销此类型全部订单" onclick ="cancelAll()"/><p>
 <table id="ordersList" name="ordersList" width="100%" cellpadding="1" cellspacing="0" border="1"></table>
 <p>
-<font color="red">即时单</font>
+<hr>
+<span style="color:red;font-weight:bold;">即时单</span>
 &nbsp&nbsp<input type="button" value="开多" id="market1" name="market1" onclick ="tradeMarket1('BUY', 1)"/>
 &nbsp&nbsp<input type="button" value="开空" id="market2" name="market2" onclick ="tradeMarket1('SELL', 2)"/>
 <p>
 <hr>
-<font color="red">计划单</font>
+<span style="color:red;font-weight:bold;">计划单</span>
 &nbsp&nbsp<input type="button" value="开单" id="plan" name="plan" onclick ="tradePlan()"/>
 <table id="positionRiskList" name="positionRiskList" width="100%" cellpadding="1" cellspacing="0" border="1">
 <tr>
@@ -1440,7 +1451,7 @@
 </tr>
 </table>
 <p>
-<font color="red">预览详情</font>
+<hr>
 <table id="detailList" name="detailList" width="100%" cellpadding="1" cellspacing="0" border="1"></table>
 <p>
 <div id="followDiv">
@@ -1451,13 +1462,13 @@
 <input type="button" id="findAllPlansSubmit" id="findAllPlansSubmit" value="我的计划单" onclick ="findAllPlans()"/>
 <table id="plansList" name="plansList" width="100%" cellpadding="1" cellspacing="0" border="1"></table>
 <p>
-<font color="red">历史计划单</font>
+<input type="button" id="historyOrdersSubmit" id="historyOrdersSubmit" value="历史计划单" onclick ="historyOrders()"/>&nbsp&nbsp
 <input type="radio" name="startTime1" value="1" checked>一个月
 <input type="radio" name="startTime1" value="3">三个月
 <input type="radio" name="startTime1" value="6">六个月
-&nbsp&nbsp<input type="button" id="historyOrdersSubmit" id="historyOrdersSubmit" value="查询历史单" onclick ="historyOrders()"/>
 <table id="historyList" name="historyList" width="100%" cellpadding="1" cellspacing="0" border="1"></table>
 <p>
+<hr>
 <a href="${pageContext.request.contextPath}/User/index">用户页面</a>
 <a href="${pageContext.request.contextPath}/Config/index">配置页面</a>
 <a href="${pageContext.request.contextPath}/User/logout">退出登录</a>

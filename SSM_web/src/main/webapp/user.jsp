@@ -6,10 +6,10 @@
     <script type="text/javascript">  
 
     window.onload = function(){
-        init();
+    	findUser();
     }
     
-	    function init(){  
+	    function findUser(){  
 	    	$("#message").html('');
 	        $.ajax({  
 	            type : "get",
@@ -89,29 +89,31 @@
     <span id="message" name="message"></span>
 </font>
 <p>
+<input type="button" id="findUserSubmit" id="findUserSubmit" value="刷新" onclick ="findUser()"/>
 <table id="config" name="config" width="100%" cellpadding="1" cellspacing="0" border="1">
 <input type="hidden" id="id" name="id">
 <tr>
-<td><b>password</b></td>
+<td align="left"><b>password（密码）</b></td>
 <td><input type="text" id="password" name="password" value="" size="50"></td>
 </tr>
 <tr>
-<td><b>apiKey</b></td>
+<td align="left"><b>apiKey（公钥）</b></td>
 <td><input type="text" id="apiKey" name="apiKey" value="" size="80"></td>
 </tr>
 <tr>
-<td><b>secretKey</b></td>
+<td align="left"><b>secretKey（私钥）</b></td>
 <td><input type="text" id="secretKey" name="secretKey" value="" size="80"></td>
 </tr>
 <tr>
-<td><b>mail</b></td>
+<td align="left"><b>mail（邮箱）</b></td>
 <td><input type="text" id="mail" name="mail" value="" size="50"></td>
 </tr>
 <tr>
-<td><input type="button" name="save" id="save" value="保存" onclick ="save()"/></td>
+<td colspan="2" align="left"><input type="button" name="save" id="save" value="保存" onclick ="save()"/></td>
 </tr>
 </table>
 <p>
+<hr>
 <a href="${pageContext.request.contextPath}/Account/index">交易页面</a>
 <a href="${pageContext.request.contextPath}/Config/index">配置页面</a>
 <a href="${pageContext.request.contextPath}/User/logout">退出登录</a>

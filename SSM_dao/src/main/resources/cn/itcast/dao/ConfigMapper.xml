@@ -6,6 +6,10 @@
             resultType="cn.itcast.pojo.Config">
         select * from config where uid= #{uid} and type=#{type}
     </select>
+    <select id="findConfigsByUid" parameterType="cn.itcast.pojo.Config"
+            resultType="cn.itcast.pojo.Config">
+        select * from config where uid= #{uid}
+    </select>    
     <select id="findConfigFlag2" parameterType="cn.itcast.pojo.Config"
             resultType="cn.itcast.pojo.Config">
         select c.uid, c.marketAmount, c.rate, `apikey` as `type`, `secretkey` as lossWorkingType from config c, user u 

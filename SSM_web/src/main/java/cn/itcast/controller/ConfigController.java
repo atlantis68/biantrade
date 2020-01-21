@@ -1,5 +1,7 @@
 package cn.itcast.controller;
 
+import java.util.List;
+
 import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
@@ -45,6 +47,24 @@ public class ConfigController {
 			Config allConfig = configService.findConfigByUid(config);
         	result.put("status", "ok");
         	result.put("msg", JSON.toJSONString(allConfig));
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+    		result.put("status", "error");
+    		result.put("msg", e.getMessage());
+		}
+    	return result.toJSONString();
+    }
+    
+    @RequestMapping("/findConfigs")
+    @ResponseBody
+    public String findConfigs(HttpSession session) {
+    	JSONObject result = new JSONObject();
+    	try {
+    		User user = (User) session.getAttribute("USER_SESSION");
+			List<Config> allConfigs = configService.findConfigsByUid(user.getId());
+        	result.put("status", "ok");
+        	result.put("msg", JSON.toJSONString(allConfigs));
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
