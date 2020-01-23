@@ -32,11 +32,11 @@
     </select>   
     <select id="findPlansByState" parameterType="String"
             resultType="cn.itcast.pojo.Plan">
-        select p.`id`, p.`uid`, p.`pid`, p.`symbol`, p.`first`, p.`second`, p.`third`, p.`stop`, p.`trigger`, p.`compare`, p.`state`, 
+        select p.`id`, p.`uid`, p.`pid`, p.`symbol`, p.`first`, p.`second`, p.`third`, p.`stop`, p.`trigger`, p.`compare`, p.`trigger1`, p.`compare1`, p.`state`, 
         	u.apikey as createTime, u.secretkey as updateTime, p.`type`, p.`orderIds` from `plan` p, user u where p.uid = u.id and state = #{state}
     </select>  
     <select id="findPlansByState1" resultType="cn.itcast.pojo.Plan">
-        select p.`id`, p.`uid`, p.`pid`, p.`symbol`, p.`first`, p.`second`, p.`third`, p.`stop`, p.`trigger1`, p.`compare1`, p.`state`, 
+        select p.`id`, p.`uid`, p.`pid`, p.`symbol`, p.`first`, p.`second`, p.`third`, p.`stop`, p.`trigger`, p.`compare`, p.`trigger1`, p.`compare1`, p.`state`, 
         	u.apikey as createTime, u.secretkey as updateTime, p.`type`, p.`orderIds` from `plan` p, user u where p.uid = u.id and state &lt; 4
     </select>        
 </mapper>

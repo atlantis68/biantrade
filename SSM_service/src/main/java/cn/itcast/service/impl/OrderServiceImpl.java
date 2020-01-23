@@ -303,20 +303,6 @@ public class OrderServiceImpl implements OrderService {
 			float par1 = allConfig.getLimitAmount() * allConfig.getMaxLoss() / 100 / diff;
 			float par2 = range / ToolsUtils.getCurPriceByKey(symbol);
 			String quantity = ToolsUtils.formatQuantity(symbol, (par1 < par2 ? par1 : par2) / 3);
-			//是否立即提交
-			Float triggerPrice = null;
-			if(StringUtils.isNotEmpty(trigger)) {
-				triggerPrice = Float.parseFloat(trigger);
-				if(compare == 0) {
-					if(triggerPrice > curPrice) {
-						return new Result(0, "现价低于触发价");
-					}	
-				} else {
-					if(triggerPrice < curPrice) {
-						return new Result(0, "现价高于触发价");
-					}	
-				}
-			}
 			if(mock) {
 				JSONObject json = new JSONObject();
 				json.put("fisrt", ToolsUtils.formatPrice(symbol, firstPrice));
@@ -330,6 +316,20 @@ public class OrderServiceImpl implements OrderService {
 				json.put("lossrate", ToolsUtils.formatPrice("BTCUSDT", threshold * lever * 100) + "%");
 				json.put("losspredict", ToolsUtils.formatPrice("BTCUSDT", diff * Float.parseFloat(quantity) * 3));
 				return new Result(-1, json.toJSONString());
+			}
+			//是否立即提交
+			Float triggerPrice = null;
+			if(StringUtils.isNotEmpty(trigger)) {
+				triggerPrice = Float.parseFloat(trigger);
+				if(compare == 0) {
+					if(triggerPrice > curPrice) {
+						return new Result(0, "现价低于触发价");
+					}	
+				} else {
+					if(triggerPrice < curPrice) {
+						return new Result(0, "现价高于触发价");
+					}	
+				}
 			}
 			//开始执行
 			//调整杠杆
