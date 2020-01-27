@@ -498,7 +498,7 @@
 			            			"</tr>";
 		            		}
 		            		for (i in list) {
-		            			if(parseFloat(list[i].positionAmt) > 0) {
+		            			if(Math.abs(list[i].positionAmt) > 0) {
 			            			var edit = "";
 			            		   	if(list[i].positionAmt < 0) {
 			            		   		edit = "<input type=\"type\" value=" + Math.abs(list[i].positionAmt) + " id=\"position" + list[i].symbol + "\" name=\"position" + list[i].symbol + "\")\" size=5/>" 
