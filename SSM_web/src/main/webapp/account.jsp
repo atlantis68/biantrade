@@ -288,6 +288,7 @@
     
     function showAll(){  
     	$("#showAllSubmit").attr("disabled","true");
+    	$("#detailList").html("");
     	balance();
     	positionRisk();
     	findAllOrders();
@@ -305,6 +306,7 @@
         $.ajax({  
             type : "get",
             url : "/Account/getPrice",
+            timeout : 10000,
             data : '',
 
             //成功
@@ -340,6 +342,7 @@
 	        $.ajax({  
 	            type : "get",
 	            url : "/Account/findAllOrders",
+	            timeout : 10000,
 	            data : "symbol="+$('input[name="symbol"]:checked').val() + "&startTime="+$('input[name="startTime"]:checked').val(),
 
 	            //成功
@@ -418,6 +421,7 @@
 	        $.ajax({  
 	            type : "get",
 	            url : "/Account/balance",
+	            timeout : 10000,
 	            data : "",
 
 	            //成功
@@ -474,6 +478,7 @@
 	        $.ajax({  
 	            type : "get",
 	            url : "/Account/positionRisk",
+	            timeout : 10000,
 	            data : "",
 
 	            //成功
@@ -552,6 +557,7 @@
 	        $.ajax({  
 	            type : "get",
 	            url : "/Account/cancel",
+	            timeout : 10000,
 	            data : "symbol="+$('input[name="symbol"]:checked').val() + "&orderId=" + orderId,
 
 	            //成功
@@ -587,6 +593,7 @@
 	        $.ajax({  
 	            type : "get",
 	            url : "/Account/cancelAll",
+	            timeout : 10000,
 	            data : "symbol="+$('input[name="symbol"]:checked').val(),
 
 	            //成功
@@ -626,6 +633,7 @@
 	        $.ajax({  
 	            type : "get",
 	            url : "/Account/tradeMarket",
+	            timeout : 10000,
 	            data : "symbol=" + $('input[name="symbol"]:checked').val() + "&side=" + side,
 
 	            //成功
@@ -670,6 +678,7 @@
 	        $.ajax({  
 	            type : "get",
 	            url : "/Account/tradeMarket",
+	            timeout : 10000,
 	            data : "symbol=" + symbol + "&side=" + side + "&quantity=" + $("#position" + symbol).val(),
 
 	            //成功
@@ -724,6 +733,7 @@
 	        $.ajax({  
 	            type : "get",
 	            url : "/Account/profitOrLoss",
+	            timeout : 10000,
 	            data : "symbol=" + symbol + "&side=" + side + "&quantity=" + $("#position" + symbol).val() 
 	            	+ "&rate=" + $("#prate" + symbol).val() + "&type=" + type + "&stopPrice=" + stopPrice,
 
@@ -779,6 +789,7 @@
 	        $.ajax({  
 	            type : "get",
 	            url : "/Account/profitOrLoss",
+	            timeout : 10000,
 	            data : "symbol=" + symbol + "&side=" + side + "&quantity=" + $("#position" + symbol).val() 
 	            	+ "&rate=" + $("#lrate" + symbol).val() + "&type=" + type + "&stopPrice=" + stopPrice,
 
@@ -837,6 +848,7 @@
 		        $.ajax({  
 		            type : "get",
 		            url : "/Order/plan",
+		            timeout : 10000,
 		            data : "first=" + $("#first").val() + "&second=" + $("#second").val() + "&third=" + $("#third").val() + "&stop=" + $("#stop").val() 
 		            	+ "&compare=" + +$('input[name="compare"]:checked').val() + "&trigger=" + $("#trigger").val() 
 		            	+ "&compare1=" + +$('input[name="compare1"]:checked').val() + "&trigger1=" + $("#trigger1").val() 
@@ -881,6 +893,7 @@
 	        $.ajax({  
 	            type : "get",
 	            url : "/Order/findAllPlans",
+	            timeout : 10000,
 	            data : '',
 
 	            //成功
@@ -963,6 +976,7 @@
 	        $.ajax({  
 	            type : "get",
 	            url : "/Order/historyOrders",
+	            timeout : 10000,
 	            data : "&startTime="+$('input[name="startTime1"]:checked').val(),
 
 	            //成功
@@ -1035,6 +1049,7 @@
 	        $.ajax({  
 	            type : "get",
 	            url : "/User/findUserByUid",
+	            timeout : 10000,
 	            data : "uid="+uid,
 
 	            //成功
@@ -1075,6 +1090,7 @@
 	        $.ajax({  
 	            type : "get",
 	            url : "/Order/fllowPlans",
+	            timeout : 10000,
 	            data : "symbol="+$('input[name="symbol"]:checked').val(),
 
 	            //成功
@@ -1150,6 +1166,7 @@
 	    	$.ajax({   
 	            type : "get",
 	            url : "/Order/cancelPlan",
+	            timeout : 10000,
 	            data : "symbol=" + symbol + "&id="+ id + "&state=" + $("#swarn" + id + " option:selected").val() + "&orderIds="+orderIds,
 
 	            //成功
@@ -1188,6 +1205,7 @@
 	        $.ajax({  
 	            type : "get",
 	            url : "/Order/follow",
+	            timeout : 10000,
 	            data : "id="+id,
 
 	            //成功
@@ -1226,6 +1244,7 @@
 	        $.ajax({  
 	            type : "get",
 	            url : "/Order/repeat",
+	            timeout : 10000,
 	            data : "id="+id,
 
 	            //成功
@@ -1264,6 +1283,7 @@
 	        $.ajax({  
 	            type : "get",
 	            url : "/Order/warn",
+	            timeout : 10000,
 	            data : "id="+id,
 
 	            //成功
@@ -1300,6 +1320,7 @@
 	        $.ajax({  
 	            type : "get",
 	            url : "/Order/predict",
+	            timeout : 10000,
 	            data : "id="+id,
 
 	            //成功
@@ -1382,8 +1403,8 @@
 </div>
 <p>
 <span style="color:red;font-weight:bold;">交易所挂单</span>
-<input type="radio" name="startTime" value="3">三天内
-<input type="radio" name="startTime" value="7" checked>七天内
+<input type="radio" name="startTime" value="3" checked>三天内
+<input type="radio" name="startTime" value="7">七天内
 &nbsp&nbsp<input type="button" id="findAllOrdersSubmit" id="findAllOrdersSubmit" value="查询订单" onclick ="findAllOrders()"/>
 &nbsp&nbsp<input type="button" id="cancelAllSubmit" id="cancelAllSubmit" value="撤销此类型全部订单" onclick ="cancelAll()"/><p>
 <table id="ordersList" name="ordersList" width="100%" cellpadding="1" cellspacing="0" border="1"></table>

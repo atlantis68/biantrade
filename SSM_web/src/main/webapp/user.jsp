@@ -14,6 +14,7 @@
 	        $.ajax({  
 	            type : "get",
 	            url : "/User/findUser",
+	            timeout : 10000,
 	            data : '',
 
 	            //成功
@@ -54,6 +55,7 @@
 	        $.ajax({  
 	            type : "get",
 	            url : "/User/update",
+	            timeout : 10000,
 	            data : "id=" + $("#id").val() + "&password=" + $("#password").val() + "&apiKey=" + $("#apiKey").val() 
 	            	+ "&secretKey=" + $("#secretKey").val() + "&mail=" + $("#mail").val(),
 

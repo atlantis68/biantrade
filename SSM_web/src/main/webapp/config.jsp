@@ -39,6 +39,7 @@
 	        $.ajax({  
 	            type : "get",
 	            url : "/Config/findConfigs",
+	            timeout : 10000,
 	            data : '',
 
 	            //成功
@@ -149,6 +150,7 @@
 	        $.ajax({  
 	            type : "get",
 	            url : "/Config/save",
+	            timeout : 10000,
 	            data : "id=" + id + "&marketAmount=" + $("#marketAmount"+type).val() + "&limitAmount=" + $("#limitAmount"+type).val() 
 	            	+ "&maxLoss=" + $("#maxLoss"+type).val() + "&tradeOffset=" + $("#tradeOffset"+type).val() + "&lossTriggerOffset=" + $("#lossTriggerOffset"+type).val() 
 	            	+ "&lossEntrustOffset=" + $("#lossEntrustOffset"+type).val() + "&lossWorkingType="+$('input[name="lossWorkingType' + type + '"]:checked').val()
