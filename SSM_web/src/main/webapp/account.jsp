@@ -445,8 +445,8 @@
 		            			if(list[i].asset == "USDT") {
 			            			str += "<tr>" + 
 				            			"<td>" + list[i].asset + "</td>" + 
-				            			"<td>" + Number(list[i].balance.match(/^\d+(?:\.\d{0,4})?/)) + "</td>" + 
-				            			"<td>" + Number(list[i].withdrawAvailable.match(/^\d+(?:\.\d{0,4})?/)) + "</td>" + 
+				            			"<td>" + Number(list[i].balance.match(/^\-?\d+(?:\.\d{0,4})?/)) + "</td>" + 
+				            			"<td>" + Number(list[i].withdrawAvailable.match(/^\-?\d+(?:\.\d{0,4})?/)) + "</td>" + 
 				            			"<td>" + getFormatDateByLong(list[i].updateTime) + "</td>" + 
 				            			"</tr>";
 		            			}
@@ -522,11 +522,11 @@
 			            		    }
 			            			str += "<tr>" + 
 				            			"<td>" + list[i].symbol + "</td>" + 
-				            			"<td>" + Number(list[i].positionAmt.match(/^\d+(?:\.\d{0,4})?/)) + "</td>" + 
-				            			"<td>" + Number(list[i].entryPrice.match(/^\d+(?:\.\d{0,4})?/)) + "</td>" + 
-				            			"<td>" + Number(list[i].markPrice.match(/^\d+(?:\.\d{0,4})?/)) + "</td>" + 
-				            			"<td>" + Number(list[i].unRealizedProfit.match(/^\d+(?:\.\d{0,4})?/)) + "</td>" + 
-				            			"<td><span style=\"color:red;font-weight:bold;\">" + Number(list[i].liquidationPrice.match(/^\d+(?:\.\d{0,4})?/)) + "</span></td>" +
+				            			"<td>" + Number(list[i].positionAmt.match(/^\-?\d+(?:\.\d{0,4})?/)) + "</td>" + 
+				            			"<td>" + Number(list[i].entryPrice.match(/^\-?\d+(?:\.\d{0,4})?/)) + "</td>" + 
+				            			"<td>" + Number(list[i].markPrice.match(/^\-?\d+(?:\.\d{0,4})?/)) + "</td>" + 
+				            			"<td>" + Number(list[i].unRealizedProfit.match(/^\-?\d+(?:\.\d{0,4})?/)) + "</td>" + 
+				            			"<td><span style=\"color:red;font-weight:bold;\">" + Number(list[i].liquidationPrice.match(/^\-?\d+(?:\.\d{0,4})?/)) + "</span></td>" +
 				            			"<td>" + list[i].leverage + "</td>" +
 				            			"<td>" + edit + "</td>" + 
 				            			"</tr>";
