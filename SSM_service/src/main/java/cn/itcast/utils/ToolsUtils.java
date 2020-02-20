@@ -79,10 +79,12 @@ public class ToolsUtils {
 	
 	public static String formatQuantity(String symbol, Float value) {
 		String result;
-		if(symbol.toUpperCase().equals("TRXUSDT") || symbol.toUpperCase().equals("XLMUSDT")) {
+		if(symbol.toUpperCase().equals("TRXUSDT") || symbol.toUpperCase().equals("XLMUSDT")
+				|| symbol.toUpperCase().equals("ADAUSDT")) {
 			result = "" + (value.intValue());
 		} else if(symbol.toUpperCase().equals("XRPUSDT") || symbol.toUpperCase().equals("EOSUSDT")
-				|| symbol.toUpperCase().equals("ETCUSDT") || symbol.toUpperCase().equals("LINKUSDT")) {
+				|| symbol.toUpperCase().equals("ETCUSDT") || symbol.toUpperCase().equals("LINKUSDT")
+				|| symbol.toUpperCase().equals("BNBUSDT") || symbol.toUpperCase().equals("ATOMUSDT")) {
 			result = decimalFormatFor1.format(value);
 		} else {
 			result = decimalFormatFor3.format(value);
@@ -92,12 +94,14 @@ public class ToolsUtils {
 	
 	public static String formatPrice(String symbol, Float value) {
 		String result;
-		if(symbol.toUpperCase().equals("TRXUSDT") || symbol.toUpperCase().equals("XLMUSDT")) {
+		if(symbol.toUpperCase().equals("TRXUSDT") || symbol.toUpperCase().equals("XLMUSDT") 
+				|| symbol.toUpperCase().equals("ADAUSDT")) {
 			result = decimalFormatFor5.format(value);
 		} else if(symbol.toUpperCase().equals("XRPUSDT")) {
 			result = decimalFormatFor4.format(value);
 		} else if(symbol.toUpperCase().equals("EOSUSDT") || symbol.toUpperCase().equals("ETCUSDT")
-				|| symbol.toUpperCase().equals("LINKUSDT")) {
+				|| symbol.toUpperCase().equals("LINKUSDT") || symbol.toUpperCase().equals("BNBUSDT")
+				|| symbol.toUpperCase().equals("ATOMUSDT")) {
 			result = decimalFormatFor3.format(value);
 		} else {
 			result = decimalFormatFor2.format(value);

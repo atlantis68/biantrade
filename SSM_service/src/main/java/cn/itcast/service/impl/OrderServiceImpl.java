@@ -95,9 +95,9 @@ public class OrderServiceImpl implements OrderService {
 			plan.setThird(Float.parseFloat(third));
 			plan.setStop(Float.parseFloat(stop));
 			plan.setTrigger(StringUtils.isNotEmpty(trigger) ? Float.parseFloat(trigger) : 0f);
-			plan.setCompare(compare);
+			plan.setCompare(StringUtils.isNotEmpty(trigger) ? compare : 0);
 			plan.setTrigger1(StringUtils.isNotEmpty(trigger1) ? Float.parseFloat(trigger1) : 0f);
-			plan.setCompare1(compare1);
+			plan.setCompare1(StringUtils.isNotEmpty(trigger1) ? compare1 : 1);
 			plan.setState(res.getState() < 2 ? res.getState() : 3);
 			plan.setCreateTime(format.format(new Date()));
 			plan.setUpdateTime(format.format(new Date()));
@@ -161,7 +161,7 @@ public class OrderServiceImpl implements OrderService {
 			plan.setThird(Float.parseFloat(third));
 			plan.setStop(Float.parseFloat(stop));
 			plan.setTrigger(StringUtils.isNotEmpty(trigger) ? Float.parseFloat(trigger) : 0f);
-			plan.setCompare(compare);
+			plan.setCompare(StringUtils.isNotEmpty(trigger) ? compare : 0);
 			plan.setTrigger1(StringUtils.isNotEmpty(trigger1) ? Float.parseFloat(trigger1) : 0f);
 			plan.setCompare1(StringUtils.isNotEmpty(trigger1) ? compare1 : 1);
 			plan.setState(res.getState() < 2 ? res.getState() : 3);
