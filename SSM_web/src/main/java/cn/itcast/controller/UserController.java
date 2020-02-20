@@ -27,6 +27,8 @@ public class UserController {
     public String index(Model model, HttpSession session) {
     	User user = (User) session.getAttribute("USER_SESSION");
     	model.addAttribute("role", user.getRole());
+    	model.addAttribute("username", user.getUsername());
+    	model.addAttribute("nickname", user.getNickname());
         return "user";
     }
 
@@ -39,6 +41,8 @@ public class UserController {
             session.setAttribute("USER_SESSION", user);
             if(StringUtils.isNotEmpty(user.getApiKey()) && StringUtils.isNotEmpty(user.getSecretKey())) {
             	model.addAttribute("role", user.getRole());
+            	model.addAttribute("username", user.getUsername());
+            	model.addAttribute("nickname", user.getNickname());
             	return "account";            	
             } else {
             	return "user";

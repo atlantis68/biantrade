@@ -50,6 +50,8 @@ public class AccountController {
     public String index(Model model, HttpSession session) {
     	User user = (User) session.getAttribute("USER_SESSION");
     	model.addAttribute("role", user.getRole());
+    	model.addAttribute("username", user.getUsername());
+    	model.addAttribute("nickname", user.getNickname());
         return "account";
     }
 	

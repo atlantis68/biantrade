@@ -32,12 +32,15 @@
 			}
 		}
 		$("#showList").html(str); 	
+		$("#userinfo").text('${nickname}（${username}）');
 		$('input[type=radio][name=symbol]').change(function() {
 			for (x in coins) {
 				$("#" + coins[x]).removeAttr("style");
 			}
 			$("#" + this.value).attr("style","color:red;font-weight:bold;");
 			$("#title").text(this.value);
+			$("#title1").text(this.value);
+			$("#title2").text(this.value);
 	    });
     });
 
@@ -1389,6 +1392,9 @@
     <span id="message" name="message"></span>
 </span>
 <p>
+<div style="width:100%">
+    <span id='userinfo' name='userinfo' style="font-weight:bold;font-size:18px;text-align:center;display:block;position: relative;color:red;"></span>
+</div>
 <span style="float:right;"><input type="button" id="showAllSubmit" id="showAllSubmit" value="显示所有" onclick ="showAll()"/></span>
 <input type="button" id="balanceSubmit" id="balanceSubmit" value="刷新账户" onclick ="balance()"/>
 &nbsp&nbsp<input type="button" id="positionRiskSubmit" id="positionRiskSubmit" value="刷新持仓" onclick ="positionRisk()"/><p>
@@ -1398,25 +1404,25 @@
 <p>
 <table id="showList" name="showList" width="100%" cellpadding="1" cellspacing="0" border="1"></table>
 <p>
-<div style="width:100%">
-    <span id='title' name='title' style="font-weight:bold;font-size:25px;text-align:center;display:block;position: relative;color:red;">BTCUSDT</span>
-</div>
-<p>
 <span style="color:red;font-weight:bold;">交易所挂单</span>
 <input type="radio" name="startTime" value="3" checked>三天内
 <input type="radio" name="startTime" value="7">七天内
 &nbsp&nbsp<input type="button" id="findAllOrdersSubmit" id="findAllOrdersSubmit" value="查询订单" onclick ="findAllOrders()"/>
-&nbsp&nbsp<input type="button" id="cancelAllSubmit" id="cancelAllSubmit" value="撤销此类型全部订单" onclick ="cancelAll()"/><p>
+&nbsp&nbsp<input type="button" id="cancelAllSubmit" id="cancelAllSubmit" value="撤销此类型全部订单" onclick ="cancelAll()"/>
+&nbsp&nbsp<span id='title' name='title' style="color:red;font-weight:bold;">BTCUSDT</span>
+<p>
 <table id="ordersList" name="ordersList" width="100%" cellpadding="1" cellspacing="0" border="1"></table>
 <p>
 <hr>
 <span style="color:red;font-weight:bold;">即时单</span>
 &nbsp&nbsp<input type="button" value="开多" id="market1" name="market1" onclick ="tradeMarket1('BUY', 1)"/>
 &nbsp&nbsp<input type="button" value="开空" id="market2" name="market2" onclick ="tradeMarket1('SELL', 2)"/>
+&nbsp&nbsp<span id='title1' name='title1' style="color:red;font-weight:bold;">BTCUSDT</span>
 <p>
 <hr>
 <span style="color:red;font-weight:bold;">计划单</span>
 &nbsp&nbsp<input type="button" value="开单" id="plan" name="plan" onclick ="tradePlan()"/>
+&nbsp&nbsp<span id='title2' name='title2' style="color:red;font-weight:bold;">BTCUSDT</span>
 <table id="positionRiskList" name="positionRiskList" width="100%" cellpadding="1" cellspacing="0" border="1">
 <tr>
 <td>
