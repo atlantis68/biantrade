@@ -12,7 +12,7 @@
     </select>         
     <select id="findPlanByTime" parameterType="Integer"
             resultType="cn.itcast.pojo.Plan">
-        SELECT p.* FROM plan p, USER u WHERE u.id = p.uid AND u.role = 0 AND createTime > DATE_SUB(NOW(),INTERVAL #{time} MONTH) and state &gt; 3 order by createTime;
+        SELECT p.* FROM plan p, USER u WHERE u.id = p.uid AND u.role = 0 AND createTime > DATE_SUB(NOW(),INTERVAL #{time} DAY) and state &gt; 3 order by createTime;
     </select>     
     <select id="findFllowPlans" parameterType="String"
             resultType="cn.itcast.pojo.Plan">

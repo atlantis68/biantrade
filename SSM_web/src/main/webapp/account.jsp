@@ -845,8 +845,8 @@
 				$("#stop").focus();
 				return;
 			} 
-			if((parseFloat($("#first").val()) <= parseFloat($("#second").val()) && parseFloat($("#second").val()) <= parseFloat($("#third").val()) && parseFloat($("#third").val()) < parseFloat($("#stop").val())) ||
-					(parseFloat($("#first").val()) >= parseFloat($("#second").val()) && parseFloat($("#second").val()) >= parseFloat($("#third").val()) && parseFloat($("#third").val()) > parseFloat($("#stop").val()))) {
+			if((parseFloat($("#first").val()) < parseFloat($("#stop").val()) && parseFloat($("#second").val()) < parseFloat($("#stop").val()) && parseFloat($("#third").val()) < parseFloat($("#stop").val())) ||
+					(parseFloat($("#first").val()) > parseFloat($("#stop").val()) && parseFloat($("#second").val()) > parseFloat($("#stop").val()) && parseFloat($("#third").val()) > parseFloat($("#stop").val()))) {
 		    	$("#plan").attr("disabled","true");
 		        $.ajax({  
 		            type : "get",
@@ -1012,6 +1012,12 @@
 		            			var edit = "<input type=\"button\" id=\"rplan" + list[i].id + "\" name=\"rplan" + list[i].id + "\" value=\"再次下单\" onclick =\"repeat(" + list[i].id + ")\"/>"
 		            				+ "&nbsp&nbsp<input type=\"button\" id=\"detail" + list[i].id + "\" name=\"detail" + list[i].id + "\" value=\"预览\" onclick =\"showDetail(" + list[i].id + ", '" + list[i].symbol + "')\"/>"		            			
 		            				+ "&nbsp&nbsp<input type=\"button\" id=\"fusers" + list[i].id + "\" name=\"fusers" + list[i].id + "\" value=\"跟单人员\" onclick =\"findUserByUid(" + list[i].id + ")\"/>";
+		            			var color = "<span>";
+		            			if(list[i].state == 5) {
+		            				color = "<span style=\"color:green;\">";
+		            			} else if(list[i].state == 6) {
+		            				color = "<span style=\"color:red;\">";
+		            			}
 		            			str += "<tr>" + 
 		            				"<td>" + list[i].symbol + "</td>" + 
 			            			"<td>" + list[i].first + "</td>" + 
@@ -1020,7 +1026,7 @@
 			            			"<td>" + list[i].stop + "</td>" + 
 			            			"<td>" + translateCompare(list[i].compare) + translateNull(list[i].trigger) + "</td>" + 
 			            			"<td>" + translateCompare(list[i].compare1) + translateNull(list[i].trigger1) + "</td>" + 			            			
-			            			"<td>" + translateState(list[i].state) + "</td>" +  
+			            			"<td>" + color + translateState(list[i].state) + "</span></td>" +  
 			            			"<td>" + translateFrom(list[i].type) + "</td>" +
 			            			"<td>" + getFormatDateByLong(list[i].createTime) + "</td>" + 
 			            			"<td>" + getFormatDateByLong(list[i].updateTime) + "</td>" + 
@@ -1490,9 +1496,9 @@
 <table id="plansList" name="plansList" width="100%" cellpadding="1" cellspacing="0" border="1"></table>
 <p>
 <input type="button" id="historyOrdersSubmit" id="historyOrdersSubmit" value="历史计划单" onclick ="historyOrders()"/>&nbsp&nbsp
-<input type="radio" name="startTime1" value="1" checked>一个月
-<input type="radio" name="startTime1" value="3">三个月
-<input type="radio" name="startTime1" value="6">六个月
+<input type="radio" name="startTime1" value="1" checked>一天内
+<input type="radio" name="startTime1" value="7">一周内
+<input type="radio" name="startTime1" value="30">一月内
 <table id="historyList" name="historyList" width="100%" cellpadding="1" cellspacing="0" border="1"></table>
 <p>
 <hr>

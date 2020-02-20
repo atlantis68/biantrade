@@ -163,7 +163,7 @@ public class OrderServiceImpl implements OrderService {
 			plan.setTrigger(StringUtils.isNotEmpty(trigger) ? Float.parseFloat(trigger) : 0f);
 			plan.setCompare(compare);
 			plan.setTrigger1(StringUtils.isNotEmpty(trigger1) ? Float.parseFloat(trigger1) : 0f);
-			plan.setCompare1(compare1);
+			plan.setCompare1(StringUtils.isNotEmpty(trigger1) ? compare1 : 1);
 			plan.setState(res.getState() < 2 ? res.getState() : 3);
 			plan.setCreateTime(format.format(new Date()));
 			plan.setUpdateTime(format.format(new Date()));
@@ -235,7 +235,7 @@ public class OrderServiceImpl implements OrderService {
 			String side = null;
 			String stopSide = null;
 			Float entrustPrice = null;
-			if(firstPrice >= secondPrice && secondPrice >= thirdPrice && thirdPrice > stopPrice) {
+			if(firstPrice > stopPrice && secondPrice > stopPrice && thirdPrice > stopPrice) {
 				side = "BUY";
 				firstPrice = firstPrice * (1 + allConfig.getTradeOffset() / 10000);
 				secondPrice = secondPrice * (1 + allConfig.getTradeOffset() / 10000);
@@ -243,7 +243,7 @@ public class OrderServiceImpl implements OrderService {
 				stopSide = "SELL";
 				stopPrice = stopPrice * (1 - allConfig.getLossTriggerOffset() / 10000);
 				entrustPrice = stopPrice * (1 - allConfig.getLossEntrustOffset() / 10000);
-			} else if(firstPrice <= secondPrice && secondPrice <= thirdPrice && thirdPrice < stopPrice) {
+			} else if(firstPrice < stopPrice && secondPrice < stopPrice && thirdPrice < stopPrice) {
 				side = "SELL";
 				firstPrice = firstPrice * (1 - allConfig.getTradeOffset() / 10000);
 				secondPrice = secondPrice * (1 - allConfig.getTradeOffset() / 10000);
