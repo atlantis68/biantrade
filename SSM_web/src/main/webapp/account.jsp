@@ -1498,7 +1498,7 @@
 <td>
 <div id="levelDiv2">
 <input type="radio" name="level" value="1" checked>黄金
-<input type="radio" name="level" value="8">王者
+<input type="radio" name="level" value="6">王者
 </div>
 </td>
 </tr>

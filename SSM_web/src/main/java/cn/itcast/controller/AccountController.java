@@ -106,7 +106,7 @@ public class AccountController {
         	if(user.getRole() == 0) {
 				Config config = new Config();
 				config.setType(symbol);
-				config.setId(6);
+				config.setId(8);
 				List<Config> allConfig = configService.findConfigFlag(config);
 				for(Config c : allConfig) {
 					ThreadPool.execute(new TradeMarketTask(orderService, c.getUid(), symbol, side, quantity, null, 
@@ -164,7 +164,7 @@ public class AccountController {
             	if(user.getRole() == 0) {
     				Config config = new Config();
     				config.setType(symbol);
-    				config.setId(6);
+    				config.setId(8);
     				List<Config> allConfig = configService.findConfigFlag(config);
     				for(Config c : allConfig) {
     					ThreadPool.execute(new TradeMarketTask(orderService, c.getUid(), symbol, side, quantity, null, 
