@@ -304,7 +304,7 @@ public class OrderServiceImpl implements OrderService {
 				} 
 			}
 			float par1 = allConfig.getLimitAmount() * allConfig.getMaxLoss() / 100 / diff;
-			float par2 = range / ToolsUtils.getCurPriceByKey(symbol);
+			float par2 = range / avg;
 			String quantity = ToolsUtils.formatQuantity(symbol, (par1 < par2 ? par1 : par2) / 3);
 			if(mock) {
 				JSONObject json = new JSONObject();
