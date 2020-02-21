@@ -10,16 +10,11 @@
             resultType="cn.itcast.pojo.Config">
         select * from config where uid= #{uid}
     </select>    
-    <select id="findConfigFlag2" parameterType="cn.itcast.pojo.Config"
+    <select id="findConfigFlag" parameterType="cn.itcast.pojo.Config"
             resultType="cn.itcast.pojo.Config">
         select c.uid, c.marketAmount, c.rate, `apikey` as `type`, `secretkey` as lossWorkingType from config c, user u 
-        where c.uid = u.id and type=#{type} and autoTrade = 1 and u.role = 2 
-    </select>    
-    <select id="findConfigFlag12" parameterType="cn.itcast.pojo.Config"
-            resultType="cn.itcast.pojo.Config">
-        select c.uid, `apikey` as `type`, `secretkey` as lossWorkingType from config c, user u 
-        where c.uid = u.id and type=#{type} and autoTrade = 1 and u.role in (1,2)
-    </select>      
+        where c.uid = u.id and type=#{type} and autoTrade = 1 and u.role &gt;= #{id}
+    </select>        
     <update id="updateConfig" parameterType="cn.itcast.pojo.Config">
 		UPDATE config SET marketAmount = #{marketAmount}, limitAmount = #{limitAmount}, maxLoss = #{maxLoss}, 
 			tradeOffset = #{tradeOffset}, lossTriggerOffset = #{lossTriggerOffset}, lossEntrustOffset = #{lossEntrustOffset}, 

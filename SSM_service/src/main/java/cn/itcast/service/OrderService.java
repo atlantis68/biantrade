@@ -10,7 +10,7 @@ public interface OrderService {
     
     public List<Plan> findPlanByUid(Integer uid);
     
-    public List<Plan> findFllowPlans(String symbol);
+    public List<Plan> findFllowPlans(Integer level);
     
     public Plan findPlanById(Integer id);
     
@@ -20,14 +20,14 @@ public interface OrderService {
     
     public int insertMail(Mail mail);
     
-    public List<Plan> findPlanByTime(Integer time);
+    public List<Plan> findPlanByTime(Integer time, Integer level);
     
 	public Result generateAndDealOrder(String symbol, String first, String second, String third, String stop, 
 			String trigger, Integer compare, String trigger1, Integer compare1, Integer uid, String apiKey, String secretKey, 
 			List<String> orderIds, Float curPrice, boolean mock);
 			
-    public String plan(String symbol, String first, String second, String third, String stop, String trigger, 
-    		Integer compare, String trigger1, Integer compare1, Integer uid, String apiKey, String secretKey, Float curPrice);
+    public String plan(String symbol, String first, String second, String third, String stop, String trigger, Integer compare, 
+    		String trigger1, Integer compare1, Integer uid, String apiKey, String secretKey, Float curPrice, Integer level);
     
     public String trade(String symbol, String side, String quantity, String price, String stopPrice, String type, 
     		String timeInForce, String workingType, String reduceOnly, String apiKey, String secretKey) throws Exception;

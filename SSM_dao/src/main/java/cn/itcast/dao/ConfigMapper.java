@@ -12,9 +12,7 @@ public interface ConfigMapper {
     
     public List<Config> findConfigsByUid(@Param("uid") Integer uid);
     
-    public List<Config> findConfigFlag2(Config config);
-    
-    public List<Config> findConfigFlag12(Config config);
+    public List<Config> findConfigFlag(Config config);
     
     public int updateConfig(Config config);
 

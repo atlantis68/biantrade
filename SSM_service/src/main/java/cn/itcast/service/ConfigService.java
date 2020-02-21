@@ -9,9 +9,7 @@ public interface ConfigService {
     
     public List<Config> findConfigsByUid(Integer uid);
     
-    public List<Config> findConfigFlag2(Config config);
-    
-	public List<Config> findConfigFlag12(Config config);
+    public List<Config> findConfigFlag(Config config);
 
     public int updateConfig(Config config);
 

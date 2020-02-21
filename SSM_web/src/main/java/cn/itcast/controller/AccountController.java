@@ -20,6 +20,8 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 
+import cn.itcast.back.ThreadPool;
+import cn.itcast.back.TradeMarketTask;
 import cn.itcast.client.HttpClient;
 import cn.itcast.client.SHA256;
 import cn.itcast.pojo.Config;
@@ -60,22 +62,9 @@ public class AccountController {
     public String tradeMarket(String symbol, String side, String quantity, HttpSession session) {
     	JSONObject result = new JSONObject();
     	String realQuantity;
-    	String reduceOnly = null;
     	try {
-    		float price = ToolsUtils.getCurPriceByKey(symbol);
     		User user = (User) session.getAttribute("USER_SESSION");
     		if(StringUtils.isEmpty(quantity)) {
-//    			int leverage = 0;
-//        		String risks = orderService.positionRisk(user.getApiKey(), user.getSecretKey());
-//        		List<String> lists = JSON.parseArray(risks, String.class);
-//        		for(String list : lists) {
-//        			Map<String, String> risk = JSON.parseObject(list, new TypeReference<Map<String, String>>(){} );
-//        			if(risk != null && StringUtils.isNotEmpty(risk.get("leverage")) 
-//        					&& StringUtils.isNotEmpty(risk.get("symbol")) && risk.get("symbol").equals(symbol)) {
-//        				leverage = Integer.parseInt(risk.get("leverage"));
-//        				break;
-//        			}       			
-//        		}
     			Config config = new Config();
     			config.setUid(user.getId());
     			config.setType(symbol);
@@ -83,18 +72,28 @@ public class AccountController {
 //    			realQuantity = ToolsUtils.formatQuantity(symbol, allConfig.getMarketAmount() * leverage / price);
     			realQuantity = allConfig.getMarketAmount().toString();
     		} else {
-    			realQuantity = quantity;
-    			reduceOnly = "true";
+    			float positionAmt = 0;
+        		String risks = orderService.positionRisk(user.getApiKey(), user.getSecretKey());
+        		List<String> lists = JSON.parseArray(risks, String.class);
+        		for(String list : lists) {
+        			Map<String, String> risk = JSON.parseObject(list, new TypeReference<Map<String, String>>(){} );
+        			if(risk != null && StringUtils.isNotEmpty(risk.get("positionAmt")) 
+        					&& StringUtils.isNotEmpty(risk.get("symbol")) && risk.get("symbol").equals(symbol)) {
+        				positionAmt = Math.abs(Float.parseFloat(risk.get("positionAmt")));
+        				break;
+        			}       			
+        		}
+    			realQuantity = "" + (positionAmt * (Float.parseFloat(quantity) / 100));
     		}
     		String temp = orderService.trade(symbol, side, ToolsUtils.formatQuantity(symbol, Float.parseFloat(realQuantity)), 
-    				null, null, "MARKET", null, null, reduceOnly, user.getApiKey(), user.getSecretKey());
+    				null, null, "MARKET", null, null, "true", user.getApiKey(), user.getSecretKey());
 			Map<String, String> tempInfo = JSON.parseObject(temp, new TypeReference<Map<String, String>>(){} );
 			if(tempInfo != null && StringUtils.isNotEmpty(tempInfo.get("orderId"))) {
 				result.put("status", "ok");
 				Mail mail = new Mail();
 				mail.setUid(user.getId());
 				mail.setSymbol(symbol);
-				mail.setSubject(symbol + "即时单创建成功，成交价格" + price + "，已提交到币安");
+				mail.setSubject(symbol + "即时单创建成功，成交价格" + ToolsUtils.getCurPriceByKey(symbol) + "，已提交到币安");
 				mail.setContent("提交数量：" + realQuantity);
 				mail.setState(0);
 				mail.setCreateTime(format.format(new Date()));
@@ -107,39 +106,11 @@ public class AccountController {
         	if(user.getRole() == 0) {
 				Config config = new Config();
 				config.setType(symbol);
-				List<Config> allConfig = configService.findConfigFlag2(config);
+				config.setId(6);
+				List<Config> allConfig = configService.findConfigFlag(config);
 				for(Config c : allConfig) {
-					price = ToolsUtils.getCurPriceByKey(symbol);
-	        		if(StringUtils.isEmpty(quantity)) {
-//		    			int leverage = 0;
-//		    			String risks = orderService.positionRisk(c.getType(), c.getLossWorkingType());
-//		        		List<String> lists = JSON.parseArray(risks, String.class);
-//		        		for(String list : lists) {
-//		        			Map<String, String> risk = JSON.parseObject(list, new TypeReference<Map<String, String>>(){} );
-//		        			if(risk != null && StringUtils.isNotEmpty(risk.get("leverage")) 
-//		        					&& StringUtils.isNotEmpty(risk.get("symbol")) && risk.get("symbol").equals(symbol)) {
-//		        				leverage = Integer.parseInt(risk.get("leverage"));
-//		        				break;
-//		        			}       			
-//		        		}
-//		    			realQuantity = ToolsUtils.formatQuantity(symbol, c.getMarketAmount() * leverage / price);
-		    			realQuantity = c.getMarketAmount().toString();
-	        		} else {
-	        			realQuantity = quantity;
-	        		}
-					temp = orderService.trade(symbol, side, realQuantity, null, null, "MARKET", null, null, reduceOnly, c.getType(), c.getLossWorkingType());
-					tempInfo = JSON.parseObject(temp, new TypeReference<Map<String, String>>(){} );
-					if(tempInfo != null && StringUtils.isNotEmpty(tempInfo.get("orderId"))) {
-						Mail mail = new Mail();
-			    		mail.setUid(c.getUid());
-			    		mail.setSymbol(symbol);
-			    		mail.setSubject(symbol + "即时单跟单创建成功，成交价格" + price + "，已提交到币安");
-			    		mail.setContent("提交数量：" + realQuantity);
-			    		mail.setState(0);
-			    		mail.setCreateTime(format.format(new Date()));
-			    		mail.setUpdateTime(format.format(new Date()));
-			    		orderService.insertMail(mail);
-					} 
+					ThreadPool.execute(new TradeMarketTask(orderService, c.getUid(), symbol, side, quantity, null, 
+							null, "MARKET", null, null, "true", c.getType(), c.getLossWorkingType()));
 				}
         	}
 		} catch (Exception e) {
@@ -156,37 +127,23 @@ public class AccountController {
     public String profitOrLoss(String symbol, String side, String quantity, String rate, 
     		String type, Float stopPrice, HttpSession session) {
     	JSONObject result = new JSONObject();
-//    	Float stopPrice = null;
+    	String realQuantity;
     	try {
     		User user = (User) session.getAttribute("USER_SESSION");
-//    		float entryPrice = Float.parseFloat(price);
-//    		float curRate = Float.parseFloat(rate);
-//			int leverage = 0;
-//			String risks = orderService.positionRisk(user.getApiKey(), user.getSecretKey());
-//    		List<String> lists = JSON.parseArray(risks, String.class);
-//    		for(String list : lists) {
-//    			Map<String, String> risk = JSON.parseObject(list, new TypeReference<Map<String, String>>(){} );
-//    			if(risk != null && StringUtils.isNotEmpty(risk.get("leverage")) 
-//    					&& StringUtils.isNotEmpty(risk.get("symbol")) && risk.get("symbol").equals(symbol)) {
-//    				leverage = Integer.parseInt(risk.get("leverage"));
-//    				break;
-//    			}       			
-//    		}
-//    		if(side.toUpperCase().equals("BUY")) {
-//    			if(type.toUpperCase().equals("TAKE_PROFIT_MARKET")) {
-//    				stopPrice = entryPrice * (1 - curRate / 100 / leverage);
-//    			} else if(type.toUpperCase().equals("STOP_MARKET")) {
-//    				stopPrice = entryPrice * (1 + curRate / 100 / leverage);
-//    			}
-//    		} else if(side.toUpperCase().equals("SELL")) {
-//    			if(type.toUpperCase().equals("TAKE_PROFIT_MARKET")) {
-//    				stopPrice = entryPrice * (1 + curRate / 100 / leverage);
-//    			} else if(type.toUpperCase().equals("STOP_MARKET")) {
-//    				stopPrice = entryPrice * (1 - curRate / 100 / leverage);
-//    			}
-//    		}
     		if(stopPrice != null) {
-    			String temp = orderService.trade(symbol, side, ToolsUtils.formatQuantity(symbol, Float.parseFloat(quantity)), 
+    			float positionAmt = 0;
+        		String risks = orderService.positionRisk(user.getApiKey(), user.getSecretKey());
+        		List<String> lists = JSON.parseArray(risks, String.class);
+        		for(String list : lists) {
+        			Map<String, String> risk = JSON.parseObject(list, new TypeReference<Map<String, String>>(){} );
+        			if(risk != null && StringUtils.isNotEmpty(risk.get("positionAmt")) 
+        					&& StringUtils.isNotEmpty(risk.get("symbol")) && risk.get("symbol").equals(symbol)) {
+        				positionAmt = Math.abs(Float.parseFloat(risk.get("positionAmt")));
+        				break;
+        			}       			
+        		}
+    			realQuantity = "" + (positionAmt * (Float.parseFloat(quantity) / 100));
+    			String temp = orderService.trade(symbol, side, ToolsUtils.formatQuantity(symbol, Float.parseFloat(realQuantity)), 
     					null, ToolsUtils.formatPrice(symbol, stopPrice), type, null, "CONTRACT_PRICE", "true", user.getApiKey(), user.getSecretKey());
     			Map<String, String> tempInfo = JSON.parseObject(temp, new TypeReference<Map<String, String>>(){} );
     			if(tempInfo != null && StringUtils.isNotEmpty(tempInfo.get("orderId"))) {
@@ -195,7 +152,7 @@ public class AccountController {
     				mail.setUid(user.getId());
     				mail.setSymbol(symbol);
     				mail.setSubject(symbol + "止盈/止损单创建成功，挂单价格" + stopPrice + "，已提交到币安");
-    				mail.setContent("提交数量：" + quantity);
+    				mail.setContent("提交数量：" + realQuantity);
     				mail.setState(0);
     				mail.setCreateTime(format.format(new Date()));
     				mail.setUpdateTime(format.format(new Date()));
@@ -204,6 +161,16 @@ public class AccountController {
     				result.put("status", "error");
     			}
     			result.put("msg", JSON.toJSONString(temp));
+            	if(user.getRole() == 0) {
+    				Config config = new Config();
+    				config.setType(symbol);
+    				config.setId(6);
+    				List<Config> allConfig = configService.findConfigFlag(config);
+    				for(Config c : allConfig) {
+    					ThreadPool.execute(new TradeMarketTask(orderService, c.getUid(), symbol, side, quantity, null, 
+    							ToolsUtils.formatPrice(symbol, stopPrice), type, null, "CONTRACT_PRICE", "true", c.getType(), c.getLossWorkingType()));
+    				}
+            	}
     		} else {
         		result.put("status", "error");
         		result.put("msg", "parameter error");

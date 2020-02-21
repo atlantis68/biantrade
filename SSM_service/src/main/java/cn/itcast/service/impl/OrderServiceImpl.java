@@ -54,8 +54,8 @@ public class OrderServiceImpl implements OrderService {
 		return planMapper.findPlanByUid(uid.toString());
 	}
 	
-	public List<Plan> findFllowPlans(String symbol) {
-		return planMapper.findFllowPlans(symbol);
+	public List<Plan> findFllowPlans(Integer level) {
+		return planMapper.findFllowPlans(level);
 	}
 	
 	public Plan findPlanById(Integer id) {
@@ -74,13 +74,13 @@ public class OrderServiceImpl implements OrderService {
 		return mailMapper.insertMail(mail);
 	}
 	
-	public List<Plan> findPlanByTime(Integer time) {
-		return planMapper.findPlanByTime(time);
+	public List<Plan> findPlanByTime(Integer time, Integer level) {
+		return planMapper.findPlanByTime(time, level);
 	}
 
 	//需要保证事务
-	public String plan(String symbol, String first, String second, String third, String stop, String trigger, 
-			Integer compare, String trigger1, Integer compare1, Integer uid, String apiKey, String secretKey, Float curPrice) {
+	public String plan(String symbol, String first, String second, String third, String stop, String trigger, Integer compare, 
+    		String trigger1, Integer compare1, Integer uid, String apiKey, String secretKey, Float curPrice, Integer level) {
 		String result = "";
 		try {
 			List<String> orderIds = new ArrayList<String>();
@@ -102,6 +102,9 @@ public class OrderServiceImpl implements OrderService {
 			plan.setCreateTime(format.format(new Date()));
 			plan.setUpdateTime(format.format(new Date()));
 			plan.setType(0);
+			if(level != null) {
+				plan.setLevel(level);
+			}
 			String orders = "";
 			if(res.getState() == 1) {
 				for(String orderId : orderIds) {

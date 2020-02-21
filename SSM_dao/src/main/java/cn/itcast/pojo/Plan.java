@@ -18,6 +18,7 @@ public class Plan {
 	private String createTime;
 	private String updateTime;
 	private Integer type;
+	private Integer level;
 	private String orderIds;
 
 	public Integer getId() {
@@ -146,6 +147,14 @@ public class Plan {
 
 	public void setType(Integer type) {
 		this.type = type;
+	}
+
+	public Integer getLevel() {
+		return level;
+	}
+
+	public void setLevel(Integer level) {
+		this.level = level;
 	}
 
 	public String getOrderIds() {

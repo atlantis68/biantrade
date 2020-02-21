@@ -14,7 +14,7 @@ public interface PlanMapper {
 
 	public List<Plan> findPlanByUid(@Param("uid") String uid);
 	
-	public List<Plan> findFllowPlans(@Param("symbol") String symbol);
+	public List<Plan> findFllowPlans(@Param("level") Integer level);
 	
 	public Plan findPlanById(@Param("id") Integer id);
 	
@@ -24,5 +24,5 @@ public interface PlanMapper {
 	
 	public List<Plan> findPlansByState1();
 	
-	public List<Plan> findPlanByTime(@Param("time") Integer time);
+	public List<Plan> findPlanByTime(@Param("time") Integer time, @Param("level") Integer level);
 }

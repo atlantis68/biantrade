@@ -11,7 +11,10 @@
     $(document).ready(function(){
     	role = ${role};
     	if(role == 0) {
-    		$('#followDiv').css('display','none'); 
+    		$('#followDiv').css('display','none');
+    	} else {
+    		$('#levelDiv1').css('display','none');
+    		$('#levelDiv2').css('display','none');
     	}
     	var seq = 0;
     	var str = "<tr><td colspan=\"10\" align=\"center\"><span style=\"color:red;font-weight:bold;\">实时报价</span></td></tr>";
@@ -509,14 +512,14 @@
 		            			if(Math.abs(list[i].positionAmt) > 0) {
 			            			var edit = "";
 			            		   	if(list[i].positionAmt < 0) {
-			            		   		edit = "<input type=\"type\" value=" + Math.abs(list[i].positionAmt) + " id=\"position" + list[i].symbol + "\" name=\"position" + list[i].symbol + "\")\" size=5/>" 
-			            		   			+ "&nbsp&nbsp<input type=\"button\" value=\"平仓\" id=\"market" + list[i].symbol + "\" name=\"market" + list[i].symbol + "\" onclick =\"tradeMarket2('BUY', '" + list[i].symbol + "')\"/>"
-			            		   			+ "<input type=\"type\" value=50 id=\"prate" + list[i].symbol + "\" name=\"prate" + list[i].symbol + "\")\" size=5/>%" 
+			            		   		edit = "<input type=\"type\" value=10 id=\"position" + list[i].symbol + "\" name=\"position" + list[i].symbol + "\")\" size=3/>%" 
+			            		   			+ "<input type=\"button\" value=\"平仓\" id=\"market" + list[i].symbol + "\" name=\"market" + list[i].symbol + "\" onclick =\"tradeMarket2('BUY', '" + list[i].symbol + "')\"/>"
+			            		   			+ "&nbsp&nbsp<input type=\"type\" value=50 id=\"prate" + list[i].symbol + "\" name=\"prate" + list[i].symbol + "\")\" size=5/>%" 
 			            		   			+ "<input type=\"button\" value=\"止盈\" id=\"profit" + list[i].symbol + "\" name=\"profit" + list[i].symbol + "\" onclick =\"tradeMarket3('BUY', 'TAKE_PROFIT_MARKET', '" + list[i].symbol + "', '" + list[i].entryPrice + "', '" + list[i].leverage + "')\"/>"
-			            		   			+ "<input type=\"type\" value=50 id=\"lrate" + list[i].symbol + "\" name=\"lrate" + list[i].symbol + "\")\" size=5/>%" 
+			            		   			+ "&nbsp&nbsp<input type=\"type\" value=50 id=\"lrate" + list[i].symbol + "\" name=\"lrate" + list[i].symbol + "\")\" size=5/>%" 
 			            		   			+ "<input type=\"button\" value=\"止损\" id=\"loss" + list[i].symbol + "\" name=\"loss" + list[i].symbol + "\" onclick =\"tradeMarket4('BUY', 'STOP_MARKET', '" + list[i].symbol + "', '" + list[i].entryPrice + "', '" + list[i].leverage + "')\"/>"            		   			
 			            		    } else if(list[i].positionAmt > 0) {
-			            		    	edit = "<input type=\"type\" value=" + Math.abs(list[i].positionAmt) + " id=\"position" + list[i].symbol + "\" name=\"position" + list[i].symbol + "\")\" size=5/>" 
+			            		    	edit = "<input type=\"type\" value=10 id=\"position" + list[i].symbol + "\" name=\"position" + list[i].symbol + "\")\" size=3/>%" 
 			            		    		+ "<input type=\"button\" value=\"平仓\" id=\"market" + list[i].symbol + "\" name=\"market" + list[i].symbol + "\" onclick =\"tradeMarket2('SELL', '" + list[i].symbol + "')\"/>"
 			            		   			+ "&nbsp&nbsp<input type=\"type\" value=50 id=\"prate" + list[i].symbol + "\" name=\"prate" + list[i].symbol + "\")\" size=5/>%" 
 			            		   			+ "<input type=\"button\" value=\"止盈\" id=\"profit" + list[i].symbol + "\" name=\"profit" + list[i].symbol + "\" onclick =\"tradeMarket3('SELL', 'TAKE_PROFIT_MARKET', '" + list[i].symbol + "', '" + list[i].entryPrice + "', '" + list[i].leverage + "')\"/>"
@@ -671,8 +674,8 @@
 	    		return;
 	    	}
 	     	$("#message").html('');
-    		if(!validateFloat($("#position" + symbol).val())) {
-    			$("#message").html("“平仓数量”必须是小数点后五位以内的小数");
+    		if(!validateFloat2($("#position" + symbol).val())) {
+    			$("#message").html("“平仓数量”必须是小数点后两位以内的小数");
     			$("#position" + symbol).focus();
     			return;
     		}
@@ -713,8 +716,8 @@
 	    
 	    function tradeMarket3(side, type, symbol, price, rate) { 
 	     	$("#message").html('');
-    		if(!validateFloat($("#position" + symbol).val())) {
-    			$("#message").html("“止盈数量”必须是小数点后五位以内的小数");
+    		if(!validateFloat2($("#position" + symbol).val())) {
+    			$("#message").html("“止盈数量”必须是小数点后两位以内的小数");
     			$("#position" + symbol).focus();
     			return;
     		} else if(!validateFloat2($("#prate" + symbol).val())) {
@@ -769,8 +772,8 @@
 	    
 	    function tradeMarket4(side, type, symbol, price, rate) {  
 	     	$("#message").html('');
-    		if(!validateFloat($("#position" + symbol).val())) {
-    			$("#message").html("“止损数量”必须是小数点后五位以内的小数");
+    		if(!validateFloat2($("#position" + symbol).val())) {
+    			$("#message").html("“止损数量”必须是小数点后两位以内的小数");
     			$("#position" + symbol).focus();
     			return;
     		} else if(!validateFloat2($("#lrate" + symbol).val())) {
@@ -848,14 +851,18 @@
 			if((parseFloat($("#first").val()) < parseFloat($("#stop").val()) && parseFloat($("#second").val()) < parseFloat($("#stop").val()) && parseFloat($("#third").val()) < parseFloat($("#stop").val())) ||
 					(parseFloat($("#first").val()) > parseFloat($("#stop").val()) && parseFloat($("#second").val()) > parseFloat($("#stop").val()) && parseFloat($("#third").val()) > parseFloat($("#stop").val()))) {
 		    	$("#plan").attr("disabled","true");
+		    	var pars = "first=" + $("#first").val() + "&second=" + $("#second").val() + "&third=" + $("#third").val() + "&stop=" + $("#stop").val() 
+	            	+ "&compare=" + +$('input[name="compare"]:checked').val() + "&trigger=" + $("#trigger").val() 
+	            	+ "&compare1=" + +$('input[name="compare1"]:checked').val() + "&trigger1=" + $("#trigger1").val() 
+	            	+ "&symbol="+$('input[name="symbol"]:checked').val();
+		    	if(role == 0) {
+		    		pars += "&level="+$('input[name="level"]:checked').val();
+		    	}
 		        $.ajax({  
 		            type : "get",
 		            url : "/Order/plan",
 		            timeout : 10000,
-		            data : "first=" + $("#first").val() + "&second=" + $("#second").val() + "&third=" + $("#third").val() + "&stop=" + $("#stop").val() 
-		            	+ "&compare=" + +$('input[name="compare"]:checked').val() + "&trigger=" + $("#trigger").val() 
-		            	+ "&compare1=" + +$('input[name="compare1"]:checked').val() + "&trigger1=" + $("#trigger1").val() 
-		            	+ "&symbol="+$('input[name="symbol"]:checked').val(),
+		            data : pars,
 
 		            //成功
 		            success : function(data) {
@@ -1012,11 +1019,11 @@
 		            			var edit = "<input type=\"button\" id=\"rplan" + list[i].id + "\" name=\"rplan" + list[i].id + "\" value=\"再次下单\" onclick =\"repeat(" + list[i].id + ")\"/>"
 		            				+ "&nbsp&nbsp<input type=\"button\" id=\"detail" + list[i].id + "\" name=\"detail" + list[i].id + "\" value=\"预览\" onclick =\"showDetail(" + list[i].id + ", '" + list[i].symbol + "')\"/>"		            			
 		            				+ "&nbsp&nbsp<input type=\"button\" id=\"fusers" + list[i].id + "\" name=\"fusers" + list[i].id + "\" value=\"跟单人员\" onclick =\"findUserByUid(" + list[i].id + ")\"/>";
-		            			var color = "<span>";
+		            			var color = "<span>&nbsp×&nbsp";
 		            			if(list[i].state == 5) {
-		            				color = "<span style=\"color:green;\">";
+		            				color = "<span style=\"color:green;\">&nbsp↑&nbsp";
 		            			} else if(list[i].state == 6) {
-		            				color = "<span style=\"color:red;\">";
+		            				color = "<span style=\"color:red;\">&nbsp↓&nbsp";
 		            			}
 		            			str += "<tr>" + 
 		            				"<td>" + list[i].symbol + "</td>" + 
@@ -1419,13 +1426,13 @@
 <p>
 <table id="ordersList" name="ordersList" width="100%" cellpadding="1" cellspacing="0" border="1"></table>
 <p>
-<hr>
+<!-- <hr>
 <span style="color:red;font-weight:bold;">即时单</span>
 &nbsp&nbsp<input type="button" value="开多" id="market1" name="market1" onclick ="tradeMarket1('BUY', 1)"/>
 &nbsp&nbsp<input type="button" value="开空" id="market2" name="market2" onclick ="tradeMarket1('SELL', 2)"/>
 &nbsp&nbsp<span id='title1' name='title1' style="color:red;font-weight:bold;">BTCUSDT</span>
-<p>
-<hr>
+<p> 
+<hr>-->
 <span style="color:red;font-weight:bold;">计划单</span>
 &nbsp&nbsp<input type="button" value="开单" id="plan" name="plan" onclick ="tradePlan()"/>
 &nbsp&nbsp<span id='title2' name='title2' style="color:red;font-weight:bold;">BTCUSDT</span>
@@ -1480,6 +1487,19 @@
 <input type="radio" name="compare1" value="0">大于
 <input type="radio" name="compare1" value="1" checked>小于
 <input type="text" id="trigger1" name="trigger1"/>
+</td>
+</tr>
+<tr>
+<td>
+<div id="levelDiv1">
+级别
+</div>
+</td>
+<td>
+<div id="levelDiv2">
+<input type="radio" name="level" value="1" checked>黄金
+<input type="radio" name="level" value="8">王者
+</div>
 </td>
 </tr>
 </table>

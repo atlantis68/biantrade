@@ -35,14 +35,8 @@ public class ConfigServiceImpl implements ConfigService {
 	}
 
 	@Override
-	public List<Config> findConfigFlag2(Config config) {
+	public List<Config> findConfigFlag(Config config) {
 		// TODO Auto-generated method stub
-		return configMapper.findConfigFlag2(config);
-	}
-
-	@Override
-	public List<Config> findConfigFlag12(Config config) {
-		// TODO Auto-generated method stub
-		return configMapper.findConfigFlag12(config);
+		return configMapper.findConfigFlag(config);
 	}
 }

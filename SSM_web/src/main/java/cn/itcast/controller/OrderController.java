@@ -52,7 +52,7 @@ public class OrderController {
     
     @RequestMapping(value = "/plan")
     @ResponseBody
-    public String plan(String symbol, String first, String second, String third, String stop, 
+    public String plan(String symbol, String first, String second, String third, String stop, Integer level,
     		String trigger, Integer compare, String trigger1, Integer compare1, HttpSession session) {
     	JSONObject result = new JSONObject();
     	try {
@@ -60,7 +60,7 @@ public class OrderController {
     		//获取配置项
     		User user = (User) session.getAttribute("USER_SESSION");
     		String plan = orderService.plan(symbol, first, second, third, stop, trigger, compare, trigger1, compare1,
-    				user.getId(), user.getApiKey(), user.getSecretKey(), curPrice);
+    				user.getId(), user.getApiKey(), user.getSecretKey(), curPrice, level);
         	result.put("status", "ok");
         	result.put("msg", plan);
         	if(user.getRole() == 0) {
@@ -71,7 +71,8 @@ public class OrderController {
         			if(id > 0) {
         				Config config = new Config();
         				config.setType(symbol);
-        				List<Config> allConfig = configService.findConfigFlag12(config);
+        				config.setId(level);
+        				List<Config> allConfig = configService.findConfigFlag(config);
         				for(Config c : allConfig) {
         					ThreadPool.execute(new FollowPlanTask(orderService, id, symbol, first, second, third, stop, 
         							trigger, compare, trigger1, compare1, c.getUid(), c.getType(), c.getLossWorkingType(), curPrice));
@@ -116,7 +117,12 @@ public class OrderController {
     	try {
     		//获取配置项
     		User user = (User) session.getAttribute("USER_SESSION");
-    		List<Plan> plans = orderService.findPlanByTime(startTime);
+    		List<Plan> plans;
+    		if(user.getRole() == 0) {
+    			plans = orderService.findPlanByTime(startTime, 9);    			
+    		} else {
+    			plans = orderService.findPlanByTime(startTime, user.getRole());  
+    		}
         	result.put("status", "ok");
         	result.put("msg", JSON.toJSONString(plans));
 		} catch (Exception e) {
@@ -136,7 +142,7 @@ public class OrderController {
     	try {
     		User user = (User) session.getAttribute("USER_SESSION");
     		if(user.getRole() > 0) {
-        		List<Plan> plans = orderService.findFllowPlans(symbol);
+        		List<Plan> plans = orderService.findFllowPlans(user.getRole());
         		result.put("status", "ok");
         		result.put("msg", JSON.toJSONString(plans));
     		} else {
@@ -224,9 +230,13 @@ public class OrderController {
     		User user = (User) session.getAttribute("USER_SESSION");
     		Plan plan = orderService.findPlanById(id);
     		if(plan != null) {
+    			Integer level = null;
+    			if(user.getRole() == 0) {
+    				level = plan.getLevel();
+    			}
 				String temp = plan(plan.getSymbol(), plan.getFirst().toString(), plan.getSecond().toString(), 
-    					plan.getThird().toString(), plan.getStop().toString(), plan.getTrigger().toString(), plan.getCompare(), 
-    					plan.getTrigger1().toString(), plan.getCompare1(), session);
+						plan.getThird().toString(), plan.getStop().toString(), level, plan.getTrigger().toString(), 
+						plan.getCompare(), plan.getTrigger1().toString(), plan.getCompare1(), session);
 				result = JSONObject.parseObject(temp); 
     		} else {
     			result.put("status", "error");
