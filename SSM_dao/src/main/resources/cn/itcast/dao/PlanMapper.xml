@@ -3,8 +3,10 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="cn.itcast.dao.PlanMapper">
     <insert id="insertPlan" parameterType="cn.itcast.pojo.Plan" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO `plan` (uid, pid, symbol, first, second, third, stop, `trigger`, compare, `trigger1`, compare1, state, createTime, updateTime, `type`, orderIds) 
-        	VALUES (#{uid}, #{pid}, #{symbol}, #{first}, #{second}, #{third}, #{stop}, #{trigger}, #{compare}, #{trigger1}, #{compare1}, #{state}, #{createTime}, #{updateTime}, #{type}, #{orderIds});
+        INSERT INTO `plan` (uid, pid, symbol, first, second, third, stop, `trigger`, compare, 
+        	`trigger1`, compare1, state, createTime, updateTime, `type`, level, orderIds) 
+        	VALUES (#{uid}, #{pid}, #{symbol}, #{first}, #{second}, #{third}, #{stop}, #{trigger}, #{compare}, 
+        	#{trigger1}, #{compare1}, #{state}, #{createTime}, #{updateTime}, #{type}, #{level}, #{orderIds});
     </insert>
     <select id="findPlanByUid" parameterType="String"
             resultType="cn.itcast.pojo.Plan">

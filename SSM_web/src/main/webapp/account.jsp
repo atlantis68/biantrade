@@ -273,6 +273,22 @@
     	return result;   	
     }
     
+    function translateLevel(value) {
+    	var result = "";
+		switch(value) {
+		case 1 :
+			result = "黄金";
+			break;
+		case 2 :
+			result = "王者";
+			break;
+		case 5 :
+			result = "独食";
+			break;
+		}
+    	return result;   	
+    }
+    
     function translateCompare(value) {
     	var result = "";
 		switch(value) {
@@ -928,6 +944,7 @@
 			            			"<td align=\"center\"><b>撤单触发价</b></td>" + 	
 			            			"<td align=\"center\"><b>状态</b></td>" + 
 			            			"<td align=\"center\"><b>来源</b></td>" + 
+			            			"<td align=\"center\"><b>等级</b></td>" +
 			            			"<td align=\"center\"><b>关联订单号</b></td>" + 
 			            			"<td align=\"center\"><b>操作时间</b></td>" + 
 			            			"<td align=\"center\"><b>更新时间</b></td>" + 
@@ -956,6 +973,7 @@
 			            			"<td>" + translateCompare(list[i].compare1) + translateNull(list[i].trigger1) + "</td>" + 			            			
 			            			"<td>" + translateState(list[i].state) + "</td>" +  
 			            			"<td>" + translateFrom(list[i].type) + "</td>" +
+			            			"<td>" + translateLevel(list[i].level) + "</td>" +
 			            			"<td>" + list[i].orderIds + "</td>" +
 			            			"<td>" + getFormatDateByLong(list[i].createTime) + "</td>" + 
 			            			"<td>" + getFormatDateByLong(list[i].updateTime) + "</td>" + 
@@ -1011,6 +1029,7 @@
 			            			"<td align=\"center\"><b>撤单触发价</b></td>" + 	
 			            			"<td align=\"center\"><b>状态</b></td>" + 
 			            			"<td align=\"center\"><b>来源</b></td>" + 
+			            			"<td align=\"center\"><b>等级</b></td>" +
 			            			"<td align=\"center\"><b>操作时间</b></td>" + 
 			            			"<td align=\"center\"><b>更新时间</b></td>" + 
 			            			"<td align=\"center\"><b>操作</b></td>" + 
@@ -1037,6 +1056,7 @@
 			            			"<td>" + translateCompare(list[i].compare1) + translateNull(list[i].trigger1) + "</td>" + 			            			
 			            			"<td>" + color + translateState(list[i].state) + "</span></td>" +  
 			            			"<td>" + translateFrom(list[i].type) + "</td>" +
+			            			"<td>" + translateLevel(list[i].level) + "</td>" +
 			            			"<td>" + getFormatDateByLong(list[i].createTime) + "</td>" + 
 			            			"<td>" + getFormatDateByLong(list[i].updateTime) + "</td>" + 
 			            			"<td>" + edit + "</td>" + 
@@ -1131,6 +1151,7 @@
 			            			"<td align=\"center\"><b>撤单触发价</b></td>" + 			            			
 			            			"<td align=\"center\"><b>状态</b></td>" + 
 			            			"<td align=\"center\"><b>来源</b></td>" + 
+			            			"<td align=\"center\"><b>等级</b></td>" +
 			            			"<td align=\"center\"><b>操作时间</b></td>" + 
 			            			"<td align=\"center\"><b>更新时间</b></td>" + 
 			            			"<td align=\"center\"><b>操作</b></td>" + 
@@ -1151,6 +1172,7 @@
 			            			"<td>" + translateCompare(list[i].compare1) + translateNull(list[i].trigger1) + "</td>" + 			            			
 			            			"<td>" + translateState(list[i].state) + "</td>" +  
 			            			"<td>" + translateFrom(list[i].type) + "</td>" +
+			            			"<td>" + translateLevel(list[i].level) + "</td>" +
 			            			"<td>" + getFormatDateByLong(list[i].createTime) + "</td>" + 
 			            			"<td>" + getFormatDateByLong(list[i].updateTime) + "</td>" + 
 			            			"<td>" + edit + "</td>" + 
