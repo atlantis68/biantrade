@@ -9,7 +9,7 @@ public class User {
 	private String apiKey;
 	private String secretKey;
 	private String mail;
-	private Integer role;
+	private String role;
 
 	public Integer getId() {
 		return id;
@@ -67,11 +67,11 @@ public class User {
 		this.mail = mail;
 	}
 
-	public Integer getRole() {
+	public String getRole() {
 		return role;
 	}
 
-	public void setRole(Integer role) {
+	public void setRole(String role) {
 		this.role = role;
 	}
 

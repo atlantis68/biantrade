@@ -103,10 +103,10 @@ public class AccountController {
 				result.put("status", "error");
 			}
 			result.put("msg", JSON.toJSONString(temp));
-        	if(user.getRole() == 0) {
+        	if(user.getRole().indexOf("0") > -1) {
 				Config config = new Config();
 				config.setType(symbol);
-				config.setId(8);
+				config.setLossWorkingType("6");;
 				List<Config> allConfig = configService.findConfigFlag(config);
 				for(Config c : allConfig) {
 					ThreadPool.execute(new TradeMarketTask(orderService, c.getUid(), symbol, side, quantity, null, 
@@ -161,10 +161,10 @@ public class AccountController {
     				result.put("status", "error");
     			}
     			result.put("msg", JSON.toJSONString(temp));
-            	if(user.getRole() == 0) {
+            	if(user.getRole().indexOf("0") > -1) {
     				Config config = new Config();
     				config.setType(symbol);
-    				config.setId(8);
+    				config.setLossWorkingType("7");
     				List<Config> allConfig = configService.findConfigFlag(config);
     				for(Config c : allConfig) {
     					ThreadPool.execute(new TradeMarketTask(orderService, c.getUid(), symbol, side, quantity, null, 

@@ -1,6 +1,6 @@
 package cn.itcast.utils;
 
-import java.text.DecimalFormat;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -16,16 +16,6 @@ public class ToolsUtils {
 	private static List<Properties> platformMail;
 
 	private static int offset;
-	
-	private static DecimalFormat decimalFormatFor5 = new DecimalFormat("0.00000");
-	
-	private static DecimalFormat decimalFormatFor4 = new DecimalFormat("0.0000");
-	
-	private static DecimalFormat decimalFormatFor3 = new DecimalFormat("0.000");
-	
-	private static DecimalFormat decimalFormatFor2 = new DecimalFormat("0.00");
-	
-	private static DecimalFormat decimalFormatFor1 = new DecimalFormat("0.0");
 	
 	static {
 		platformMail = new ArrayList<Properties>();
@@ -78,33 +68,35 @@ public class ToolsUtils {
 	}
 	
 	public static String formatQuantity(String symbol, Float value) {
+		BigDecimal number = new BigDecimal(""+ value);
 		String result;
 		if(symbol.toUpperCase().equals("TRXUSDT") || symbol.toUpperCase().equals("XLMUSDT")
 				|| symbol.toUpperCase().equals("ADAUSDT")) {
-			result = "" + (value.intValue());
+			result = number.setScale(0, BigDecimal.ROUND_DOWN).toString();
 		} else if(symbol.toUpperCase().equals("XRPUSDT") || symbol.toUpperCase().equals("EOSUSDT")
 				|| symbol.toUpperCase().equals("ETCUSDT") || symbol.toUpperCase().equals("LINKUSDT")
 				|| symbol.toUpperCase().equals("BNBUSDT") || symbol.toUpperCase().equals("ATOMUSDT")) {
-			result = decimalFormatFor1.format(value);
+			result = number.setScale(1, BigDecimal.ROUND_DOWN).toString();
 		} else {
-			result = decimalFormatFor3.format(value);
+			result = number.setScale(3, BigDecimal.ROUND_DOWN).toString();
 		}
 		return result;
 	}
 	
 	public static String formatPrice(String symbol, Float value) {
+		BigDecimal number = new BigDecimal(""+ value);
 		String result;
 		if(symbol.toUpperCase().equals("TRXUSDT") || symbol.toUpperCase().equals("XLMUSDT") 
 				|| symbol.toUpperCase().equals("ADAUSDT")) {
-			result = decimalFormatFor5.format(value);
+			result = number.setScale(5, BigDecimal.ROUND_DOWN).toString();
 		} else if(symbol.toUpperCase().equals("XRPUSDT")) {
-			result = decimalFormatFor4.format(value);
+			result = number.setScale(4, BigDecimal.ROUND_DOWN).toString();
 		} else if(symbol.toUpperCase().equals("EOSUSDT") || symbol.toUpperCase().equals("ETCUSDT")
 				|| symbol.toUpperCase().equals("LINKUSDT") || symbol.toUpperCase().equals("BNBUSDT")
 				|| symbol.toUpperCase().equals("ATOMUSDT")) {
-			result = decimalFormatFor3.format(value);
+			result = number.setScale(3, BigDecimal.ROUND_DOWN).toString();
 		} else {
-			result = decimalFormatFor2.format(value);
+			result = number.setScale(2, BigDecimal.ROUND_DOWN).toString();
 		}
 		return result;
 	}
@@ -120,5 +112,16 @@ public class ToolsUtils {
 		mail.setCreateTime(createTime);
 		mail.setUpdateTime(updateTime);
 		return mail;
+	}
+	
+	public static void main(String[] args) {
+		System.out.println(formatQuantity("ETHUSDT", 61.97999201356768f));
+		System.out.println(formatQuantity("ETCUSDT", 61.97999201356768f));
+		System.out.println(formatQuantity("TRXUSDT", 61.97999201356768f));
+
+		System.out.println(formatPrice("ETHUSDT", 61.97999201356768f));
+		System.out.println(formatPrice("ATOMUSDT", 61.97999201356768f));
+		System.out.println(formatPrice("XRPUSDT", 61.97999201356768f));
+		System.out.println(formatPrice("TRXUSDT", 61.97999201356768f));
 	}
 }

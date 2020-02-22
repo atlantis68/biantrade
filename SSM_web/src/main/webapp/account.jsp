@@ -9,7 +9,9 @@
     var coins = ["BTCUSDT","ETHUSDT","BCHUSDT","LTCUSDT","EOSUSDT","ETCUSDT","XRPUSDT","TRXUSDT","XLMUSDT","LINKUSDT","ATOMUSDT","DASHUSDT","ZECUSDT","ADAUSDT","BNBUSDT"];
     
     $(document).ready(function(){
-    	role = ${role};
+    	if('${role}'.indexOf("0") > -1) {
+    		role = 0;
+    	}
     	if(role == 0) {
     		$('#followDiv').css('display','none');
     	} else {
@@ -1498,7 +1500,8 @@
 <td>
 <div id="levelDiv2">
 <input type="radio" name="level" value="1" checked>黄金
-<input type="radio" name="level" value="6">王者
+<input type="radio" name="level" value="2">王者
+<input type="radio" name="level" value="5">独食
 </div>
 </td>
 </tr>

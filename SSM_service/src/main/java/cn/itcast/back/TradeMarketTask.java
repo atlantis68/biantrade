@@ -79,7 +79,7 @@ public class TradeMarketTask implements Runnable {
 	    		if(StringUtils.isNotEmpty(stopPrice)) {
 	    			mail.setSubject(symbol + "止盈/止损单创建成功，挂单价格" + stopPrice + "，已提交到币安");
 	    		} else {
-	    			mail.setSubject(symbol + "即时单跟单创建成功，成交价格" + ToolsUtils.getCurPriceByKey(symbol) + "，已提交到币安");	    			
+	    			mail.setSubject(symbol + "平仓跟单创建成功，成交价格" + ToolsUtils.getCurPriceByKey(symbol) + "，已提交到币安");	    			
 	    		}
 	    		mail.setContent("提交数量：" + quantity);
 	    		mail.setState(0);

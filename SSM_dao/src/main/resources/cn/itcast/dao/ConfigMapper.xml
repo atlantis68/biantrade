@@ -13,7 +13,8 @@
     <select id="findConfigFlag" parameterType="cn.itcast.pojo.Config"
             resultType="cn.itcast.pojo.Config">
         select c.uid, c.marketAmount, c.rate, `apikey` as `type`, `secretkey` as lossWorkingType from config c, user u 
-        where c.uid = u.id and type=#{type} and autoTrade = 1 and u.role &gt;= #{id}
+        where c.uid = u.id and type=#{type} and autoTrade = 1 and u.role like "%"#{lossWorkingType}"%"
+        
     </select>        
     <update id="updateConfig" parameterType="cn.itcast.pojo.Config">
 		UPDATE config SET marketAmount = #{marketAmount}, limitAmount = #{limitAmount}, maxLoss = #{maxLoss}, 

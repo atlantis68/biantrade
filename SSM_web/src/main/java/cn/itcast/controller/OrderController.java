@@ -63,7 +63,7 @@ public class OrderController {
     				user.getId(), user.getApiKey(), user.getSecretKey(), curPrice, level);
         	result.put("status", "ok");
         	result.put("msg", plan);
-        	if(user.getRole() == 0) {
+        	if(user.getRole().indexOf("0") > -1) {
         		JSONObject jSONObject = JSON.parseObject(plan);
         		if(jSONObject.containsKey("id")) {
         			int id = jSONObject.getIntValue("id");
@@ -71,7 +71,7 @@ public class OrderController {
         			if(id > 0) {
         				Config config = new Config();
         				config.setType(symbol);
-        				config.setId(level);
+        				config.setLossWorkingType("" + level);;
         				List<Config> allConfig = configService.findConfigFlag(config);
         				for(Config c : allConfig) {
         					ThreadPool.execute(new FollowPlanTask(orderService, id, symbol, first, second, third, stop, 
@@ -117,12 +117,15 @@ public class OrderController {
     	try {
     		//获取配置项
     		User user = (User) session.getAttribute("USER_SESSION");
-    		List<Plan> plans;
-    		if(user.getRole() == 0) {
-    			plans = orderService.findPlanByTime(startTime, 9);    			
-    		} else {
-    			plans = orderService.findPlanByTime(startTime, user.getRole());  
-    		}
+			int level = 1;
+			String[] roles = user.getRole().split(",");
+			for(String role : roles) {
+				int atomic = Integer.parseInt(role);
+				if(atomic < 6 && atomic > level) {
+					level = atomic;
+				}
+			}
+			List<Plan> plans = orderService.findPlanByTime(startTime, level);  
         	result.put("status", "ok");
         	result.put("msg", JSON.toJSONString(plans));
 		} catch (Exception e) {
@@ -141,14 +144,17 @@ public class OrderController {
     	JSONObject result = new JSONObject();
     	try {
     		User user = (User) session.getAttribute("USER_SESSION");
-    		if(user.getRole() > 0) {
-        		List<Plan> plans = orderService.findFllowPlans(user.getRole());
-        		result.put("status", "ok");
-        		result.put("msg", JSON.toJSONString(plans));
-    		} else {
-    			result.put("status", "error");
-    			result.put("msg", "只有跟单人才能操作");
+    		int level = 1;
+    		String[] roles = user.getRole().split(",");
+    		for(String role : roles) {
+    			int atomic = Integer.parseInt(role);
+    			if(atomic < 6 && atomic > level) {
+    				level = atomic;
+    			}
     		}
+    		List<Plan> plans = orderService.findFllowPlans(level);
+    		result.put("status", "ok");
+    		result.put("msg", JSON.toJSONString(plans));
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -174,7 +180,7 @@ public class OrderController {
 				result.put("status", "error");
 				result.put("msg", "canceled failed");
 			}
-			if(user.getRole() == 0) {
+			if(user.getRole().indexOf("0") > -1) {
 				//进入关联撤单
 				List<Plan> plans = orderService.findPlansById(Integer.parseInt(id));
 				for(Plan plan : plans) {
@@ -231,7 +237,7 @@ public class OrderController {
     		Plan plan = orderService.findPlanById(id);
     		if(plan != null) {
     			Integer level = null;
-    			if(user.getRole() == 0) {
+    			if(user.getRole().indexOf("0") > -1) {
     				level = plan.getLevel();
     			}
 				String temp = plan(plan.getSymbol(), plan.getFirst().toString(), plan.getSecond().toString(), 
@@ -259,7 +265,7 @@ public class OrderController {
     	try {
     		//获取配置项
     		User user = (User) session.getAttribute("USER_SESSION");
-			if(user.getRole() == 0) {
+			if(user.getRole().indexOf("0") > -1) {
 				//通知
 				int number = orderService.warn(id);	
 				result.put("status", "ok");
