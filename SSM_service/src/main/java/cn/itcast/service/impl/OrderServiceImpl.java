@@ -104,6 +104,8 @@ public class OrderServiceImpl implements OrderService {
 			plan.setType(0);
 			if(level != null) {
 				plan.setLevel(level);
+			} else {
+				plan.setLevel(1);
 			}
 			String orders = "";
 			if(res.getState() == 1) {
@@ -171,6 +173,7 @@ public class OrderServiceImpl implements OrderService {
 			plan.setCreateTime(format.format(new Date()));
 			plan.setUpdateTime(format.format(new Date()));
 			plan.setType(1);
+			plan.setLevel(1);
 			String orders = "";
 			if(res.getState() == 1) {
 				for(String orderId : orderIds) {
