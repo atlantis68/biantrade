@@ -15,7 +15,7 @@
 			for (x in list) {
 				str += "<input type=\"radio\" name=\"relaids\" value=\"" + list[x].id + "\">" + list[x].nickname + "（" + list[x].username + "）";
 			}
-			str += "<input type=\"button\" id=\"changeUser name=\"changeUser value=\"切换用户\" onclick =\"changeUser()\"/>";
+			str += "<input type=\"button\" id=\"changeUserSubmit\" name=\"changeUserSubmit\" value=\"切换用户\" onclick =\"changeUser()\"/>";
 			$("#relaDiv").html(str);
     	} else {
     		$('#relaDiv').css('display','none');
@@ -335,6 +335,8 @@
     		$("#message").html("必须选择切换的用户");
     		return;
     	}
+    	$("#message").html('');
+    	$("#changeUserSubmit").attr("disabled","true");
         $.ajax({  
             type : "get",
             url : "/User/changeUser",
@@ -368,6 +370,7 @@
 
             //请求完成后回调函数 (请求成功或失败之后均调用)。
             complete: function(message) {
+            	$("#changeUserSubmit").removeAttr("disabled");
             } 
         });  
     }    
