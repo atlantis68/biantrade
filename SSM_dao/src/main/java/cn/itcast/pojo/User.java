@@ -10,6 +10,7 @@ public class User {
 	private String secretKey;
 	private String mail;
 	private String role;
+	private String relaids;
 
 	public Integer getId() {
 		return id;
@@ -73,6 +74,14 @@ public class User {
 
 	public void setRole(String role) {
 		this.role = role;
+	}
+
+	public String getRelaids() {
+		return relaids;
+	}
+
+	public void setRelaids(String relaids) {
+		this.relaids = relaids;
 	}
 
 }

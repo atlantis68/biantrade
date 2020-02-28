@@ -1,7 +1,9 @@
 package cn.itcast.controller;
 
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 
@@ -29,6 +32,7 @@ import cn.itcast.pojo.Mail;
 import cn.itcast.pojo.User;
 import cn.itcast.service.ConfigService;
 import cn.itcast.service.OrderService;
+import cn.itcast.service.UserService;
 import cn.itcast.utils.ToolsUtils;
 import okhttp3.Call;
 import okhttp3.Request;
@@ -45,16 +49,36 @@ public class AccountController {
     
     @Autowired
     private OrderService orderService;
+    
+    @Autowired
+    private UserService userService;
 	
 	private static SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	
     @RequestMapping(value = "/index")
     public String index(Model model, HttpSession session) {
+
     	User user = (User) session.getAttribute("USER_SESSION");
     	model.addAttribute("role", user.getRole());
+    	model.addAttribute("id", user.getId());
     	model.addAttribute("username", user.getUsername());
     	model.addAttribute("nickname", user.getNickname());
-        return "account";
+    	if(StringUtils.isNotEmpty(user.getRelaids())) {
+    		List<String> idList = Arrays.asList(user.getRelaids().split(","));
+    		List<User> users = userService.findUserByIds(idList);
+    		if(users != null && users.size() > 0) {
+    			JSONArray userInfos = new JSONArray();
+    			for(User u : users) {
+    				Map<String, String> temp = new HashMap<String, String>();
+    				temp.put("id", "" + u.getId());
+    				temp.put("username", u.getUsername());
+    				temp.put("nickname", u.getNickname());
+    				userInfos.add(temp);
+    			}
+    			model.addAttribute("ids", userInfos.toString());            		
+    		}
+    	}
+    	return "account";            	
     }
 	
     @RequestMapping("/tradeMarket")

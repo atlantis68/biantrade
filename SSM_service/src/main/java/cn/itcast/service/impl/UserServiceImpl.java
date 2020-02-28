@@ -31,4 +31,20 @@ public class UserServiceImpl implements UserService {
     public List<User> findUserByUid(int uid) {
     	return userMapper.findUserByUid(uid);
     }
+    
+    public List<User> findUserByIds(List<String> ids) {
+    	return userMapper.findUserByIds(ids);
+    }
+
+	@Override
+	public User checkPermission(String id, String relaid) {
+		// TODO Auto-generated method stub
+		return userMapper.checkPermission(id, relaid);
+	}
+
+	@Override
+	public User findRelaUser(int id) {
+		// TODO Auto-generated method stub
+		return userMapper.findRelaUser(id);
+	}
 }

@@ -16,5 +16,19 @@
     <select id="findUserByUid" parameterType="Integer"
             resultType="cn.itcast.pojo.User">
         SELECT DISTINCT p.`state` as username, u.`nickname` FROM USER u, plan p WHERE p.`uid` = u.id AND p.pid = #{uid};
-    </select>      
+    </select>   
+    <select id="findUserByIds" resultType="cn.itcast.pojo.User">
+        SELECT * FROM USER WHERE id IN 
+		<foreach collection="list" item="id" index="index" open="(" close=")" separator=",">
+		  #{id}
+		</foreach>
+    </select>  
+    <select id="checkPermission" parameterType="String"
+            resultType="cn.itcast.pojo.User">
+        select * from user where id = #{id} and relaids like "%"#{relaid}"%"
+    </select>  
+    <select id="findRelaUser" parameterType="Integer"
+            resultType="cn.itcast.pojo.User">
+        select * from user where id = #{id}
+    </select>
 </mapper>

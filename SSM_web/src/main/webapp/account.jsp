@@ -9,14 +9,16 @@
     var coins = ["BTCUSDT","ETHUSDT","BCHUSDT","LTCUSDT","EOSUSDT","ETCUSDT","XRPUSDT","TRXUSDT","XLMUSDT","LINKUSDT","ATOMUSDT","DASHUSDT","ZECUSDT","ADAUSDT","BNBUSDT"];
     
     $(document).ready(function(){
-    	if('${role}'.indexOf("0") > -1) {
-    		role = 0;
-    	}
-    	if(role == 0) {
-    		$('#followDiv').css('display','none');
+    	if('${ids}') {
+			var list = JSON.parse('${ids}');
+			var str = "";
+			for (x in list) {
+				str += "<input type=\"radio\" name=\"relaids\" value=\"" + list[x].id + "\">" + list[x].nickname + "（" + list[x].username + "）";
+			}
+			str += "<input type=\"button\" id=\"changeUser name=\"changeUser value=\"切换用户\" onclick =\"changeUser()\"/>";
+			$("#relaDiv").html(str);
     	} else {
-    		$('#levelDiv1').css('display','none');
-    		$('#levelDiv2').css('display','none');
+    		$('#relaDiv').css('display','none');
     	}
     	var seq = 0;
     	var str = "<tr><td colspan=\"10\" align=\"center\"><span style=\"color:red;font-weight:bold;\">实时报价</span></td></tr>";
@@ -37,7 +39,7 @@
 			}
 		}
 		$("#showList").html(str); 	
-		$("#userinfo").text('${nickname}（${username}）');
+		$("#userId").val('${id}');
 		$('input[type=radio][name=symbol]').change(function() {
 			for (x in coins) {
 				$("#" + coins[x]).removeAttr("style");
@@ -47,7 +49,25 @@
 			$("#title1").text(this.value);
 			$("#title2").text(this.value);
 	    });
+		init('${role}', '${nickname}', '${username}');
     });
+    
+    function init(role, nickname, username) {
+    	if(role.indexOf("0") > -1) {
+    		role = 0;
+    	}    	
+    	if(role == 0) {
+    		$('#followDiv').css('display','none');
+    		$('#levelDiv1').css('display','block');
+    		$('#levelDiv2').css('display','block');
+    	} else {
+    		$('#followDiv').css('display','block');
+    		$('#levelDiv1').css('display','none');
+    		$('#levelDiv2').css('display','none');
+    	}
+		$("#userinfo").text(nickname + "（" + username + "）");
+		clearAll();
+    }
 
     window.setInterval(getPrice, 5000); 
     
@@ -310,6 +330,48 @@
     	return result;
     }
     
+    function changeUser(){  
+    	if(!$('input[name="relaids"]:checked').val()) {
+    		$("#message").html("必须选择切换的用户");
+    		return;
+    	}
+        $.ajax({  
+            type : "get",
+            url : "/User/changeUser",
+            timeout : 10000,
+            data : 'id=' + $("#userId").val() + "&relaid="+ $('input[name="relaids"]:checked').val(),
+
+            //成功
+            success : function(data) {
+            	if(data.indexOf("登录") > -1) {
+            		window.location.href='User/logout';
+            	} else {
+            		var jsonObject= jQuery.parseJSON(data);  
+            		if(jsonObject.status == 'ok') {
+            			var user = JSON.parse(jsonObject.msg)
+            			init(user.role, user.nickname, user.username);
+            			if(user.id == $("#userId").val()) {
+            				$('#myUser').css('display','block');
+            			} else {
+            				$('#myUser').css('display','none');
+            			}
+            		} else {
+            			$("#message").html(jsonObject.msg);
+            		}
+            	}
+            },
+
+            //错误情况
+            error : function(error) {
+                console.log("error : " + error);
+            },
+
+            //请求完成后回调函数 (请求成功或失败之后均调用)。
+            complete: function(message) {
+            } 
+        });  
+    }    
+    
     function showAll(){  
     	$("#showAllSubmit").attr("disabled","true");
     	$("#detailList").html("");
@@ -324,6 +386,18 @@
     	setTimeout(function (){
     		$("#showAllSubmit").removeAttr("disabled");
         }, 10000);    	 
+    }
+    
+    function clearAll(){  
+    	$("#detailList").html("");
+    	$("#balanceList").html("");
+    	$("#positionRiskList").html("");
+    	$("#ordersList").html("");
+    	if(role > 0) {
+    		$("#followList").html("");
+    	}
+    	$("#plansList").html("");
+    	$("#historyList").html(""); 
     }
     
     function getPrice(){  
@@ -1424,11 +1498,15 @@
 	    }	
     </script>
 </head>
+<div id="relaDiv">
+</div>
+<p>
 <span style="color:red;font-weight:bold;">
     <%-- 提示信息--%>
     <span id="message" name="message"></span>
 </span>
 <p>
+<input type="hidden" id="userId" name="userId" value=""/>
 <div style="width:100%">
     <span id='userinfo' name='userinfo' style="font-weight:bold;font-size:18px;text-align:center;display:block;position: relative;color:red;"></span>
 </div>
@@ -1547,8 +1625,10 @@
 <table id="historyList" name="historyList" width="100%" cellpadding="1" cellspacing="0" border="1"></table>
 <p>
 <hr>
+<div id="myUser">
 <a href="${pageContext.request.contextPath}/User/index">用户页面</a>
 <a href="${pageContext.request.contextPath}/Config/index">配置页面</a>
+</div>
 <a href="${pageContext.request.contextPath}/User/logout">退出登录</a>
 </body>
 </html>
