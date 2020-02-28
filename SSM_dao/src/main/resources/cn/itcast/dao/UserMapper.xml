@@ -22,6 +22,7 @@
 		<foreach collection="list" item="id" index="index" open="(" close=")" separator=",">
 		  #{id}
 		</foreach>
+		order by id
     </select>  
     <select id="checkPermission" parameterType="String"
             resultType="cn.itcast.pojo.User">

@@ -66,7 +66,7 @@
     		$('#levelDiv2').css('display','none');
     	}
 		$("#userinfo").text(nickname + "（" + username + "）");
-		clearAll();
+		showAll();
     }
 
     window.setInterval(getPrice, 5000); 
