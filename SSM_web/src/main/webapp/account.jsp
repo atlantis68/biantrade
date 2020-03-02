@@ -52,10 +52,12 @@
 		init('${role}', '${nickname}', '${username}');
     });
     
-    function init(role, nickname, username) {
-    	if(role.indexOf("0") > -1) {
+    function init(vrole, nickname, username) {
+    	if(vrole.indexOf("0") > -1) {
     		role = 0;
-    	}    	
+    	} else {
+			role = 1;
+		}    	
     	if(role == 0) {
     		$('#followDiv').css('display','none');
     		$('#levelDiv1').css('display','block');
@@ -921,7 +923,7 @@
 	        }); 
 	    }	
 	    
-	    function tradePlan(){  
+	    function tradePlan(){ 
 	    	if(!confirm($('input[name="symbol"]:checked').val() + "：是否开单")) {
 	    		return;
 	    	}	    	
