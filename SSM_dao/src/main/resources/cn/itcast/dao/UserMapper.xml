@@ -4,7 +4,7 @@
 <mapper namespace="cn.itcast.dao.UserMapper">
     <select id="findUser" parameterType="String"
             resultType="cn.itcast.pojo.User">
-        select * from user where username= #{username} and password=#{password}
+        select * from user where username= #{username} and password=#{password} and status = 1
     </select>
     <select id="findUserById" parameterType="Integer"
             resultType="cn.itcast.pojo.User">
@@ -18,7 +18,7 @@
         SELECT DISTINCT p.`state` as username, u.`nickname` FROM USER u, plan p WHERE p.`uid` = u.id AND p.pid = #{uid};
     </select>   
     <select id="findUserByIds" resultType="cn.itcast.pojo.User">
-        SELECT * FROM USER WHERE id IN 
+        SELECT * FROM USER WHERE status = 1 and id IN 
 		<foreach collection="list" item="id" index="index" open="(" close=")" separator=",">
 		  #{id}
 		</foreach>
@@ -26,10 +26,10 @@
     </select>  
     <select id="checkPermission" parameterType="String"
             resultType="cn.itcast.pojo.User">
-        select * from user where id = #{id} and relaids like "%"#{relaid}"%"
+        select * from user where id = #{id} and relaids like "%"#{relaid}"%" and status = 1
     </select>  
     <select id="findRelaUser" parameterType="Integer"
             resultType="cn.itcast.pojo.User">
-        select * from user where id = #{id}
+        select * from user where id = #{id} and status = 1
     </select>
 </mapper>

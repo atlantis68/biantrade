@@ -1082,6 +1082,7 @@
 	    	$("#message").html('');
 	    	$("#historyOrdersSubmit").attr("disabled","true");
 	    	$("#historyList").html("");
+	    	$("#statistics").html("");
 	        $.ajax({  
 	            type : "get",
 	            url : "/Order/historyOrders",
@@ -1114,6 +1115,9 @@
 			            			"<td align=\"center\"><b>操作</b></td>" + 
 			            			"</tr>";
 		            		}
+		            		var up = 0;
+		            		var down = 0;
+		            		var miss = 0;
 		            		for (x in list) {
 		            			i = list.length - x - 1;
 		            			var edit = "<input type=\"button\" id=\"rplan" + list[i].id + "\" name=\"rplan" + list[i].id + "\" value=\"再次下单\" onclick =\"repeat(" + list[i].id + ")\"/>"
@@ -1122,8 +1126,12 @@
 		            			var color = "<span>&nbsp×&nbsp";
 		            			if(list[i].state == 5) {
 		            				color = "<span style=\"color:green;\">&nbsp↑&nbsp";
+		            				up += 1;
 		            			} else if(list[i].state == 6) {
 		            				color = "<span style=\"color:red;\">&nbsp↓&nbsp";
+		            				down += 1;
+		            			} else {
+		            				miss += 1;
 		            			}
 		            			str += "<tr>" + 
 		            				"<td>" + list[i].symbol + "</td>" + 
@@ -1142,6 +1150,7 @@
 			            			"</tr>";
 		            		}
 	            			$("#historyList").html(str);
+	            			$("#statistics").html("<span style=\"color:green;\">↑盈利：" + up + "&nbsp&nbsp</span><span style=\"color:red;\">↓亏损：" + down + "&nbsp&nbsp</span>×失效：" + miss);
 	            		} else {
 	            			$("#message").html(jsonObject.msg);
 	            		}
@@ -1627,6 +1636,7 @@
 <input type="radio" name="startTime1" value="1" checked>一天内
 <input type="radio" name="startTime1" value="7">一周内
 <input type="radio" name="startTime1" value="30">一月内
+<span id="statistics" name="statistics" style="float:right;"></span>
 <table id="historyList" name="historyList" width="100%" cellpadding="1" cellspacing="0" border="1"></table>
 <p>
 <hr>

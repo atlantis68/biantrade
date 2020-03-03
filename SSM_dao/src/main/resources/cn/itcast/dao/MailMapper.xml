@@ -11,6 +11,6 @@
     </update>    
     <select id="findUnsentMail" resultType="cn.itcast.pojo.Mail">
         select m.id as id, u.mail as symbol, m.subject, m.content from mail m, user u 
-        where m.uid = u.id and state = 0 and updateTime > DATE_SUB(NOW(),INTERVAL  1 HOUR) 
+        where m.uid = u.id and state = 0 and updateTime > DATE_SUB(NOW(),INTERVAL  1 HOUR)  and u.status = 1
     </select>     
 </mapper>

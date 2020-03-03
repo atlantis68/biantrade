@@ -15,11 +15,12 @@
     <select id="findPlanByTime" parameterType="Integer"
             resultType="cn.itcast.pojo.Plan">
         SELECT p.* FROM plan p, USER u WHERE u.id = p.uid AND u.role like "%0%" AND createTime > DATE_SUB(NOW(),INTERVAL #{time} DAY) 
-        	and state &gt; 3 and p.level &lt;= #{level} order by updateTime;
+        	and state &gt; 3 and p.level &lt;= #{level} and u.status = 1 order by updateTime;
     </select>     
     <select id="findFllowPlans" parameterType="Integer"
             resultType="cn.itcast.pojo.Plan">
-        SELECT p.* FROM plan p, USER u WHERE state &lt; 4 AND u.id = p.uid AND u.role like "%0%" and p.level &lt;= #{level} order by createTime;
+        SELECT p.* FROM plan p, USER u WHERE state &lt; 4 AND u.id = p.uid AND u.role like "%0%" 
+        	and p.level &lt;= #{level} and u.status = 1 order by createTime;
     </select>        
     <update id="updatePlanById" parameterType="cn.itcast.pojo.Plan">
         update `plan` set state = #{state}, updateTime = #{updateTime}, orderIds = #{orderIds} where id = #{id};
@@ -31,15 +32,15 @@
     <select id="findPlansById" parameterType="Integer"
             resultType="cn.itcast.pojo.Plan">
 		SELECT p.id, p.uid, `symbol`, first, second, third, stop, `apikey` as createTime, `secretkey` as updateTime, `orderIds` FROM `plan` p, user u 
-		where p.uid = u.id and p.pid = #{id} AND p.state &lt; 4
+			where p.uid = u.id and p.pid = #{id} AND p.state &lt; 4 and u.status = 1
     </select>   
     <select id="findPlansByState" parameterType="String"
             resultType="cn.itcast.pojo.Plan">
         select p.`id`, p.`uid`, p.`pid`, p.`symbol`, p.`first`, p.`second`, p.`third`, p.`stop`, p.`trigger`, p.`compare`, p.`trigger1`, p.`compare1`, p.`state`, 
-        	u.apikey as createTime, u.secretkey as updateTime, p.`type`, p.`orderIds` from `plan` p, user u where p.uid = u.id and state = #{state}
+        	u.apikey as createTime, u.secretkey as updateTime, p.`type`, p.`orderIds` from `plan` p, user u where p.uid = u.id and state = #{state} and u.status = 1
     </select>  
     <select id="findPlansByState1" resultType="cn.itcast.pojo.Plan">
         select p.`id`, p.`uid`, p.`pid`, p.`symbol`, p.`first`, p.`second`, p.`third`, p.`stop`, p.`trigger`, p.`compare`, p.`trigger1`, p.`compare1`, p.`state`, 
-        	u.apikey as createTime, u.secretkey as updateTime, p.`type`, p.`orderIds` from `plan` p, user u where p.uid = u.id and state &lt; 4
+        	u.apikey as createTime, u.secretkey as updateTime, p.`type`, p.`orderIds` from `plan` p, user u where p.uid = u.id and state &lt; 4 and u.status = 1
     </select>        
 </mapper>

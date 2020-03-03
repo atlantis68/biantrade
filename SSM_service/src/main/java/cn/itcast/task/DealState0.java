@@ -39,6 +39,12 @@ public class DealState0 implements Runnable {
     
 	@Override
 	public void run() {
+		try {
+			Thread.sleep(5000);
+		} catch (InterruptedException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
     	while(true) {
 	    	try {
 	    		List<Plan> plans = planMapper.findPlansByState("0");

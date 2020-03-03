@@ -149,6 +149,7 @@ public class UserController {
     		if(my != null) {
     			User relaUser = userService.findRelaUser(Integer.parseInt(relaid));
     			if(relaUser != null) {
+    				session.setMaxInactiveInterval(-1);
     	            session.setAttribute("USER_SESSION", relaUser);
     				Map<String, String> temp = new HashMap<String, String>();
     				temp.put("id", "" + relaUser.getId());

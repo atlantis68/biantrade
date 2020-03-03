@@ -11,6 +11,7 @@ public class User {
 	private String mail;
 	private String role;
 	private String relaids;
+	private Integer status;
 
 	public Integer getId() {
 		return id;
@@ -82,6 +83,14 @@ public class User {
 
 	public void setRelaids(String relaids) {
 		this.relaids = relaids;
+	}
+
+	public Integer getStatus() {
+		return status;
+	}
+
+	public void setStatus(Integer status) {
+		this.status = status;
 	}
 
 }
