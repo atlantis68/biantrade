@@ -456,14 +456,23 @@ public class OrderServiceImpl implements OrderService {
 		}
 		//是否全部成功
     	if(orderIds.size() < 6) {
+    		boolean allCanceled = true;
 			for(String orderId : orderIds) {
 				try {
-					cancel(symbol, orderId, apiKey, secretKey);						
+					String temp = cancel(symbol, orderId, apiKey, secretKey);	
+					Map<String, String> tempInfo = JSON.parseObject(temp, new TypeReference<Map<String, String>>(){} );
+					if(!(tempInfo != null && StringUtils.isNotEmpty(tempInfo.get("orderId")))) {
+						allCanceled = false;
+					} 
 				} catch(Exception e) {
-					state = 4;
+					allCanceled = false;
 				}
 			}
-			state = 3;
+			if(allCanceled) {
+				state = 3;				
+			} else {
+				state = 4;
+			}
 		}
     	return new Result(state, msg);
     }
