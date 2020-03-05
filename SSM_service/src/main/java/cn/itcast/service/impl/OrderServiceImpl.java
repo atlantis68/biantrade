@@ -54,6 +54,10 @@ public class OrderServiceImpl implements OrderService {
 		return planMapper.findPlanByUid(uid.toString());
 	}
 	
+	public List<Plan> findCachePlanByUid(Integer uid) {
+		return planMapper.findCachePlanByUid(uid.toString());
+	}
+	
 	public List<Plan> findFllowPlans(Integer level) {
 		return planMapper.findFllowPlans(level);
 	}
@@ -621,5 +625,9 @@ public class OrderServiceImpl implements OrderService {
     		mailMapper.insertMail(mail);
 		}	
     	return plans.size();
+    }
+    
+    public int insertPlan(Plan plan) {
+    	return planMapper.insertPlan(plan);
     }
 }

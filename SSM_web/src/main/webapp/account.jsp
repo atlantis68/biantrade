@@ -389,6 +389,7 @@
     	if(role > 0) {
     		fllowPlans();    		
     	}
+    	findCachePlans();
     	findAllPlans();
     	historyOrders();
     	setTimeout(function (){
@@ -995,6 +996,76 @@
 			}
  
 	    }
+	    
+	    function savePlan(){ 
+	    	if(!confirm($('input[name="symbol"]:checked').val() + "：是否保存")) {
+	    		return;
+	    	}	    	
+	    	$("#message").html('');
+			if(!validateFloat($("#first").val())) {
+				$("#message").html("“第一档”必须是小数点后五位以内的小数");
+				$("#first").focus();
+				return;
+			} else if(!validateFloat($("#second").val())) {
+				$("#message").html("“第二档”必须是小数点后五位以内的小数");
+				$("#second").focus();
+				return;
+			} else if(!validateFloat($("#third").val())) {
+				$("#message").html("“第三档”必须是小数点后五位以内的小数");
+				$("#third").focus();
+				return;
+			} else if(!validateFloat($("#stop").val())) {
+				$("#message").html("“止损档”必须是小数点后五位以内的小数");
+				$("#stop").focus();
+				return;
+			} 
+			if((parseFloat($("#first").val()) < parseFloat($("#stop").val()) && parseFloat($("#second").val()) < parseFloat($("#stop").val()) && parseFloat($("#third").val()) < parseFloat($("#stop").val())) ||
+					(parseFloat($("#first").val()) > parseFloat($("#stop").val()) && parseFloat($("#second").val()) > parseFloat($("#stop").val()) && parseFloat($("#third").val()) > parseFloat($("#stop").val()))) {
+		    	$("#save").attr("disabled","true");
+		    	var pars = "first=" + $("#first").val() + "&second=" + $("#second").val() + "&third=" + $("#third").val() + "&stop=" + $("#stop").val() 
+	            	+ "&compare=" + +$('input[name="compare"]:checked').val() + "&trigger=" + $("#trigger").val() 
+	            	+ "&compare1=" + +$('input[name="compare1"]:checked').val() + "&trigger1=" + $("#trigger1").val() 
+	            	+ "&symbol="+$('input[name="symbol"]:checked').val();
+		    	if(role == 0) {
+		    		pars += "&level="+$('input[name="level"]:checked').val();
+		    	}
+		        $.ajax({  
+		            type : "get",
+		            url : "/Order/save",
+		            timeout : 10000,
+		            data : pars,
+
+		            //成功
+		            success : function(data) {
+		            	if(data.indexOf("登录") > -1) {
+		            		window.location.href='User/logout';
+		            	} else {
+		            		var jsonObject= jQuery.parseJSON(data);  
+		            		if(jsonObject.status == 'error') {
+		            			$("#message").html(jsonObject.msg);
+		            		} else {
+		            			findCachePlans();
+		            			$("#message").html($('input[name="symbol"]:checked').val() + "的计划单已保存");	 
+		            		}
+		            	}
+		            },
+
+		            //错误情况
+		            error : function(error) {
+		                console.log("error : " + error);
+		            },
+
+		            //请求完成后回调函数 (请求成功或失败之后均调用)。
+		            complete: function(message) {
+		            	$("#save").removeAttr("disabled");
+		            } 
+		        });
+			} else {
+				$("#message").html("档位设置不合规");
+				return;
+			}
+ 
+	    }	    
 
 	    function findAllPlans(){  
 	    	$("#message").html('');
@@ -1080,6 +1151,83 @@
 	            } 
 	        });  
 	    } 	 
+	    
+	    function findCachePlans(){  
+	    	$("#message").html('');
+	    	$("#findCachePlansSubmit").attr("disabled","true");
+	    	$("#cacheList").html("");
+	        $.ajax({  
+	            type : "get",
+	            url : "/Order/findCachePlans",
+	            timeout : 10000,
+	            data : '',
+
+	            //成功
+	            success : function(data) {
+	            	if(data.indexOf("登录") > -1) {
+	            		window.location.href='User/logout';
+	            	} else {
+	            		var jsonObject= jQuery.parseJSON(data);  
+	            		if(jsonObject.status == 'ok') {
+	            			var list = JSON.parse(jsonObject.msg);
+		            		if(list.length > 0) {
+		            			var str = "";
+		            			str += "<tr>" + 
+		            				"<td align=\"center\"><b>类型</b></td>" +
+			            			"<td align=\"center\"><b>第一档</b></td>" + 
+			            			"<td align=\"center\"><b>第二档</b></td>" + 
+			            			"<td align=\"center\"><b>第三档</b></td>" + 
+			            			"<td align=\"center\"><b>止损档</b></td>" + 
+			            			"<td align=\"center\"><b>开单触发价</b></td>" + 
+			            			"<td align=\"center\"><b>撤单触发价</b></td>" + 	
+			            			"<td align=\"center\"><b>状态</b></td>" + 
+			            			"<td align=\"center\"><b>来源</b></td>" + 
+			            			"<td align=\"center\"><b>等级</b></td>" +
+			            			"<td align=\"center\"><b>操作时间</b></td>" + 
+			            			"<td align=\"center\"><b>更新时间</b></td>" + 
+			            			"<td align=\"center\"><b>操作</b></td>" + 
+			            			"</tr>";
+		            		}
+		            		for (x in list) {
+		            			i = list.length - x - 1;
+		            			var edit = '';
+		            			edit += "&nbsp&nbsp<input type=\"button\" id=\"csave" + list[i].id + "\" name=\"csave" + list[i].id + "\" value=\"提交\" onclick =\"submitPlan(" + list[i].id + ")\"/>"
+		            				+ "&nbsp&nbsp<input type=\"button\" id=\"c1plan" + list[i].id + "\" name=\"c1plan" + list[i].id + "\" value=\"撤单\" onclick =\"cancelPlan1('" + list[i].symbol + "', " + list[i].id + ", '" + list[i].orderIds + "')\"/>"
+		            				+ "&nbsp&nbsp<input type=\"button\" id=\"detail" + list[i].id + "\" name=\"detail" + list[i].id + "\" value=\"预览\" onclick =\"showDetail(" + list[i].id + ", '" + list[i].symbol + "')\"/>";
+		            			str += "<tr>" + 
+		            				"<td>" + list[i].symbol + "</td>" + 
+			            			"<td>" + list[i].first + "</td>" + 
+			            			"<td>" + list[i].second + "</td>" + 
+			            			"<td>" + list[i].third + "</td>" + 
+			            			"<td>" + list[i].stop + "</td>" + 
+			            			"<td>" + translateCompare(list[i].compare) + translateNull(list[i].trigger) + "</td>" + 
+			            			"<td>" + translateCompare(list[i].compare1) + translateNull(list[i].trigger1) + "</td>" + 			            			
+			            			"<td>" + translateState(list[i].state) + "</td>" +  
+			            			"<td>" + translateFrom(list[i].type) + "</td>" +
+			            			"<td>" + translateLevel(list[i].level) + "</td>" +
+			            			"<td>" + getFormatDateByLong(list[i].createTime) + "</td>" + 
+			            			"<td>" + getFormatDateByLong(list[i].updateTime) + "</td>" + 
+			            			"<td>" + edit + "</td>" + 
+			            			"</tr>";
+		            		}
+	            			$("#cacheList").html(str);
+	            		} else {
+	            			$("#message").html(jsonObject.msg);
+	            		}
+	            	}
+	            },
+
+	            //错误情况
+	            error : function(error) {
+	                console.log("error : " + error);
+	            },
+
+	            //请求完成后回调函数 (请求成功或失败之后均调用)。
+	            complete: function(message) {
+	            	$("#findCachePlansSubmit").removeAttr("disabled");
+	            } 
+	        });  
+	    } 	    
 	    
 	    function historyOrders(){  
 	    	$("#message").html('');
@@ -1327,6 +1475,45 @@
 	        });  
 	    }
 	    
+	    function cancelPlan1(symbol, id){  
+	    	if(!confirm("是否撤单")) {
+	    		return;
+	    	}
+	    	$("#message").html('');
+	    	$("#c1plan"+id).attr("disabled","true");
+	    	$.ajax({   
+	            type : "get",
+	            url : "/Order/cancelPlan",
+	            timeout : 10000,
+	            data : "symbol=" + symbol + "&id="+ id + "&state=6",
+
+	            //成功
+	            success : function(data) {
+	            	if(data.indexOf("登录") > -1) {
+	            		window.location.href='User/logout';
+	            	} else {
+	            		var jsonObject= jQuery.parseJSON(data);
+	            		if(jsonObject.status == 'error') {
+	            			$("#message").html(jsonObject.msg);
+	            		} else {
+	            			findCachePlans();
+	            			$("#message").html("plan" + id + " " + jsonObject.msg);	
+	            		}
+	            	}
+	            },
+
+	            //错误情况
+	            error : function(error) {
+	                console.log("error : " + error);
+	            },
+
+	            //请求完成后回调函数 (请求成功或失败之后均调用)。
+	            complete: function(message) {
+	            	$("#c1plan"+id).removeAttr("disabled");
+	            } 
+	        });  
+	    }	    
+	    
 	    function follow(id){  
 	    	if(!confirm("是否跟单")) {
 	    		return;
@@ -1365,6 +1552,42 @@
 	            } 
 	        });  
 	    }	
+	    
+	    function submitPlan(id){  
+	    	$("#message").html('');
+	    	$("#csave"+id).attr("disabled","true");
+	        $.ajax({  
+	            type : "get",
+	            url : "/Order/submit",
+	            timeout : 10000,
+	            data : "id="+id,
+
+	            //成功
+	            success : function(data) {
+	            	if(data.indexOf("登录") > -1) {
+	            		window.location.href='User/logout';
+	            	} else {
+	            		var jsonObject= jQuery.parseJSON(data);
+	            		if(jsonObject.status == 'error') {
+	            			$("#message").html(jsonObject.msg);
+	            		} else {
+	            			findAllPlans();
+	            			$("#message").html($('input[name="symbol"]:checked').val() + "的计划单已提交");	 
+	            		}
+	            	}
+	            },
+
+	            //错误情况
+	            error : function(error) {
+	                console.log("error : " + error);
+	            },
+
+	            //请求完成后回调函数 (请求成功或失败之后均调用)。
+	            complete: function(message) {
+	            	$("#csave"+id).removeAttr("disabled");
+	            } 
+	        });  
+	    }		    
 	    
 	    function repeat(id){  
 	    	if(!confirm("是否再次下单")) {
@@ -1554,6 +1777,7 @@
 <hr>-->
 <span style="color:red;font-weight:bold;">计划单</span>
 &nbsp&nbsp<input type="button" value="开单" id="plan" name="plan" onclick ="tradePlan()"/>
+&nbsp&nbsp<input type="button" value="保存" id="save" name="save" onclick ="savePlan()"/>
 &nbsp&nbsp<span id='title2' name='title2' style="color:red;font-weight:bold;">BTCUSDT</span>
 <table id="positionRiskList" name="positionRiskList" width="100%" cellpadding="1" cellspacing="0" border="1">
 <tr>
@@ -1626,6 +1850,9 @@
 <p>
 <hr>
 <table id="detailList" name="detailList" width="100%" cellpadding="1" cellspacing="0" border="1"></table>
+<p>
+<input type="button" id="findCachePlansSubmit" id="findCachePlansSubmit" value="计划单仓库" onclick ="findCachePlans()"/>
+<table id="cacheList" name="cacheList" width="100%" cellpadding="1" cellspacing="0" border="1"></table>
 <p>
 <div id="followDiv">
 <input type="button" id="fllowSubmit" id="fllowSubmit" value="跟随计划单" onclick ="fllowPlans()"/>

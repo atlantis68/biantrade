@@ -10,6 +10,8 @@ public interface OrderService {
     
     public List<Plan> findPlanByUid(Integer uid);
     
+    public List<Plan> findCachePlanByUid(Integer uid);
+    
     public List<Plan> findFllowPlans(Integer level);
     
     public Plan findPlanById(Integer id);
@@ -44,4 +46,6 @@ public interface OrderService {
     public String positionRisk(String apiKey, String secretKey) throws Exception;
     
     public int warn(String id) throws Exception;
+    
+    public int insertPlan(Plan plan);
 }

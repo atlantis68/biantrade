@@ -14,6 +14,8 @@ public interface PlanMapper {
 
 	public List<Plan> findPlanByUid(@Param("uid") String uid);
 	
+	public List<Plan> findCachePlanByUid(@Param("uid") String uid);
+	
 	public List<Plan> findFllowPlans(@Param("level") Integer level);
 	
 	public Plan findPlanById(@Param("id") Integer id);

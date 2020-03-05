@@ -1,10 +1,12 @@
 package cn.itcast.controller;
 
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -88,6 +90,51 @@ public class OrderController {
 		}
     	return result.toJSONString();
     }
+    
+    @RequestMapping(value = "/save")
+    @ResponseBody
+    public String save(String symbol, String first, String second, String third, String stop, Integer level,
+    		String trigger, Integer compare, String trigger1, Integer compare1, HttpSession session) {
+    	JSONObject result = new JSONObject();
+    	try {
+    		//获取配置项
+    		User user = (User) session.getAttribute("USER_SESSION");
+			Plan plan = new Plan();
+			plan.setUid(user.getId());
+			plan.setPid(0);
+			plan.setSymbol(symbol);
+			plan.setFirst(Float.parseFloat(first));
+			plan.setSecond(Float.parseFloat(second));
+			plan.setThird(Float.parseFloat(third));
+			plan.setStop(Float.parseFloat(stop));
+			plan.setTrigger(StringUtils.isNotEmpty(trigger) ? Float.parseFloat(trigger) : 0f);
+			plan.setCompare(StringUtils.isNotEmpty(trigger) ? compare : 0);
+			plan.setTrigger1(StringUtils.isNotEmpty(trigger1) ? Float.parseFloat(trigger1) : 0f);
+			plan.setCompare1(StringUtils.isNotEmpty(trigger1) ? compare1 : 1);
+			plan.setState(5);
+			plan.setCreateTime(format.format(new Date()));
+			plan.setUpdateTime(format.format(new Date()));
+			plan.setType(0);
+			if(level != null) {
+				plan.setLevel(level);
+			} else {
+				plan.setLevel(1);
+			}
+			plan.setOrderIds("");
+			if(orderService.insertPlan(plan) > 0) {
+				result.put("status", "ok");				
+			} else {
+				result.put("status", "error");		
+				result.put("msg", "保存失败");
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+    		result.put("status", "error");
+    		result.put("msg", e.getMessage());
+		}
+    	return result.toJSONString();
+    }
 
 
     @RequestMapping(value = "/findAllPlans")
@@ -98,6 +145,26 @@ public class OrderController {
     		//获取配置项
     		User user = (User) session.getAttribute("USER_SESSION");
     		List<Plan> plans = orderService.findPlanByUid(user.getId());
+        	result.put("status", "ok");
+        	result.put("msg", JSON.toJSONString(plans));
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+    		result.put("status", "error");
+    		result.put("msg", e.getMessage());
+		}
+    	return result.toJSONString();
+		
+    }
+
+    @RequestMapping(value = "/findCachePlans")
+    @ResponseBody
+    public String findCachePlans(HttpSession session) {
+    	JSONObject result = new JSONObject();
+    	try {
+    		//获取配置项
+    		User user = (User) session.getAttribute("USER_SESSION");
+    		List<Plan> plans = orderService.findCachePlanByUid(user.getId());
         	result.put("status", "ok");
         	result.put("msg", JSON.toJSONString(plans));
 		} catch (Exception e) {
@@ -307,6 +374,30 @@ public class OrderController {
     		} else {
     			result.put("status", "error");
     			result.put("msg", "show detail failed");   
+    		}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+    		result.put("status", "error");
+    		result.put("msg", e.getMessage());
+		}
+    	return result.toJSONString();
+		
+    }
+    
+    @RequestMapping(value = "/submit")
+    @ResponseBody
+    public String submit(Integer id, HttpSession session) {
+    	JSONObject result = new JSONObject();
+    	try {
+    		//获取配置项
+    		Plan plan = orderService.findPlanById(id);
+    		if(plan != null) {
+    			return plan(plan.getSymbol(), plan.getFirst().toString(), plan.getSecond().toString(), plan.getThird().toString(), plan.getStop().toString(), 
+    					plan.getLevel(), plan.getTrigger().toString(), plan.getCompare(), plan.getTrigger1().toString(), plan.getCompare1(), session);
+    		} else {
+    			result.put("status", "error");
+    			result.put("msg", "submit plan failed");   
     		}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

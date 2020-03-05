@@ -11,7 +11,11 @@
     <select id="findPlanByUid" parameterType="String"
             resultType="cn.itcast.pojo.Plan">
         select * from `plan` where uid = #{uid} and state &lt; 4 order by createTime;
-    </select>         
+    </select>   
+    <select id="findCachePlanByUid" parameterType="String"
+            resultType="cn.itcast.pojo.Plan">
+        select * from `plan` where uid = #{uid} and state = 5 order by createTime;
+    </select>           
     <select id="findPlanByTime" parameterType="Integer"
             resultType="cn.itcast.pojo.Plan">
         SELECT p.* FROM plan p, USER u WHERE u.id = p.uid AND u.role like "%0%" AND updateTime > DATE_SUB(NOW(),INTERVAL #{time} DAY) 
