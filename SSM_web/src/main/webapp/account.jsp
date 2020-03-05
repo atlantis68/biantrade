@@ -269,13 +269,16 @@
 		case 3 :
 			result = "发送失败";
 			break;
-		case 4 :
+		case 5 :
+			result = "待处理";
+			break;			
+		case 6 :
 			result = "失效";
 			break;
-		case 5 :
+		case 7 :
 			result = "盈利";
 			break;
-		case 6 :
+		case 8 :
 			result = "亏损";
 			break;
 		}
@@ -1036,7 +1039,7 @@
 		            			if(role == 0) {
 		            				edit = "<input type=\"button\" id=\"warn" + list[i].id + "\" name=\"warn" + list[i].id + "\" value=\"止盈提醒\" onclick =\"warn(" + list[i].id + ")\"/>" 
 		            			}
-		            			edit += "&nbsp&nbsp<select id=\"swarn" + list[i].id + "\" name=\"swarn" + list[i].id + "\"><option value =\"4\">失效</option><option value =\"5\">盈利</option><option value=\"6\">亏损</option></select>"
+		            			edit += "&nbsp&nbsp<select id=\"swarn" + list[i].id + "\" name=\"swarn" + list[i].id + "\"><option value =\"6\">失效</option><option value =\"7\">盈利</option><option value=\"8\">亏损</option></select>"
 		            				+ "<input type=\"button\" id=\"cplan" + list[i].id + "\" name=\"cplan" + list[i].id + "\" value=\"撤单\" onclick =\"cancelPlan('" + list[i].symbol + "', " + list[i].id + ", '" + list[i].orderIds + "')\"/>"
 		            				+ "&nbsp&nbsp<input type=\"button\" id=\"detail" + list[i].id + "\" name=\"detail" + list[i].id + "\" value=\"预览\" onclick =\"showDetail(" + list[i].id + ", '" + list[i].symbol + "')\"/>";
 	            				if(role == 0) {
@@ -1124,13 +1127,13 @@
 		            				+ "&nbsp&nbsp<input type=\"button\" id=\"detail" + list[i].id + "\" name=\"detail" + list[i].id + "\" value=\"预览\" onclick =\"showDetail(" + list[i].id + ", '" + list[i].symbol + "')\"/>"		            			
 		            				+ "&nbsp&nbsp<input type=\"button\" id=\"fusers" + list[i].id + "\" name=\"fusers" + list[i].id + "\" value=\"跟单人员\" onclick =\"findUserByUid(" + list[i].id + ")\"/>";
 		            			var color = "<span>&nbsp×&nbsp";
-		            			if(list[i].state == 5) {
+		            			if(list[i].state == 7) {
 		            				color = "<span style=\"color:green;\">&nbsp↑&nbsp";
 		            				up += 1;
-		            			} else if(list[i].state == 6) {
+		            			} else if(list[i].state == 8) {
 		            				color = "<span style=\"color:red;\">&nbsp↓&nbsp";
 		            				down += 1;
-		            			} else {
+		            			} else if(list[i].state == 6) {
 		            				miss += 1;
 		            			}
 		            			str += "<tr>" + 

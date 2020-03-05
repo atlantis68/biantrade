@@ -15,7 +15,7 @@
     <select id="findPlanByTime" parameterType="Integer"
             resultType="cn.itcast.pojo.Plan">
         SELECT p.* FROM plan p, USER u WHERE u.id = p.uid AND u.role like "%0%" AND updateTime > DATE_SUB(NOW(),INTERVAL #{time} DAY) 
-        	and state &gt; 3 and p.level &lt;= #{level} and u.status = 1 order by updateTime;
+        	and state &gt; 5 and p.level &lt;= #{level} and u.status = 1 order by updateTime;
     </select>     
     <select id="findFllowPlans" parameterType="Integer"
             resultType="cn.itcast.pojo.Plan">
