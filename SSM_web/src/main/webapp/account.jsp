@@ -597,13 +597,14 @@
 	            		if(jsonObject.status == 'ok') {
 		            		var list = JSON.parse(jsonObject.msg);
 		            		if(list.length > 0) {
-		            			str = "<tr><td colspan=\"8\" align=\"center\"><span style=\"color:red;font-weight:bold;\">用户持仓</span></td></tr>";
+		            			str = "<tr><td colspan=\"9\" align=\"center\"><span style=\"color:red;font-weight:bold;\">用户持仓</span></td></tr>";
 		            			str += "<tr>" + 
 			            			"<td align=\"center\"><b>资金类型</b></td>" + 
 			            			"<td align=\"center\"><b>持仓</b></td>" + 
 			            			"<td align=\"center\"><b>买入价格</b></td>" + 
 			            			"<td align=\"center\"><b>标记价格</b></td>" + 
-			            			"<td align=\"center\"><b>盈利</b></td>" + 		            			
+			            			"<td align=\"center\"><b>盈利</b></td>" + 	
+			            			"<td align=\"center\"><b>收益率</b></td>" + 
 			            			"<td align=\"center\"><b>爆仓价格</b></td>" + 
 			            			"<td align=\"center\"><b>杠杆</b></td>" + 
 			            			"<td align=\"center\"><b>操作</b></td>" + 
@@ -627,12 +628,14 @@
 			            		   			+ "&nbsp&nbsp<input type=\"type\" value=50 id=\"lrate" + list[i].symbol + "\" name=\"lrate" + list[i].symbol + "\")\" size=5/>%" 
 			            		   			+ "<input type=\"button\" value=\"止损\" id=\"loss" + list[i].symbol + "\" name=\"loss" + list[i].symbol + "\" onclick =\"tradeMarket4('SELL', 'STOP_MARKET', '" + list[i].symbol + "', '" + list[i].entryPrice + "', '" + list[i].leverage + "')\"/>"
 			            		    }
+			            		   	var profit = Number(list[i].unRealizedProfit.match(/^\-?\d+(?:\.\d{0,4})?/)) / Number(list[i].entryPrice.match(/^\-?\d+(?:\.\d{0,4})?/)) * 100;
 			            			str += "<tr>" + 
 				            			"<td>" + list[i].symbol + "</td>" + 
 				            			"<td>" + Number(list[i].positionAmt.match(/^\-?\d+(?:\.\d{0,4})?/)) + "</td>" + 
 				            			"<td>" + Number(list[i].entryPrice.match(/^\-?\d+(?:\.\d{0,4})?/)) + "</td>" + 
 				            			"<td>" + Number(list[i].markPrice.match(/^\-?\d+(?:\.\d{0,4})?/)) + "</td>" + 
 				            			"<td>" + Number(list[i].unRealizedProfit.match(/^\-?\d+(?:\.\d{0,4})?/)) + "</td>" + 
+				            			"<td>" + Number((""+profit).match(/^\-?\d+(?:\.\d{0,2})?/)) + "%</td>" + 
 				            			"<td><span style=\"color:red;font-weight:bold;\">" + Number(list[i].liquidationPrice.match(/^\-?\d+(?:\.\d{0,4})?/)) + "</span></td>" +
 				            			"<td>" + list[i].leverage + "</td>" +
 				            			"<td>" + edit + "</td>" + 
