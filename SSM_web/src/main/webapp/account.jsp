@@ -628,7 +628,7 @@
 			            		   			+ "&nbsp&nbsp<input type=\"type\" value=50 id=\"lrate" + list[i].symbol + "\" name=\"lrate" + list[i].symbol + "\")\" size=5/>%" 
 			            		   			+ "<input type=\"button\" value=\"止损\" id=\"loss" + list[i].symbol + "\" name=\"loss" + list[i].symbol + "\" onclick =\"tradeMarket4('SELL', 'STOP_MARKET', '" + list[i].symbol + "', '" + list[i].entryPrice + "', '" + list[i].leverage + "')\"/>"
 			            		    }
-			            		   	var profit = Number(list[i].unRealizedProfit.match(/^\-?\d+(?:\.\d{0,4})?/)) / Number(list[i].entryPrice.match(/^\-?\d+(?:\.\d{0,4})?/)) * 100 * Number(list[i].leverage);
+			            		   	var profit = Number(list[i].unRealizedProfit.match(/^\-?\d+(?:\.\d{0,4})?/)) / Number(list[i].entryPrice.match(/^\-?\d+(?:\.\d{0,4})?/)) * 100 * Number(list[i].leverage) / Math.abs(Number(list[i].positionAmt));
 			            			str += "<tr>" + 
 				            			"<td>" + list[i].symbol + "</td>" + 
 				            			"<td>" + Number(list[i].positionAmt.match(/^\-?\d+(?:\.\d{0,4})?/)) + "</td>" + 

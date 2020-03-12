@@ -455,6 +455,7 @@ public class OrderServiceImpl implements OrderService {
 				seq++;
 			}
 		} catch (Exception e) {
+			msg = e.getMessage();
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
