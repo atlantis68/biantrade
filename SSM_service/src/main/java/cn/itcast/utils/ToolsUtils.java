@@ -12,6 +12,10 @@ import cn.itcast.pojo.Mail;
 public class ToolsUtils {
 
 	private static Map<String, Float> curPrice = new HashMap<String, Float>();
+	
+	private static Map<String, String> userPositionAmt = new HashMap<String, String>();
+	
+	private static Map<String, String> userLeverage = new HashMap<String, String>();
 
 	private static List<Properties> platformMail;
 
@@ -65,6 +69,22 @@ public class ToolsUtils {
 	
 	public static Properties getRandomPlat() {
 		return platformMail.get(offset++ % platformMail.size());
+	}
+
+	public static String getUserPositionAmt(String key) {
+		return ToolsUtils.userPositionAmt.get(key);
+	}
+	
+	public static void setUserPositionAmt(String key, String value) {
+		ToolsUtils.userPositionAmt.put(key, value);
+	}
+	
+	public static String getUserLeverage(String key) {
+		return ToolsUtils.userLeverage.get(key);
+	}
+	
+	public static void setUserLeverage(String key, String value) {
+		ToolsUtils.userLeverage.put(key, value);
 	}
 	
 	public static String formatQuantity(String symbol, Float value) {
