@@ -27,6 +27,7 @@ import cn.itcast.back.ThreadPool;
 import cn.itcast.back.TradeMarketTask;
 import cn.itcast.client.HttpClient;
 import cn.itcast.client.SHA256;
+import cn.itcast.pojo.Balance;
 import cn.itcast.pojo.Config;
 import cn.itcast.pojo.Mail;
 import cn.itcast.pojo.User;
@@ -412,6 +413,17 @@ public class AccountController {
     	JSONObject result = new JSONObject();
 		result.put("status", "ok");
 		result.put("msg", JSON.toJSONString(ToolsUtils.getCurPrice()));
+		return result.toJSONString();
+    }
+    
+    @RequestMapping("/myBalance")
+    @ResponseBody
+    public String myBalance(HttpSession session) {
+    	User user = (User) session.getAttribute("USER_SESSION");
+    	List<Balance> balances = orderService.findBalanceByUid(user.getId());
+    	JSONObject result = new JSONObject();
+		result.put("status", "ok");
+		result.put("msg", JSON.toJSONString(balances));
 		return result.toJSONString();
     }
 }

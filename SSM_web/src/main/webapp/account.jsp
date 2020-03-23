@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <script type="text/javascript" src="../js/jquery-1.7.2.min.js"></script>
+<script type="text/javascript" src="../js/echarts.min.js"></script>
 <html>
 <head>
     <title>主页</title>
@@ -392,6 +393,7 @@
     	findCachePlans();
     	findAllPlans();
     	historyOrders();
+    	myBalance();
     	setTimeout(function (){
     		$("#showAllSubmit").removeAttr("disabled");
         }, 10000);    	 
@@ -1739,6 +1741,65 @@
 	            } 
 	        });  
 	    }	
+	    
+	    function myBalance(){  
+	    	$("#myBalanceSubmit").attr("disabled","true");
+			var dates = [];
+			var balances = [];
+	        $.ajax({  
+	            type : "get",
+	            url : "/Account/myBalance",
+	            timeout : 10000,
+	            data : '',
+
+	            //成功
+	            success : function(data) {
+	            	if(data.indexOf("登录") > -1) {
+	            		window.location.href='User/logout';
+	            	} else {
+	            		var jsonObject= jQuery.parseJSON(data);
+	            		if(jsonObject.status == 'ok') {
+	            			var list = JSON.parse(jsonObject.msg);
+		            		if(list.length > 0) {
+			            		for (x in list) {
+			            			i = list.length - x - 1;
+			            			dates.push(list[i].updateTime);
+			            			balances.push(Number(list[i].balance.match(/^\-?\d+(?:\.\d{0,4})?/)));
+			            		}
+		            		}
+		         	        var myChart = echarts.init(document.getElementById('mybalanceChart'));
+		        	        // 使用刚指定的配置项和数据显示图表。
+		        	        myChart.setOption({  
+		        	        	tooltip : {
+	                                trigger: 'axis'
+		        	        	},		        	        	
+		                	    xAxis: {
+		                	        type: 'category',
+		                	        data: dates
+		                	    },
+		                	    yAxis: {
+		                	        type: 'value'
+		                	    },
+		                	    series: [{
+		                	        data: balances,
+		                	        type: 'line'
+		                	    }]
+		        			});
+	            		} 
+	            	}
+	            },
+
+	            //错误情况
+	            error : function(error) {
+	                console.log("error : " + error);
+	            },
+
+	            //请求完成后回调函数 (请求成功或失败之后均调用)。
+	            complete: function(message) {
+	            	$("#myBalanceSubmit").removeAttr("disabled");
+	            } 
+	        });
+	    }    
     </script>
 </head>
 <div id="relaDiv">
@@ -1872,6 +1933,10 @@
 <span id="statistics" name="statistics" style="float:right;"></span>
 <table id="historyList" name="historyList" width="100%" cellpadding="1" cellspacing="0" border="1"></table>
 <p>
+<input type="button" id="myBalanceSubmit" id="myBalanceSubmit" value="仓位历史" onclick ="myBalance()"/>
+&nbsp&nbsp<span style="color:red;font-weight:bold;"></span>
+<div id="mybalanceChart" style="width: 100%;height:200px">
+</div>
 <hr>
 <div id="myUser">
 <a href="${pageContext.request.contextPath}/User/index">用户页面</a>

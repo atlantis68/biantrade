@@ -19,9 +19,11 @@ import com.alibaba.fastjson.TypeReference;
 
 import cn.itcast.client.HttpClient;
 import cn.itcast.client.SHA256;
+import cn.itcast.dao.BalanceMapper;
 import cn.itcast.dao.MailMapper;
 import cn.itcast.dao.PlanMapper;
 import cn.itcast.model.Result;
+import cn.itcast.pojo.Balance;
 import cn.itcast.pojo.Config;
 import cn.itcast.pojo.Mail;
 import cn.itcast.pojo.Plan;
@@ -47,6 +49,9 @@ public class OrderServiceImpl implements OrderService {
     
     @Autowired
     private ConfigService configService;
+    
+    @Autowired
+    private BalanceMapper balanceMapper;
 	
 	private static SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	
@@ -80,6 +85,10 @@ public class OrderServiceImpl implements OrderService {
 	
 	public List<Plan> findPlanByTime(Integer time, Integer level) {
 		return planMapper.findPlanByTime(time, level);
+	}
+	
+	public List<Balance> findBalanceByUid(Integer uid) {
+		return balanceMapper.findBalanceByUid(uid);
 	}
 
 	//需要保证事务

@@ -3,6 +3,7 @@ package cn.itcast.service;
 import java.util.List;
 
 import cn.itcast.model.Result;
+import cn.itcast.pojo.Balance;
 import cn.itcast.pojo.Mail;
 import cn.itcast.pojo.Plan;
 
@@ -48,4 +49,6 @@ public interface OrderService {
     public int warn(String id) throws Exception;
     
     public int insertPlan(Plan plan);
+    
+    public List<Balance> findBalanceByUid(Integer uid);
 }
