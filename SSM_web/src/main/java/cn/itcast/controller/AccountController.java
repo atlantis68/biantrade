@@ -23,6 +23,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 
+import cn.itcast.back.ClearMarketTask;
 import cn.itcast.back.ThreadPool;
 import cn.itcast.back.TradeMarketTask;
 import cn.itcast.client.HttpClient;
@@ -81,10 +82,67 @@ public class AccountController {
     	}
     	return "account";            	
     }
-	
+    
     @RequestMapping("/tradeMarket")
     @ResponseBody
-    public String tradeMarket(String symbol, String side, String quantity, HttpSession session) {
+    public String tradeMarket(String symbol, String type, String side, String quantity, String price, HttpSession session) {
+    	JSONObject result = new JSONObject();
+    	try {
+    		User user = (User) session.getAttribute("USER_SESSION");
+    		String temp = null;
+    		String timeInForce = null;
+    		String workingType = null;
+    		if(type.equals("LIMIT")) {
+    			quantity = ToolsUtils.formatQuantity(symbol, Float.parseFloat(quantity));
+    			price = ToolsUtils.formatPrice(symbol, Float.parseFloat(price));
+    			timeInForce = "GTC";
+    			workingType = "CONTRACT_PRICE";
+    		} else {
+    			price = null;
+    		}
+    		temp = orderService.trade(symbol, side, quantity, price, null, type, timeInForce, workingType, null, user.getApiKey(), user.getSecretKey());
+			Map<String, String> tempInfo = JSON.parseObject(temp, new TypeReference<Map<String, String>>(){} );
+			if(tempInfo != null && StringUtils.isNotEmpty(tempInfo.get("orderId"))) {
+				result.put("status", "ok");
+				Mail mail = new Mail();
+				mail.setUid(user.getId());
+				mail.setSymbol(symbol);
+				if(type.equals("LIMIT")) {
+					mail.setSubject(symbol + "即时限价单创建成功，成交价格" + price + "，已提交到币安");
+				} else {
+					mail.setSubject(symbol + "即时市价单创建成功，成交价格" + ToolsUtils.getCurPriceByKey(symbol) + "，已提交到币安");					
+				}
+				mail.setContent("提交数量：" + quantity);
+				mail.setState(0);
+				mail.setCreateTime(format.format(new Date()));
+				mail.setUpdateTime(format.format(new Date()));
+				orderService.insertMail(mail);
+			} else {
+				result.put("status", "error");
+			}
+			result.put("msg", JSON.toJSONString(temp));
+        	if(user.getRole().indexOf("0") > -1) {
+				Config config = new Config();
+				config.setType(symbol);
+				config.setLossWorkingType("8");;
+				List<Config> allConfig = configService.findConfigFlag(config);
+				for(Config c : allConfig) {
+					ThreadPool.execute(new TradeMarketTask(orderService, c.getUid(), symbol, side, quantity, price, 
+							type, timeInForce, workingType, c.getType(), c.getLossWorkingType()));
+				}
+        	}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+    		result.put("status", "error");
+    		result.put("msg", e.getMessage());
+		}
+    	return result.toJSONString();
+    }
+	
+    @RequestMapping("/clearMarket")
+    @ResponseBody
+    public String clearMarket(String symbol, String side, String quantity, HttpSession session) {
     	JSONObject result = new JSONObject();
     	String realQuantity;
     	try {
@@ -118,7 +176,7 @@ public class AccountController {
 				Mail mail = new Mail();
 				mail.setUid(user.getId());
 				mail.setSymbol(symbol);
-				mail.setSubject(symbol + "即时单创建成功，成交价格" + ToolsUtils.getCurPriceByKey(symbol) + "，已提交到币安");
+				mail.setSubject(symbol + "平仓单创建成功，成交价格" + ToolsUtils.getCurPriceByKey(symbol) + "，已提交到币安");
 				mail.setContent("提交数量：" + realQuantity);
 				mail.setState(0);
 				mail.setCreateTime(format.format(new Date()));
@@ -134,7 +192,7 @@ public class AccountController {
 				config.setLossWorkingType("6");;
 				List<Config> allConfig = configService.findConfigFlag(config);
 				for(Config c : allConfig) {
-					ThreadPool.execute(new TradeMarketTask(orderService, c.getUid(), symbol, side, quantity, null, 
+					ThreadPool.execute(new ClearMarketTask(orderService, c.getUid(), symbol, side, quantity, null, 
 							null, "MARKET", null, null, "true", c.getType(), c.getLossWorkingType()));
 				}
         	}
@@ -192,7 +250,7 @@ public class AccountController {
     				config.setLossWorkingType("7");
     				List<Config> allConfig = configService.findConfigFlag(config);
     				for(Config c : allConfig) {
-    					ThreadPool.execute(new TradeMarketTask(orderService, c.getUid(), symbol, side, quantity, null, 
+    					ThreadPool.execute(new ClearMarketTask(orderService, c.getUid(), symbol, side, quantity, null, 
     							ToolsUtils.formatPrice(symbol, stopPrice), type, null, "CONTRACT_PRICE", "true", c.getType(), c.getLossWorkingType()));
     				}
             	}

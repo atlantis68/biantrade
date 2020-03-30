@@ -50,6 +50,13 @@
 			$("#title1").text(this.value);
 			$("#title2").text(this.value);
 	    });
+		$('input[type=radio][name=jtype]').change(function() {
+			if(this.value == 'MARKET') {
+				$("#jprice").attr("disabled", "true");
+			} else {
+				$("#jprice").removeAttr("disabled");
+			}
+	    });		
 		init('${role}', '${nickname}', '${username}');
     });
     
@@ -739,6 +746,15 @@
 	    	if(!confirm($('input[name="symbol"]:checked').val() + "：是否" + translateSide(side))) {
 	    		return;
 	    	}
+    		if(!validateFloat($("#jprice").val()) && $('input[name="jtype"]:checked').val() == 'LIMIT') {
+    			$("#message").html("“限价单价格”必须是小数点后五位以内的小数");
+    			$("#jprice").focus();
+    			return;
+    		} else if(!validateFloat($("#jnumber").val())) {
+    			$("#message").html("“即时单数量”必须是小数点后五位以内的小数");
+    			$("#jnumber").focus();
+    			return;
+    		}
 	     	$("#message").html('');
 	    	$("#market"+seq).attr("disabled","true");
 	    	
@@ -746,7 +762,9 @@
 	            type : "get",
 	            url : "/Account/tradeMarket",
 	            timeout : 10000,
-	            data : "symbol=" + $('input[name="symbol"]:checked').val() + "&side=" + side,
+	            data : "symbol=" + $('input[name="symbol"]:checked').val() + "&side=" + side
+	            	+ "&type=" + $('input[name="jtype"]:checked').val() + "&quantity=" + $("#jnumber").val()
+	            	+ "&price=" + $("#jprice").val(),
 
 	            //成功
 	            success : function(data) {
@@ -757,7 +775,7 @@
 	            		if(jsonObject.status == 'error') {
 	            			$("#message").html(jsonObject.msg);
 	            		} else {
-	            			positionRisk();
+	            			findAllOrders();
 	            			$("#message").html("市价单已提交");	
 	            		}
 	            	}
@@ -789,7 +807,7 @@
 
 	        $.ajax({  
 	            type : "get",
-	            url : "/Account/tradeMarket",
+	            url : "/Account/clearMarket",
 	            timeout : 10000,
 	            data : "symbol=" + symbol + "&side=" + side + "&quantity=" + $("#position" + symbol).val(),
 
@@ -1832,13 +1850,17 @@
 <p>
 <table id="ordersList" name="ordersList" width="100%" cellpadding="1" cellspacing="0" border="1"></table>
 <p>
-<!-- <hr>
+<hr>
 <span style="color:red;font-weight:bold;">即时单</span>
+&nbsp&nbsp<input type="radio" name="jtype" value="LIMIT" checked>限价单
+<input type="radio" name="jtype" value="MARKET">市价单
+&nbsp&nbsp价格：<input type="text" id="jprice" name="jprice" size=5/>
+&nbsp&nbsp数量：<input type="text" id="jnumber" name="jnumber" size=5/>
 &nbsp&nbsp<input type="button" value="开多" id="market1" name="market1" onclick ="tradeMarket1('BUY', 1)"/>
 &nbsp&nbsp<input type="button" value="开空" id="market2" name="market2" onclick ="tradeMarket1('SELL', 2)"/>
 &nbsp&nbsp<span id='title1' name='title1' style="color:red;font-weight:bold;">BTCUSDT</span>
 <p> 
-<hr>-->
+<hr>
 <span style="color:red;font-weight:bold;">计划单</span>
 &nbsp&nbsp<input type="button" value="开单" id="plan" name="plan" onclick ="tradePlan()"/>
 &nbsp&nbsp<input type="button" value="保存" id="save" name="save" onclick ="savePlan()"/>
