@@ -54,7 +54,7 @@ public class MonitorUser implements Runnable {
 	    			List<String> lists = JSON.parseArray(temp, String.class);
 	    			for(String list : lists) {
 	    				JSONObject json = JSON.parseObject(list);
-	    				String name = monitor.getNickname() + "（" + monitor.getUsername() + "）" + json.getString("symbol");
+	    				String name = monitor.getNickname() + "（" + monitor.getUsername() + "）" + json.getString("symbol") + "的" + json.getString("positionSide");
 	    				String value = ToolsUtils.getUserPositionAmt(name);
 	    				if(StringUtils.isEmpty(value)) {
 	    					ToolsUtils.setUserPositionAmt(name, json.getString("positionAmt"));

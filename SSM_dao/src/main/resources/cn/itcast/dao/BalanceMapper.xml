@@ -6,7 +6,7 @@
 		INSERT INTO `transaction`.`balance` ( `uid`, `balance`, `updateTime`) VALUES (#{uid}, #{balance},  #{updateTime} );
     </insert>  
     <select id="findBalanceByUid" parameterType="Integer" resultType="cn.itcast.pojo.Balance">
-        SELECT id, uid, balance, DATE_FORMAT(updatetime, '%Y-%m-%d') AS updatetime FROM `balance` WHERE uid=#{uid} ORDER BY updatetime desc LIMIT 15
+        SELECT id, uid, balance, DATE_FORMAT(updatetime, '%Y-%m-%d') AS updatetime FROM `balance` WHERE uid=#{uid} ORDER BY updatetime desc LIMIT 30
     </select>  
     <select id="findUserByStatus" resultType="cn.itcast.pojo.User">
         select * from user where status = 1
