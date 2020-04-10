@@ -134,6 +134,30 @@ public class ToolsUtils {
 		return mail;
 	}
 	
+	public static String generatePositionSide(Boolean firstsd, boolean reverse, String side) {
+		String result = "";
+		if(firstsd != null) {
+			if(firstsd) {
+				if(side.equals("BUY")) {
+					if(!reverse) {
+						result = "LONG";						
+					} else {
+						result = "SHORT";
+					}
+				} else if(side.equals("SELL")) {
+					if(!reverse) {
+						result = "SHORT";
+					} else {
+						result = "LONG";						
+					}
+				}
+			} else {
+				result = "BOTH";
+			}
+		} 
+		return result;
+	}
+	
 	public static void main(String[] args) {
 		System.out.println(formatQuantity("ETHUSDT", 61.97999201356768f));
 		System.out.println(formatQuantity("ETCUSDT", 61.97999201356768f));

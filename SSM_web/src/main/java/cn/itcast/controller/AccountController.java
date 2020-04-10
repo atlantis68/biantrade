@@ -100,7 +100,9 @@ public class AccountController {
     		} else {
     			price = null;
     		}
-    		temp = orderService.trade(symbol, side, quantity, price, null, type, timeInForce, workingType, null, user.getApiKey(), user.getSecretKey());
+    		boolean firstsd = orderService.positionSide(user.getApiKey(), user.getSecretKey());
+    		temp = orderService.trade(symbol, side, ToolsUtils.generatePositionSide(firstsd, false, side), 
+    				quantity, price, null, type, timeInForce, workingType, null, user.getApiKey(), user.getSecretKey());
 			Map<String, String> tempInfo = JSON.parseObject(temp, new TypeReference<Map<String, String>>(){} );
 			if(tempInfo != null && StringUtils.isNotEmpty(tempInfo.get("orderId"))) {
 				result.put("status", "ok");
@@ -147,6 +149,7 @@ public class AccountController {
     	String realQuantity;
     	try {
     		User user = (User) session.getAttribute("USER_SESSION");
+    		boolean firstsd = orderService.positionSide(user.getApiKey(), user.getSecretKey());
     		if(StringUtils.isEmpty(quantity)) {
     			Config config = new Config();
     			config.setUid(user.getId());
@@ -162,14 +165,27 @@ public class AccountController {
         			Map<String, String> risk = JSON.parseObject(list, new TypeReference<Map<String, String>>(){} );
         			if(risk != null && StringUtils.isNotEmpty(risk.get("positionAmt")) 
         					&& StringUtils.isNotEmpty(risk.get("symbol")) && risk.get("symbol").equals(symbol)) {
-        				positionAmt = Math.abs(Float.parseFloat(risk.get("positionAmt")));
-        				break;
+        				if(firstsd) {
+        					if(side.equals("BUY") && risk.get("positionSide").equals("SHORT")) {
+        						positionAmt = Math.abs(Float.parseFloat(risk.get("positionAmt"))); 
+        						break;
+        					} else if(side.equals("SELL") && risk.get("positionSide").equals("LONG")) {
+        						positionAmt = Math.abs(Float.parseFloat(risk.get("positionAmt"))); 
+        						break;
+        					}
+        				} else {
+        					if(risk.get("positionSide").equals("BOTH")) {
+        						positionAmt = Math.abs(Float.parseFloat(risk.get("positionAmt")));     
+        						break;
+        					}
+        				}
         			}       			
         		}
     			realQuantity = "" + (positionAmt * (Float.parseFloat(quantity) / 100));
     		}
-    		String temp = orderService.trade(symbol, side, ToolsUtils.formatQuantity(symbol, Float.parseFloat(realQuantity)), 
-    				null, null, "MARKET", null, null, "true", user.getApiKey(), user.getSecretKey());
+    		String temp = orderService.trade(symbol, side, ToolsUtils.generatePositionSide(firstsd, true, side),
+    				ToolsUtils.formatQuantity(symbol, Float.parseFloat(realQuantity)), 
+    				null, null, "MARKET", null, null, firstsd ? null : "true", user.getApiKey(), user.getSecretKey());
 			Map<String, String> tempInfo = JSON.parseObject(temp, new TypeReference<Map<String, String>>(){} );
 			if(tempInfo != null && StringUtils.isNotEmpty(tempInfo.get("orderId"))) {
 				result.put("status", "ok");
@@ -193,7 +209,7 @@ public class AccountController {
 				List<Config> allConfig = configService.findConfigFlag(config);
 				for(Config c : allConfig) {
 					ThreadPool.execute(new ClearMarketTask(orderService, c.getUid(), symbol, side, quantity, null, 
-							null, "MARKET", null, null, "true", c.getType(), c.getLossWorkingType()));
+							null, "MARKET", null, null, c.getType(), c.getLossWorkingType()));
 				}
         	}
 		} catch (Exception e) {
@@ -213,6 +229,7 @@ public class AccountController {
     	String realQuantity;
     	try {
     		User user = (User) session.getAttribute("USER_SESSION");
+    		boolean firstsd = orderService.positionSide(user.getApiKey(), user.getSecretKey());
     		if(stopPrice != null) {
     			float positionAmt = 0;
         		String risks = orderService.positionRisk(user.getApiKey(), user.getSecretKey());
@@ -221,13 +238,27 @@ public class AccountController {
         			Map<String, String> risk = JSON.parseObject(list, new TypeReference<Map<String, String>>(){} );
         			if(risk != null && StringUtils.isNotEmpty(risk.get("positionAmt")) 
         					&& StringUtils.isNotEmpty(risk.get("symbol")) && risk.get("symbol").equals(symbol)) {
-        				positionAmt = Math.abs(Float.parseFloat(risk.get("positionAmt")));
-        				break;
+        				if(firstsd) {
+        					if(side.equals("BUY") && risk.get("positionSide").equals("SHORT")) {
+        						positionAmt = Math.abs(Float.parseFloat(risk.get("positionAmt"))); 
+        						break;
+        					} else if(side.equals("SELL") && risk.get("positionSide").equals("LONG")) {
+        						positionAmt = Math.abs(Float.parseFloat(risk.get("positionAmt"))); 
+        						break;
+        					}
+        				} else {
+        					if(risk.get("positionSide").equals("BOTH")) {
+        						positionAmt = Math.abs(Float.parseFloat(risk.get("positionAmt")));     
+        						break;
+        					}
+        				}
         			}       			
         		}
     			realQuantity = "" + (positionAmt * (Float.parseFloat(quantity) / 100));
-    			String temp = orderService.trade(symbol, side, ToolsUtils.formatQuantity(symbol, Float.parseFloat(realQuantity)), 
-    					null, ToolsUtils.formatPrice(symbol, stopPrice), type, null, "CONTRACT_PRICE", "true", user.getApiKey(), user.getSecretKey());
+    			String temp = orderService.trade(symbol, side, ToolsUtils.generatePositionSide(firstsd, true, side), 
+    					ToolsUtils.formatQuantity(symbol, Float.parseFloat(realQuantity)), 
+    					null, ToolsUtils.formatPrice(symbol, stopPrice), type, null, "CONTRACT_PRICE", firstsd ? null : "true", 
+    					user.getApiKey(), user.getSecretKey());
     			Map<String, String> tempInfo = JSON.parseObject(temp, new TypeReference<Map<String, String>>(){} );
     			if(tempInfo != null && StringUtils.isNotEmpty(tempInfo.get("orderId"))) {
     				result.put("status", "ok");
@@ -251,7 +282,7 @@ public class AccountController {
     				List<Config> allConfig = configService.findConfigFlag(config);
     				for(Config c : allConfig) {
     					ThreadPool.execute(new ClearMarketTask(orderService, c.getUid(), symbol, side, quantity, null, 
-    							ToolsUtils.formatPrice(symbol, stopPrice), type, null, "CONTRACT_PRICE", "true", c.getType(), c.getLossWorkingType()));
+    							ToolsUtils.formatPrice(symbol, stopPrice), type, null, "CONTRACT_PRICE", c.getType(), c.getLossWorkingType()));
     				}
             	}
     		} else {
@@ -267,24 +298,24 @@ public class AccountController {
     	return result.toJSONString();
     }
     
-    @RequestMapping("/trade")
-    @ResponseBody
-    public String trade(String symbol, String side, String quantity, String price, String stopPrice, String type, 
-    		String timeInForce, String workingType, String reduceOnly, HttpSession session) {
-    	JSONObject result = new JSONObject();
-    	try {
-    		User user = (User) session.getAttribute("USER_SESSION");
-    		String temp = orderService.trade(symbol, side, quantity, price, stopPrice, type, timeInForce, workingType, reduceOnly, user.getApiKey(), user.getSecretKey());
-        	result.put("status", "ok");
-        	result.put("msg", JSON.toJSONString(temp));
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-    		result.put("status", "error");
-    		result.put("msg", e.getMessage());
-		}
-    	return result.toJSONString();
-    }
+//    @RequestMapping("/trade")
+//    @ResponseBody
+//    public String trade(String symbol, String side, String quantity, String price, String stopPrice, String type, 
+//    		String timeInForce, String workingType, String reduceOnly, HttpSession session) {
+//    	JSONObject result = new JSONObject();
+//    	try {
+//    		User user = (User) session.getAttribute("USER_SESSION");
+//    		String temp = orderService.trade(symbol, side, quantity, price, stopPrice, type, timeInForce, workingType, reduceOnly, user.getApiKey(), user.getSecretKey());
+//        	result.put("status", "ok");
+//        	result.put("msg", JSON.toJSONString(temp));
+//		} catch (Exception e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//    		result.put("status", "error");
+//    		result.put("msg", e.getMessage());
+//		}
+//    	return result.toJSONString();
+//    }
     
     @RequestMapping("/cancel")
     @ResponseBody
@@ -483,5 +514,28 @@ public class AccountController {
 		result.put("status", "ok");
 		result.put("msg", JSON.toJSONString(balances));
 		return result.toJSONString();
+    }
+    
+    @RequestMapping("/positionSide")
+    @ResponseBody
+    public String positionSide(HttpSession session) {
+    	String temp = null;
+    	JSONObject result = new JSONObject();
+    	try {
+    		User user = (User) session.getAttribute("USER_SESSION");
+    		Boolean side = orderService.positionSide(user.getApiKey(), user.getSecretKey());
+    		result.put("status", "ok");
+    		result.put("msg", side);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			result.put("status", "error");
+			if(StringUtils.isEmpty(temp)) {
+				result.put("msg", e.getMessage());
+			} else {
+				result.put("msg", temp);
+			}
+		}
+    	return result.toJSONString();
     }
 }

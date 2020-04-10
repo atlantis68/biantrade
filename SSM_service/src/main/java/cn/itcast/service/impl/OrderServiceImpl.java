@@ -353,9 +353,10 @@ public class OrderServiceImpl implements OrderService {
 			//开始执行
 			//调整杠杆
 			leverage(symbol, lever, apiKey, secretKey);
+			boolean firstsd = positionSide(apiKey, secretKey);
 			//操作第一档
-			String temp = trade(symbol, side, quantity, ToolsUtils.formatPrice(symbol, firstPrice), 
-					null, "LIMIT", "GTC", allConfig.getLossWorkingType(), null, apiKey, secretKey);
+			String temp = trade(symbol, side, ToolsUtils.generatePositionSide(firstsd, false, side), quantity, 
+					ToolsUtils.formatPrice(symbol, firstPrice), null, "LIMIT", "GTC", allConfig.getLossWorkingType(), null, apiKey, secretKey);
 			Map<String, String> tempInfo = JSON.parseObject(temp, new TypeReference<Map<String, String>>(){} );
 			if(tempInfo != null && StringUtils.isNotEmpty(tempInfo.get("orderId"))) {
 				orderIds.add(tempInfo.get("orderId"));
@@ -365,8 +366,8 @@ public class OrderServiceImpl implements OrderService {
 			seq++;
 			if(orderIds.size() == seq) {
 				//操作第二档
-				temp = trade(symbol, side, quantity, ToolsUtils.formatPrice(symbol, secondPrice), 
-						null, "LIMIT", "GTC", allConfig.getLossWorkingType(), null, apiKey, secretKey);
+				temp = trade(symbol, side, ToolsUtils.generatePositionSide(firstsd, false, side), quantity, 
+						ToolsUtils.formatPrice(symbol, secondPrice), null, "LIMIT", "GTC", allConfig.getLossWorkingType(), null, apiKey, secretKey);
 				tempInfo = JSON.parseObject(temp, new TypeReference<Map<String, String>>(){} );
 				if(tempInfo != null && StringUtils.isNotEmpty(tempInfo.get("orderId"))) {
 					orderIds.add(tempInfo.get("orderId"));
@@ -377,8 +378,8 @@ public class OrderServiceImpl implements OrderService {
 			seq++;
 			if(orderIds.size() == seq) {
 				//操作第三档
-				temp = trade(symbol, side, quantity, ToolsUtils.formatPrice(symbol, thirdPrice), 
-						null, "LIMIT", "GTC", allConfig.getLossWorkingType(), null, apiKey, secretKey);
+				temp = trade(symbol, side, ToolsUtils.generatePositionSide(firstsd, false, side), quantity, 
+						ToolsUtils.formatPrice(symbol, thirdPrice), null, "LIMIT", "GTC", allConfig.getLossWorkingType(), null, apiKey, secretKey);
 				tempInfo = JSON.parseObject(temp, new TypeReference<Map<String, String>>(){} );
 				if(tempInfo != null && StringUtils.isNotEmpty(tempInfo.get("orderId"))) {
 					orderIds.add(tempInfo.get("orderId"));
@@ -391,8 +392,9 @@ public class OrderServiceImpl implements OrderService {
 			if(allConfig.getLossType() == 0) {
 				if(orderIds.size() == seq) {
 					//操作止损单1
-					temp = trade(symbol, stopSide, quantity, ToolsUtils.formatPrice(symbol, entrustPrice), 
-							ToolsUtils.formatPrice(symbol, stopPrice), "STOP", "GTC", allConfig.getLossWorkingType(), null, apiKey, secretKey);
+					temp = trade(symbol, stopSide, ToolsUtils.generatePositionSide(firstsd, true, stopSide), quantity, 
+							ToolsUtils.formatPrice(symbol, entrustPrice), ToolsUtils.formatPrice(symbol, stopPrice), 
+							"STOP", "GTC", allConfig.getLossWorkingType(), firstsd ? null : "true", apiKey, secretKey);
 					tempInfo = JSON.parseObject(temp, new TypeReference<Map<String, String>>(){} );
 					if(tempInfo != null && StringUtils.isNotEmpty(tempInfo.get("orderId"))) {
 						orderIds.add(tempInfo.get("orderId"));
@@ -403,8 +405,9 @@ public class OrderServiceImpl implements OrderService {
 				seq++;
 				if(orderIds.size() == seq) {
 					//操作止损单2
-					temp = trade(symbol, stopSide, quantity, ToolsUtils.formatPrice(symbol, entrustPrice), 
-							ToolsUtils.formatPrice(symbol, stopPrice), "STOP", "GTC", allConfig.getLossWorkingType(), null, apiKey, secretKey);
+					temp = trade(symbol, stopSide, ToolsUtils.generatePositionSide(firstsd, true, stopSide), quantity, 
+							ToolsUtils.formatPrice(symbol, entrustPrice), ToolsUtils.formatPrice(symbol, stopPrice), 
+							"STOP", "GTC", allConfig.getLossWorkingType(), firstsd ? null : "true", apiKey, secretKey);
 					tempInfo = JSON.parseObject(temp, new TypeReference<Map<String, String>>(){} );
 					if(tempInfo != null && StringUtils.isNotEmpty(tempInfo.get("orderId"))) {
 						orderIds.add(tempInfo.get("orderId"));
@@ -415,8 +418,9 @@ public class OrderServiceImpl implements OrderService {
 				seq++;
 				if(orderIds.size() == seq) {
 					//操作止损单3
-					temp = trade(symbol, stopSide, quantity, ToolsUtils.formatPrice(symbol, entrustPrice), 
-							ToolsUtils.formatPrice(symbol, stopPrice), "STOP", "GTC", allConfig.getLossWorkingType(), null, apiKey, secretKey);
+					temp = trade(symbol, stopSide, ToolsUtils.generatePositionSide(firstsd, true, stopSide), quantity, 
+							ToolsUtils.formatPrice(symbol, entrustPrice), ToolsUtils.formatPrice(symbol, stopPrice), 
+							"STOP", "GTC", allConfig.getLossWorkingType(), firstsd ? null : "true", apiKey, secretKey);
 					tempInfo = JSON.parseObject(temp, new TypeReference<Map<String, String>>(){} );
 					if(tempInfo != null && StringUtils.isNotEmpty(tempInfo.get("orderId"))) {
 						orderIds.add(tempInfo.get("orderId"));
@@ -428,8 +432,9 @@ public class OrderServiceImpl implements OrderService {
 			} else {
 				if(orderIds.size() == seq) {
 					//操作止损单1
-					temp = trade(symbol, stopSide, quantity, null, ToolsUtils.formatPrice(symbol, stopPrice), 
-							"STOP_MARKET", null, allConfig.getLossWorkingType(), null, apiKey, secretKey);
+					temp = trade(symbol, stopSide, ToolsUtils.generatePositionSide(firstsd, true, stopSide),  quantity, null, 
+							ToolsUtils.formatPrice(symbol, stopPrice),  "STOP_MARKET", null, allConfig.getLossWorkingType(), 
+							firstsd ? null : "true", apiKey, secretKey);
 					tempInfo = JSON.parseObject(temp, new TypeReference<Map<String, String>>(){} );
 					if(tempInfo != null && StringUtils.isNotEmpty(tempInfo.get("orderId"))) {
 						orderIds.add(tempInfo.get("orderId"));
@@ -440,8 +445,9 @@ public class OrderServiceImpl implements OrderService {
 				seq++;
 				if(orderIds.size() == seq) {
 					//操作止损单2
-					temp = trade(symbol, stopSide, quantity, null, ToolsUtils.formatPrice(symbol, stopPrice), 
-							"STOP_MARKET", null, allConfig.getLossWorkingType(), null, apiKey, secretKey);
+					temp = trade(symbol, stopSide, ToolsUtils.generatePositionSide(firstsd, true, stopSide), quantity, null, 
+							ToolsUtils.formatPrice(symbol, stopPrice),  "STOP_MARKET", null, allConfig.getLossWorkingType(), 
+							firstsd ? null : "true", apiKey, secretKey);
 					tempInfo = JSON.parseObject(temp, new TypeReference<Map<String, String>>(){} );
 					if(tempInfo != null && StringUtils.isNotEmpty(tempInfo.get("orderId"))) {
 						orderIds.add(tempInfo.get("orderId"));
@@ -452,8 +458,9 @@ public class OrderServiceImpl implements OrderService {
 				seq++;
 				if(orderIds.size() == seq) {
 					//操作止损单3
-					temp = trade(symbol, stopSide, quantity, null, ToolsUtils.formatPrice(symbol, stopPrice), 
-							"STOP_MARKET", null, allConfig.getLossWorkingType(), null, apiKey, secretKey);
+					temp = trade(symbol, stopSide, ToolsUtils.generatePositionSide(firstsd, true, stopSide), quantity, null, 
+							ToolsUtils.formatPrice(symbol, stopPrice), "STOP_MARKET", null, allConfig.getLossWorkingType(), 
+							firstsd ? null : "true", apiKey, secretKey);
 					tempInfo = JSON.parseObject(temp, new TypeReference<Map<String, String>>(){} );
 					if(tempInfo != null && StringUtils.isNotEmpty(tempInfo.get("orderId"))) {
 						orderIds.add(tempInfo.get("orderId"));
@@ -491,7 +498,7 @@ public class OrderServiceImpl implements OrderService {
     	return new Result(state, msg);
     }
 	  
-    public String trade(String symbol, String side, String quantity, String price, String stopPrice, String type, 
+    public String trade(String symbol, String side, String positionSide, String quantity, String price, String stopPrice, String type, 
     		String timeInForce, String workingType, String reduceOnly, String apiKey, String secretKey) throws Exception {
     	String result = "";
 		StringBuffer uri = new StringBuffer();
@@ -501,6 +508,9 @@ public class OrderServiceImpl implements OrderService {
 		}
 		if(StringUtils.isNotEmpty(side)) {
 			uri.append("&side=").append(side);
+		}
+		if(StringUtils.isNotEmpty(positionSide)) {
+			uri.append("&positionSide=").append(positionSide);
 		}
 		if(StringUtils.isNotEmpty(quantity)) {
 			uri.append("&quantity=").append(quantity);
@@ -639,5 +649,27 @@ public class OrderServiceImpl implements OrderService {
     
     public int insertPlan(Plan plan) {
     	return planMapper.insertPlan(plan);
+    }
+    
+    public Boolean positionSide(String apiKey, String secretKey) throws Exception {
+    	String result = "";
+		StringBuffer uri = new StringBuffer();
+		uri.append("timestamp=").append(System.currentTimeMillis());
+        String signature = SHA256.HMACSHA256(uri.toString().getBytes(), secretKey.getBytes());
+		uri.append("&signature=").append(signature);
+		Request request = new Request.Builder()
+			.url(HttpClient.baseUrl + "/fapi/v1/positionSide/dual?" + uri.toString())
+			.header("X-MBX-APIKEY", apiKey)
+			.get().build();
+		logger.info(request.url().toString());
+		Call call = HttpClient.okHttpClient.newCall(request);
+		Response response = call.execute();
+		result = response.body().string();
+		logger.info("positionSide = " + result);
+		JSONObject json = JSON.parseObject(result);
+		if(json.get("dualSidePosition") != null) {
+			return Boolean.parseBoolean(json.getString("dualSidePosition"));			
+		}
+		return null;
     }
 }

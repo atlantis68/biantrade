@@ -32,7 +32,7 @@ public interface OrderService {
     public String plan(String symbol, String first, String second, String third, String stop, String trigger, Integer compare, 
     		String trigger1, Integer compare1, Integer uid, String apiKey, String secretKey, Float curPrice, Integer level);
     
-    public String trade(String symbol, String side, String quantity, String price, String stopPrice, String type, 
+    public String trade(String symbol, String side, String positionSide, String quantity, String price, String stopPrice, String type, 
     		String timeInForce, String workingType, String reduceOnly, String apiKey, String secretKey) throws Exception;
     
     public int cancelPlan(Integer uid, String symbol, String id, String orderIds, int state, String apiKey, String secretKey) throws Exception;
@@ -51,4 +51,6 @@ public interface OrderService {
     public int insertPlan(Plan plan);
     
     public List<Balance> findBalanceByUid(Integer uid);
+    
+    public Boolean positionSide(String apiKey, String secretKey) throws Exception;
 }

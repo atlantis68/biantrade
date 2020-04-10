@@ -52,7 +52,9 @@ public class TradeMarketTask implements Runnable {
 	public void run() {
 		try {
 			Thread.sleep((new Random()).nextInt(3000));
-    		String temp = orderService.trade(symbol, side, quantity, price, null, type, timeInForce, workingType, null, apiKey, secretKey);
+			boolean firstsd = orderService.positionSide(apiKey, secretKey);
+    		String temp = orderService.trade(symbol, side, ToolsUtils.generatePositionSide(firstsd, false, side), 
+    				quantity, price, null, type, timeInForce, workingType, null, apiKey, secretKey);
 			Map<String, String> tempInfo = JSON.parseObject(temp, new TypeReference<Map<String, String>>(){} );
 			if(tempInfo != null && StringUtils.isNotEmpty(tempInfo.get("orderId"))) {
 				Mail mail = new Mail();

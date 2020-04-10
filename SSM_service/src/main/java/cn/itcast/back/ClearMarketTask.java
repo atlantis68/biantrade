@@ -29,13 +29,12 @@ public class ClearMarketTask implements Runnable {
 	private String type;
 	private String timeInForce;
 	private String workingType;
-	private String reduceOnly;
 	private String apiKey;
 	private String secretKey;
 	
 	
 	public ClearMarketTask(OrderService orderService, int uid, String symbol, String side, String quantity, String price, String stopPrice, 
-			String type, String timeInForce, String workingType, String reduceOnly, String apiKey, String secretKey) {
+			String type, String timeInForce, String workingType, String apiKey, String secretKey) {
 		super();
 		this.orderService = orderService;
 		this.uid = uid;
@@ -47,7 +46,6 @@ public class ClearMarketTask implements Runnable {
 		this.type = type;
 		this.timeInForce = timeInForce;
 		this.workingType = workingType;
-		this.reduceOnly = reduceOnly;
 		this.apiKey = apiKey;
 		this.secretKey = secretKey;
 	}
@@ -69,8 +67,10 @@ public class ClearMarketTask implements Runnable {
     			}       			
     		}
     		quantity = "" + (positionAmt * (Float.parseFloat(quantity) / 100));
-			String temp = orderService.trade(symbol, side, ToolsUtils.formatQuantity(symbol, Float.parseFloat(quantity)), price, 
-					stopPrice, type, timeInForce, workingType, reduceOnly, apiKey, secretKey);
+    		boolean firstsd = orderService.positionSide(apiKey, secretKey);
+			String temp = orderService.trade(symbol, side, ToolsUtils.generatePositionSide(firstsd, true, side), 
+					ToolsUtils.formatQuantity(symbol, Float.parseFloat(quantity)), price, 
+					stopPrice, type, timeInForce, workingType, firstsd ? null : "true", apiKey, secretKey);
 			Map<String, String> tempInfo = JSON.parseObject(temp, new TypeReference<Map<String, String>>(){} );
 			if(tempInfo != null && StringUtils.isNotEmpty(tempInfo.get("orderId"))) {
 				Mail mail = new Mail();

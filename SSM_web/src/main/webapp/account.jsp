@@ -205,17 +205,23 @@
     	return result;
     }
 
-    function translateSide(value) {
+    function translateSide(value1, value2) {
     	var result = "";
-    	if(value != null) {
-    		switch(value.toUpperCase()) {
-    		case "BUY" :
-    			result = "开多";
-    			break;
-    		case "SELL" :
-    			result = "开空";
-    			break;
-    		}
+    	if(value1 != null && value2 != null) {
+    		switch(value1.toUpperCase()) {
+	    		case "BUY" :
+					result = "开多";    				
+	    			if(value2 == "SHORT") {
+	    				result = "平空";  
+	    			} 
+	    			break;
+	    		case "SELL" :
+	    			result = "开空";
+	    			if(value2 == "LONG") {
+	    				result = "平多";  
+	    			} 
+	    			break;
+	    	}
     	}
     	return result;
     }
@@ -233,7 +239,19 @@
     		}
     	}
     	return result;
-    }    
+    }  
+    
+    function translateSide2(value) {
+    	var result = "";
+    	if(value != null) {
+        	if(value) {
+        		result = "双向持仓模式";
+        	} else {
+        		result = "单向持仓模式";
+        	}
+    	}
+    	return result;
+    } 
 
     function translateWorkingType(value) {
     	var result = "";
@@ -393,6 +411,7 @@
     	$("#detailList").html("");
     	balance();
     	positionRisk();
+    	positionSide();
     	findAllOrders();
     	if(role > 0) {
     		fllowPlans();    		
@@ -501,7 +520,7 @@
 				            			"<td>" + translateTimeInForce(list[i].timeInForce) + "</td>" + 
 				            			"<td>" + translateType(list[i].type) + "</td>" + 
 				            			"<td>" + translateBoolean(list[i].reduceOnly) + "</td>" + 
-				            			"<td>" + translateSide(list[i].side) + "</td>" + 
+				            			"<td>" + translateSide(list[i].side, list[i].positionSide) + "</td>" + 
 				            			"<td>" + list[i].stopPrice + "</td>" + 
 				            			"<td>" + translateWorkingType(list[i].workingType) + "</td>" + 
 				            			"<td>" + getFormatDateByLong(list[i].time) + "</td>" + 
@@ -669,6 +688,42 @@
 	            } 
 	        });  
 	    } 
+	    
+	    function positionSide(){  
+	    	$("#message").html('');
+	    	$("#positionSideSubmit").attr("disabled","true");
+	    	$("#posside").text("");
+	        $.ajax({  
+	            type : "get",
+	            url : "/Account/positionSide",
+	            timeout : 10000,
+	            data : "",
+
+	            //成功
+	            success : function(data) {
+	            	if(data.indexOf("登录") > -1) {
+	            		window.location.href='User/logout';
+	            	} else {
+	            		var jsonObject= jQuery.parseJSON(data);  
+	            		if(jsonObject.status == 'ok') {
+	            			$("#posside").text(translateSide2(jsonObject.msg));
+	            		} else {
+	            			$("#message").html(jsonObject.msg);
+	            		}
+	            	}
+	            },
+
+	            //错误情况
+	            error : function(error) {
+	                console.log("error : " + error);
+	            },
+
+	            //请求完成后回调函数 (请求成功或失败之后均调用)。
+	            complete: function(message) {
+	            	$("#positionSideSubmit").removeAttr("disabled");
+	            } 
+	        });  
+	    } 	    
 
 	    function cancel(orderId){  
 	    	$("#message").html('');
@@ -1834,7 +1889,9 @@
 </div>
 <span style="float:right;"><input type="button" id="showAllSubmit" id="showAllSubmit" value="显示所有" onclick ="showAll()"/></span>
 <input type="button" id="balanceSubmit" id="balanceSubmit" value="刷新账户" onclick ="balance()"/>
-&nbsp&nbsp<input type="button" id="positionRiskSubmit" id="positionRiskSubmit" value="刷新持仓" onclick ="positionRisk()"/><p>
+&nbsp&nbsp<input type="button" id="positionRiskSubmit" id="positionRiskSubmit" value="刷新持仓" onclick ="positionRisk()"/>
+&nbsp&nbsp<input type="button" id="positionSideSubmit" id="positionSideSubmit" value="持仓模式" onclick ="positionSide()"/>
+&nbsp&nbsp<span id='posside' name='posside' style="color:blue;font-weight:bold;"></span><p>
 <table id="balanceList" name="balanceList" width="100%" cellpadding="1" cellspacing="0" border="1"></table>
 <p>
 <table id="positionRiskList" name="positionRiskList" width="100%" cellpadding="1" cellspacing="0" border="1"></table>
