@@ -123,16 +123,14 @@ public class AccountController {
 				result.put("status", "error");
 			}
 			result.put("msg", JSON.toJSONString(temp));
-        	if(user.getRole().indexOf("0") > -1) {
-				Config config = new Config();
-				config.setType(symbol);
-				config.setLossWorkingType("8");;
-				List<Config> allConfig = configService.findConfigFlag(config);
-				for(Config c : allConfig) {
-					ThreadPool.execute(new TradeMarketTask(orderService, c.getUid(), symbol, side, quantity, price, 
-							type, timeInForce, workingType, c.getType(), c.getLossWorkingType()));
-				}
-        	}
+			Config config = new Config();
+			config.setType(symbol);
+			config.setLossWorkingType(user.getId().toString() + "8");;
+			List<Config> allConfig = configService.findConfigFlag(config);
+			for(Config c : allConfig) {
+				ThreadPool.execute(new TradeMarketTask(orderService, c.getUid(), symbol, side, quantity, price, 
+						type, timeInForce, workingType, c.getType(), c.getLossWorkingType()));
+			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -202,16 +200,14 @@ public class AccountController {
 				result.put("status", "error");
 			}
 			result.put("msg", JSON.toJSONString(temp));
-        	if(user.getRole().indexOf("0") > -1) {
-				Config config = new Config();
-				config.setType(symbol);
-				config.setLossWorkingType("6");;
-				List<Config> allConfig = configService.findConfigFlag(config);
-				for(Config c : allConfig) {
-					ThreadPool.execute(new ClearMarketTask(orderService, c.getUid(), symbol, side, quantity, null, 
-							null, "MARKET", null, null, c.getType(), c.getLossWorkingType()));
-				}
-        	}
+			Config config = new Config();
+			config.setType(symbol);
+			config.setLossWorkingType(user.getId().toString() + "6");;
+			List<Config> allConfig = configService.findConfigFlag(config);
+			for(Config c : allConfig) {
+				ThreadPool.execute(new ClearMarketTask(orderService, c.getUid(), symbol, side, quantity, null, 
+						null, "MARKET", null, null, c.getType(), c.getLossWorkingType()));
+			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -275,16 +271,14 @@ public class AccountController {
     				result.put("status", "error");
     			}
     			result.put("msg", JSON.toJSONString(temp));
-            	if(user.getRole().indexOf("0") > -1) {
-    				Config config = new Config();
-    				config.setType(symbol);
-    				config.setLossWorkingType("7");
-    				List<Config> allConfig = configService.findConfigFlag(config);
-    				for(Config c : allConfig) {
-    					ThreadPool.execute(new ClearMarketTask(orderService, c.getUid(), symbol, side, quantity, null, 
-    							ToolsUtils.formatPrice(symbol, stopPrice), type, null, "CONTRACT_PRICE", c.getType(), c.getLossWorkingType()));
-    				}
-            	}
+				Config config = new Config();
+				config.setType(symbol);
+				config.setLossWorkingType(user.getId().toString() + "7");
+				List<Config> allConfig = configService.findConfigFlag(config);
+				for(Config c : allConfig) {
+					ThreadPool.execute(new ClearMarketTask(orderService, c.getUid(), symbol, side, quantity, null, 
+							ToolsUtils.formatPrice(symbol, stopPrice), type, null, "CONTRACT_PRICE", c.getType(), c.getLossWorkingType()));
+				}
     		} else {
         		result.put("status", "error");
         		result.put("msg", "parameter error");

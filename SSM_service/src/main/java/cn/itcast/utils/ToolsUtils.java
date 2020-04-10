@@ -158,6 +158,22 @@ public class ToolsUtils {
 		return result;
 	}
 	
+	public static String parsePositionSide(String side) {
+		String result = "";
+		switch(side) {
+			case "LONG" :
+				result = "双向多头持仓";
+				break;
+			case "SHORT" :
+				result = "双向空头持仓";
+				break;
+			case "BOTH" :
+				result = "单向持仓";
+				break;
+		}
+		return result;
+	}
+	
 	public static void main(String[] args) {
 		System.out.println(formatQuantity("ETHUSDT", 61.97999201356768f));
 		System.out.println(formatQuantity("ETCUSDT", 61.97999201356768f));

@@ -56,18 +56,30 @@ public class ClearMarketTask implements Runnable {
 		try {
 			Thread.sleep((new Random()).nextInt(3000));
 			float positionAmt = 0;
+			boolean firstsd = orderService.positionSide(apiKey, secretKey);
     		String risks = orderService.positionRisk(apiKey, secretKey);
     		List<String> lists = JSON.parseArray(risks, String.class);
     		for(String list : lists) {
     			Map<String, String> risk = JSON.parseObject(list, new TypeReference<Map<String, String>>(){} );
     			if(risk != null && StringUtils.isNotEmpty(risk.get("positionAmt")) 
     					&& StringUtils.isNotEmpty(risk.get("symbol")) && risk.get("symbol").equals(symbol)) {
-    				positionAmt = Math.abs(Float.parseFloat(risk.get("positionAmt")));
-    				break;
+    				if(firstsd) {
+    					if(side.equals("BUY") && risk.get("positionSide").equals("SHORT")) {
+    						positionAmt = Math.abs(Float.parseFloat(risk.get("positionAmt"))); 
+    						break;
+    					} else if(side.equals("SELL") && risk.get("positionSide").equals("LONG")) {
+    						positionAmt = Math.abs(Float.parseFloat(risk.get("positionAmt"))); 
+    						break;
+    					}
+    				} else {
+    					if(risk.get("positionSide").equals("BOTH")) {
+    						positionAmt = Math.abs(Float.parseFloat(risk.get("positionAmt")));     
+    						break;
+    					}
+    				}
     			}       			
     		}
     		quantity = "" + (positionAmt * (Float.parseFloat(quantity) / 100));
-    		boolean firstsd = orderService.positionSide(apiKey, secretKey);
 			String temp = orderService.trade(symbol, side, ToolsUtils.generatePositionSide(firstsd, true, side), 
 					ToolsUtils.formatQuantity(symbol, Float.parseFloat(quantity)), price, 
 					stopPrice, type, timeInForce, workingType, firstsd ? null : "true", apiKey, secretKey);
@@ -77,7 +89,7 @@ public class ClearMarketTask implements Runnable {
 	    		mail.setUid(uid);
 	    		mail.setSymbol(symbol);
 	    		if(StringUtils.isNotEmpty(stopPrice)) {
-	    			mail.setSubject(symbol + "止盈/止损单创建成功，挂单价格" + stopPrice + "，已提交到币安");
+	    			mail.setSubject(symbol + "止盈/止损跟单创建成功，挂单价格" + stopPrice + "，已提交到币安");
 	    		} else {
 	    			mail.setSubject(symbol + "平仓跟单创建成功，成交价格" + ToolsUtils.getCurPriceByKey(symbol) + "，已提交到币安");	    			
 	    		}

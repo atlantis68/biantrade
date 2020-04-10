@@ -797,8 +797,8 @@
 	        });  
 	    }
 	    
-	    function tradeMarket1(side, seq) { 
-	    	if(!confirm($('input[name="symbol"]:checked').val() + "：是否" + translateSide(side))) {
+	    function tradeMarket1(side, positionSide, seq) { 
+	    	if(!confirm($('input[name="symbol"]:checked').val() + "：是否" + translateSide(side, positionSide))) {
 	    		return;
 	    	}
     		if(!validateFloat($("#jprice").val()) && $('input[name="jtype"]:checked').val() == 'LIMIT') {
@@ -1913,8 +1913,8 @@
 <input type="radio" name="jtype" value="MARKET">市价单
 &nbsp&nbsp价格：<input type="text" id="jprice" name="jprice" size=5/>
 &nbsp&nbsp数量：<input type="text" id="jnumber" name="jnumber" size=5/>
-&nbsp&nbsp<input type="button" value="开多" id="market1" name="market1" onclick ="tradeMarket1('BUY', 1)"/>
-&nbsp&nbsp<input type="button" value="开空" id="market2" name="market2" onclick ="tradeMarket1('SELL', 2)"/>
+&nbsp&nbsp<input type="button" value="开多" id="market1" name="market1" onclick ="tradeMarket1('BUY', 'LONG', 1)"/>
+&nbsp&nbsp<input type="button" value="开空" id="market2" name="market2" onclick ="tradeMarket1('SELL', 'SHORT', 2)"/>
 &nbsp&nbsp<span id='title1' name='title1' style="color:red;font-weight:bold;">BTCUSDT</span>
 <p> 
 <hr>
