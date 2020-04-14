@@ -21,6 +21,7 @@ import com.alibaba.fastjson.JSONObject;
 import cn.itcast.back.CancelPlanTask;
 import cn.itcast.back.FollowPlanTask;
 import cn.itcast.back.ThreadPool;
+import cn.itcast.constant.TransactionConstants;
 import cn.itcast.model.Result;
 import cn.itcast.pojo.Config;
 import cn.itcast.pojo.Plan;
@@ -45,10 +46,10 @@ public class OrderController {
     
     @RequestMapping(value = "/index")
     public String index(Model model, HttpSession session) {
-    	User user = (User) session.getAttribute("USER_SESSION");
-    	model.addAttribute("role", user.getRole());
-    	model.addAttribute("username", user.getUsername());
-    	model.addAttribute("nickname", user.getNickname());
+    	User user = (User) session.getAttribute(TransactionConstants.USER_SESSION);
+    	model.addAttribute(TransactionConstants.USER_ROLE, user.getRole());
+    	model.addAttribute(TransactionConstants.USER_USERNAME, user.getUsername());
+    	model.addAttribute(TransactionConstants.USER_NICKNAME, user.getNickname());
         return "account";
     }
     
@@ -60,15 +61,15 @@ public class OrderController {
     	try {
     		Float curPrice = ToolsUtils.getCurPriceByKey(symbol);
     		//获取配置项
-    		User user = (User) session.getAttribute("USER_SESSION");
+    		User user = (User) session.getAttribute(TransactionConstants.USER_SESSION);
     		String plan = orderService.plan(symbol, first, second, third, stop, trigger, compare, trigger1, compare1,
     				user.getId(), user.getApiKey(), user.getSecretKey(), curPrice, level);
-        	result.put("status", "ok");
-        	result.put("msg", plan);
+        	result.put(TransactionConstants.SYSTEM_STATUS, TransactionConstants.SYSTEM_STATUS_OK);
+        	result.put(TransactionConstants.SYSTEM_MSG, plan);
         	if(user.getRole().indexOf("0") > -1) {
         		JSONObject jSONObject = JSON.parseObject(plan);
-        		if(jSONObject.containsKey("id")) {
-        			int id = jSONObject.getIntValue("id");
+        		if(jSONObject.containsKey(TransactionConstants.USER_ID)) {
+        			int id = jSONObject.getIntValue(TransactionConstants.USER_ID);
         			//进入关联跟单
         			if(id > 0) {
         				Config config = new Config();
@@ -85,8 +86,8 @@ public class OrderController {
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-    		result.put("status", "error");
-    		result.put("msg", e.getMessage());
+    		result.put(TransactionConstants.SYSTEM_STATUS, TransactionConstants.SYSTEM_STATUS_ERROR);
+    		result.put(TransactionConstants.SYSTEM_MSG, e.getMessage());
 		}
     	return result.toJSONString();
     }
@@ -98,7 +99,7 @@ public class OrderController {
     	JSONObject result = new JSONObject();
     	try {
     		//获取配置项
-    		User user = (User) session.getAttribute("USER_SESSION");
+    		User user = (User) session.getAttribute(TransactionConstants.USER_SESSION);
 			Plan plan = new Plan();
 			plan.setUid(user.getId());
 			plan.setPid(0);
@@ -122,16 +123,16 @@ public class OrderController {
 			}
 			plan.setOrderIds("");
 			if(orderService.insertPlan(plan) > 0) {
-				result.put("status", "ok");				
+				result.put(TransactionConstants.SYSTEM_STATUS, TransactionConstants.SYSTEM_STATUS_OK);				
 			} else {
-				result.put("status", "error");		
-				result.put("msg", "保存失败");
+				result.put(TransactionConstants.SYSTEM_STATUS, TransactionConstants.SYSTEM_STATUS_ERROR);		
+				result.put(TransactionConstants.SYSTEM_MSG, "保存失败");
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-    		result.put("status", "error");
-    		result.put("msg", e.getMessage());
+    		result.put(TransactionConstants.SYSTEM_STATUS, TransactionConstants.SYSTEM_STATUS_ERROR);
+    		result.put(TransactionConstants.SYSTEM_MSG, e.getMessage());
 		}
     	return result.toJSONString();
     }
@@ -143,15 +144,15 @@ public class OrderController {
     	JSONObject result = new JSONObject();
     	try {
     		//获取配置项
-    		User user = (User) session.getAttribute("USER_SESSION");
+    		User user = (User) session.getAttribute(TransactionConstants.USER_SESSION);
     		List<Plan> plans = orderService.findPlanByUid(user.getId());
-        	result.put("status", "ok");
-        	result.put("msg", JSON.toJSONString(plans));
+        	result.put(TransactionConstants.SYSTEM_STATUS, TransactionConstants.SYSTEM_STATUS_OK);
+        	result.put(TransactionConstants.SYSTEM_MSG, JSON.toJSONString(plans));
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-    		result.put("status", "error");
-    		result.put("msg", e.getMessage());
+    		result.put(TransactionConstants.SYSTEM_STATUS, TransactionConstants.SYSTEM_STATUS_ERROR);
+    		result.put(TransactionConstants.SYSTEM_MSG, e.getMessage());
 		}
     	return result.toJSONString();
 		
@@ -163,15 +164,15 @@ public class OrderController {
     	JSONObject result = new JSONObject();
     	try {
     		//获取配置项
-    		User user = (User) session.getAttribute("USER_SESSION");
+    		User user = (User) session.getAttribute(TransactionConstants.USER_SESSION);
     		List<Plan> plans = orderService.findCachePlanByUid(user.getId());
-        	result.put("status", "ok");
-        	result.put("msg", JSON.toJSONString(plans));
+        	result.put(TransactionConstants.SYSTEM_STATUS, TransactionConstants.SYSTEM_STATUS_OK);
+        	result.put(TransactionConstants.SYSTEM_MSG, JSON.toJSONString(plans));
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-    		result.put("status", "error");
-    		result.put("msg", e.getMessage());
+    		result.put(TransactionConstants.SYSTEM_STATUS, TransactionConstants.SYSTEM_STATUS_ERROR);
+    		result.put(TransactionConstants.SYSTEM_MSG, e.getMessage());
 		}
     	return result.toJSONString();
 		
@@ -183,7 +184,7 @@ public class OrderController {
     	JSONObject result = new JSONObject();
     	try {
     		//获取配置项
-    		User user = (User) session.getAttribute("USER_SESSION");
+    		User user = (User) session.getAttribute(TransactionConstants.USER_SESSION);
 			int level = 1;
 			String[] roles = user.getRole().split(",");
 			for(String role : roles) {
@@ -193,13 +194,13 @@ public class OrderController {
 				}
 			}
 			List<Plan> plans = orderService.findPlanByTime(startTime, level);  
-        	result.put("status", "ok");
-        	result.put("msg", JSON.toJSONString(plans));
+        	result.put(TransactionConstants.SYSTEM_STATUS, TransactionConstants.SYSTEM_STATUS_OK);
+        	result.put(TransactionConstants.SYSTEM_MSG, JSON.toJSONString(plans));
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-    		result.put("status", "error");
-    		result.put("msg", e.getMessage());
+    		result.put(TransactionConstants.SYSTEM_STATUS, TransactionConstants.SYSTEM_STATUS_ERROR);
+    		result.put(TransactionConstants.SYSTEM_MSG, e.getMessage());
 		}
     	return result.toJSONString();
 		
@@ -210,7 +211,7 @@ public class OrderController {
     public String fllowPlans(String symbol, HttpSession session) {
     	JSONObject result = new JSONObject();
     	try {
-    		User user = (User) session.getAttribute("USER_SESSION");
+    		User user = (User) session.getAttribute(TransactionConstants.USER_SESSION);
     		int level = 1;
     		String[] roles = user.getRole().split(",");
     		for(String role : roles) {
@@ -220,13 +221,13 @@ public class OrderController {
     			}
     		}
     		List<Plan> plans = orderService.findFllowPlans(level);
-    		result.put("status", "ok");
-    		result.put("msg", JSON.toJSONString(plans));
+    		result.put(TransactionConstants.SYSTEM_STATUS, TransactionConstants.SYSTEM_STATUS_OK);
+    		result.put(TransactionConstants.SYSTEM_MSG, JSON.toJSONString(plans));
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-    		result.put("status", "error");
-    		result.put("msg", e.getMessage());
+    		result.put(TransactionConstants.SYSTEM_STATUS, TransactionConstants.SYSTEM_STATUS_ERROR);
+    		result.put(TransactionConstants.SYSTEM_MSG, e.getMessage());
 		}
     	return result.toJSONString();
 		
@@ -238,14 +239,14 @@ public class OrderController {
     	JSONObject result = new JSONObject();
     	try {
     		//获取配置项
-    		User user = (User) session.getAttribute("USER_SESSION");
+    		User user = (User) session.getAttribute(TransactionConstants.USER_SESSION);
     		int number = orderService.cancelPlan(user.getId(), symbol, id, orderIds, Integer.parseInt(state), user.getApiKey(), user.getSecretKey());
 			if(number > 0) {
-				result.put("status", "ok");
-				result.put("msg", "canceled successful");
+				result.put(TransactionConstants.SYSTEM_STATUS, TransactionConstants.SYSTEM_STATUS_OK);
+				result.put(TransactionConstants.SYSTEM_MSG, "canceled successful");
 			} else {
-				result.put("status", "error");
-				result.put("msg", "canceled failed");
+				result.put(TransactionConstants.SYSTEM_STATUS, TransactionConstants.SYSTEM_STATUS_ERROR);
+				result.put(TransactionConstants.SYSTEM_MSG, "canceled failed");
 			}
 			if(user.getRole().indexOf("0") > -1) {
 				//进入关联撤单
@@ -258,8 +259,8 @@ public class OrderController {
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-    		result.put("status", "error");
-    		result.put("msg", e.getMessage());
+    		result.put(TransactionConstants.SYSTEM_STATUS, TransactionConstants.SYSTEM_STATUS_ERROR);
+    		result.put(TransactionConstants.SYSTEM_MSG, e.getMessage());
 		}
     	return result.toJSONString();
 		
@@ -271,24 +272,24 @@ public class OrderController {
     	JSONObject result = new JSONObject();
     	try {
     		//获取配置项
-    		User user = (User) session.getAttribute("USER_SESSION");
+    		User user = (User) session.getAttribute(TransactionConstants.USER_SESSION);
     		Plan plan = orderService.findPlanById(id);
     		if(plan != null && plan.getState() < 4) {
     			orderService.follow(id, plan.getSymbol(), plan.getFirst().toString(), plan.getSecond().toString(), 
     					plan.getThird().toString(), plan.getStop().toString(), plan.getTrigger().toString(), plan.getCompare(), 
     					plan.getTrigger1().toString(), plan.getCompare1(), user.getId(), user.getApiKey(), user.getSecretKey(), 
     					ToolsUtils.getCurPriceByKey(plan.getSymbol()));
-    			result.put("status", "ok");
-    			result.put("msg", "follow successful");    			
+    			result.put(TransactionConstants.SYSTEM_STATUS, TransactionConstants.SYSTEM_STATUS_OK);
+    			result.put(TransactionConstants.SYSTEM_MSG, "follow successful");    			
     		} else {
-    			result.put("status", "error");
-    			result.put("msg", "follow failed");   
+    			result.put(TransactionConstants.SYSTEM_STATUS, TransactionConstants.SYSTEM_STATUS_ERROR);
+    			result.put(TransactionConstants.SYSTEM_MSG, "follow failed");   
     		}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-    		result.put("status", "error");
-    		result.put("msg", e.getMessage());
+    		result.put(TransactionConstants.SYSTEM_STATUS, TransactionConstants.SYSTEM_STATUS_ERROR);
+    		result.put(TransactionConstants.SYSTEM_MSG, e.getMessage());
 		}
     	return result.toJSONString();
 		
@@ -300,7 +301,7 @@ public class OrderController {
     	JSONObject result = new JSONObject();
     	try {
     		//获取配置项
-    		User user = (User) session.getAttribute("USER_SESSION");
+    		User user = (User) session.getAttribute(TransactionConstants.USER_SESSION);
     		Plan plan = orderService.findPlanById(id);
     		if(plan != null) {
     			Integer level = null;
@@ -312,14 +313,14 @@ public class OrderController {
 						plan.getCompare(), plan.getTrigger1().toString(), plan.getCompare1(), session);
 				result = JSONObject.parseObject(temp); 
     		} else {
-    			result.put("status", "error");
-    			result.put("msg", "repeat failed");   
+    			result.put(TransactionConstants.SYSTEM_STATUS, TransactionConstants.SYSTEM_STATUS_ERROR);
+    			result.put(TransactionConstants.SYSTEM_MSG, "repeat failed");   
     		}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-    		result.put("status", "error");
-    		result.put("msg", e.getMessage());
+    		result.put(TransactionConstants.SYSTEM_STATUS, TransactionConstants.SYSTEM_STATUS_ERROR);
+    		result.put(TransactionConstants.SYSTEM_MSG, e.getMessage());
 		}
     	return result.toJSONString();
 		
@@ -331,21 +332,21 @@ public class OrderController {
     	JSONObject result = new JSONObject();
     	try {
     		//获取配置项
-    		User user = (User) session.getAttribute("USER_SESSION");
+    		User user = (User) session.getAttribute(TransactionConstants.USER_SESSION);
 			if(user.getRole().indexOf("0") > -1) {
 				//通知
 				int number = orderService.warn(id);	
-				result.put("status", "ok");
-				result.put("msg", "notice " + number + " users");
+				result.put(TransactionConstants.SYSTEM_STATUS, TransactionConstants.SYSTEM_STATUS_OK);
+				result.put(TransactionConstants.SYSTEM_MSG, "notice " + number + " users");
 			} else {
-				result.put("status", "error");
-				result.put("msg", "只有带单人才能操作");
+				result.put(TransactionConstants.SYSTEM_STATUS, TransactionConstants.SYSTEM_STATUS_ERROR);
+				result.put(TransactionConstants.SYSTEM_MSG, "只有带单人才能操作");
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-    		result.put("status", "error");
-    		result.put("msg", e.getMessage());
+    		result.put(TransactionConstants.SYSTEM_STATUS, TransactionConstants.SYSTEM_STATUS_ERROR);
+    		result.put(TransactionConstants.SYSTEM_MSG, e.getMessage());
 		}
     	return result.toJSONString();
 		
@@ -357,7 +358,7 @@ public class OrderController {
     	JSONObject result = new JSONObject();
     	try {
     		//获取配置项
-    		User user = (User) session.getAttribute("USER_SESSION");
+    		User user = (User) session.getAttribute(TransactionConstants.USER_SESSION);
     		Plan plan = orderService.findPlanById(id);
     		if(plan != null) {
     			Result temp = orderService.generateAndDealOrder(plan.getSymbol(), plan.getFirst().toString(), plan.getSecond().toString(), 
@@ -365,21 +366,21 @@ public class OrderController {
     					plan.getTrigger1().toString(), plan.getCompare1(), user.getId(), user.getApiKey(), user.getSecretKey(), 
     					null, ToolsUtils.getCurPriceByKey(plan.getSymbol()), true);
     			if(temp.getState() == -1) {
-        			result.put("status", "ok");
-        			result.put("msg", temp.getMsg());  
+        			result.put(TransactionConstants.SYSTEM_STATUS, TransactionConstants.SYSTEM_STATUS_OK);
+        			result.put(TransactionConstants.SYSTEM_MSG, temp.getMsg());  
     			} else {
-        			result.put("status", "error");
-        			result.put("msg", "show detail failed");  	
+        			result.put(TransactionConstants.SYSTEM_STATUS, TransactionConstants.SYSTEM_STATUS_ERROR);
+        			result.put(TransactionConstants.SYSTEM_MSG, "show detail failed");  	
     			}
     		} else {
-    			result.put("status", "error");
-    			result.put("msg", "show detail failed");   
+    			result.put(TransactionConstants.SYSTEM_STATUS, TransactionConstants.SYSTEM_STATUS_ERROR);
+    			result.put(TransactionConstants.SYSTEM_MSG, "show detail failed");   
     		}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-    		result.put("status", "error");
-    		result.put("msg", e.getMessage());
+    		result.put(TransactionConstants.SYSTEM_STATUS, TransactionConstants.SYSTEM_STATUS_ERROR);
+    		result.put(TransactionConstants.SYSTEM_MSG, e.getMessage());
 		}
     	return result.toJSONString();
 		
@@ -396,14 +397,14 @@ public class OrderController {
     			return plan(plan.getSymbol(), plan.getFirst().toString(), plan.getSecond().toString(), plan.getThird().toString(), plan.getStop().toString(), 
     					plan.getLevel(), plan.getTrigger().toString(), plan.getCompare(), plan.getTrigger1().toString(), plan.getCompare1(), session);
     		} else {
-    			result.put("status", "error");
-    			result.put("msg", "submit plan failed");   
+    			result.put(TransactionConstants.SYSTEM_STATUS, TransactionConstants.SYSTEM_STATUS_ERROR);
+    			result.put(TransactionConstants.SYSTEM_MSG, "submit plan failed");   
     		}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-    		result.put("status", "error");
-    		result.put("msg", e.getMessage());
+    		result.put(TransactionConstants.SYSTEM_STATUS, TransactionConstants.SYSTEM_STATUS_ERROR);
+    		result.put(TransactionConstants.SYSTEM_MSG, e.getMessage());
 		}
     	return result.toJSONString();
 		

@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import cn.itcast.constant.TransactionConstants;
 import cn.itcast.pojo.Mail;
 
 public class ToolsUtils {
@@ -15,7 +16,7 @@ public class ToolsUtils {
 	
 	private static Map<String, String> userPositionAmt = new HashMap<String, String>();
 	
-	private static Map<String, String> userLeverage = new HashMap<String, String>();
+//	private static Map<String, String> userLeverage = new HashMap<String, String>();
 
 	private static List<Properties> platformMail;
 
@@ -79,13 +80,13 @@ public class ToolsUtils {
 		ToolsUtils.userPositionAmt.put(key, value);
 	}
 	
-	public static String getUserLeverage(String key) {
-		return ToolsUtils.userLeverage.get(key);
-	}
-	
-	public static void setUserLeverage(String key, String value) {
-		ToolsUtils.userLeverage.put(key, value);
-	}
+//	public static String getUserLeverage(String key) {
+//		return ToolsUtils.userLeverage.get(key);
+//	}
+//	
+//	public static void setUserLeverage(String key, String value) {
+//		ToolsUtils.userLeverage.put(key, value);
+//	}
 	
 	public static String formatQuantity(String symbol, Float value) {
 		BigDecimal number = new BigDecimal(""+ value);
@@ -138,21 +139,21 @@ public class ToolsUtils {
 		String result = "";
 		if(firstsd != null) {
 			if(firstsd) {
-				if(side.equals("BUY")) {
+				if(side.equals(TransactionConstants.SIDE_BUY)) {
 					if(!reverse) {
-						result = "LONG";						
+						result = TransactionConstants.POSITIONSIDE_LONG;						
 					} else {
-						result = "SHORT";
+						result = TransactionConstants.POSITIONSIDE_SHORT;
 					}
-				} else if(side.equals("SELL")) {
+				} else if(side.equals(TransactionConstants.SIDE_SELL)) {
 					if(!reverse) {
-						result = "SHORT";
+						result = TransactionConstants.POSITIONSIDE_SHORT;
 					} else {
-						result = "LONG";						
+						result = TransactionConstants.POSITIONSIDE_LONG;						
 					}
 				}
 			} else {
-				result = "BOTH";
+				result = TransactionConstants.POSITIONSIDE_BOTH;
 			}
 		} 
 		return result;
@@ -161,13 +162,13 @@ public class ToolsUtils {
 	public static String parsePositionSide(String side) {
 		String result = "";
 		switch(side) {
-			case "LONG" :
+			case TransactionConstants.POSITIONSIDE_LONG :
 				result = "双向多头持仓";
 				break;
-			case "SHORT" :
+			case TransactionConstants.POSITIONSIDE_SHORT :
 				result = "双向空头持仓";
 				break;
-			case "BOTH" :
+			case TransactionConstants.POSITIONSIDE_BOTH :
 				result = "单向持仓";
 				break;
 		}

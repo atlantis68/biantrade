@@ -18,6 +18,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
+import cn.itcast.constant.TransactionConstants;
 import cn.itcast.pojo.User;
 import cn.itcast.service.UserService;
 
@@ -29,10 +30,10 @@ public class UserController {
 
     @RequestMapping("/index")
     public String index(Model model, HttpSession session) {
-    	User user = (User) session.getAttribute("USER_SESSION");
-    	model.addAttribute("role", user.getRole());
-    	model.addAttribute("username", user.getUsername());
-    	model.addAttribute("nickname", user.getNickname());
+    	User user = (User) session.getAttribute(TransactionConstants.USER_SESSION);
+    	model.addAttribute(TransactionConstants.USER_ROLE, user.getRole());
+    	model.addAttribute(TransactionConstants.USER_USERNAME, user.getUsername());
+    	model.addAttribute(TransactionConstants.USER_NICKNAME, user.getNickname());
         return "user";
     }
 
@@ -42,12 +43,12 @@ public class UserController {
         User user = userService.findUser(username, password);
         if (user != null) {
         	session.setMaxInactiveInterval(-1);
-            session.setAttribute("USER_SESSION", user);
+            session.setAttribute(TransactionConstants.USER_SESSION, user);
             if(StringUtils.isNotEmpty(user.getApiKey()) && StringUtils.isNotEmpty(user.getSecretKey())) {
-            	model.addAttribute("role", user.getRole());
-            	model.addAttribute("id", user.getId());
-            	model.addAttribute("username", user.getUsername());
-            	model.addAttribute("nickname", user.getNickname());
+            	model.addAttribute(TransactionConstants.USER_ROLE, user.getRole());
+            	model.addAttribute(TransactionConstants.USER_ID, user.getId());
+            	model.addAttribute(TransactionConstants.USER_USERNAME, user.getUsername());
+            	model.addAttribute(TransactionConstants.USER_NICKNAME, user.getNickname());
             	if(StringUtils.isNotEmpty(user.getRelaids())) {
             		List<String> idList = Arrays.asList(user.getRelaids().split(","));
             		List<User> users = userService.findUserByIds(idList);
@@ -55,9 +56,9 @@ public class UserController {
             			JSONArray userInfos = new JSONArray();
             			for(User u : users) {
             				Map<String, String> temp = new HashMap<String, String>();
-            				temp.put("id", "" + u.getId());
-            				temp.put("username", u.getUsername());
-            				temp.put("nickname", u.getNickname());
+            				temp.put(TransactionConstants.USER_ID, "" + u.getId());
+            				temp.put(TransactionConstants.USER_USERNAME, u.getUsername());
+            				temp.put(TransactionConstants.USER_NICKNAME, u.getNickname());
             				userInfos.add(temp);
             			}
             			model.addAttribute("ids", userInfos.toString());            		
@@ -68,7 +69,7 @@ public class UserController {
             	return "user";
             }
         }
-        model.addAttribute("msg", "用户或密码错误,请重新输入");
+        model.addAttribute(TransactionConstants.SYSTEM_MSG, "用户或密码错误,请重新输入");
         return "index";
     }
     
@@ -77,14 +78,14 @@ public class UserController {
     public String findUser(HttpSession session) {
     	JSONObject result = new JSONObject();
     	try {
-    		User user = (User) session.getAttribute("USER_SESSION");
+    		User user = (User) session.getAttribute(TransactionConstants.USER_SESSION);
     		User userInfo = userService.findUser(user.getId());    	
-        	result.put("status", "ok");
-        	result.put("msg", JSON.toJSONString(userInfo));
+        	result.put(TransactionConstants.SYSTEM_STATUS, TransactionConstants.SYSTEM_STATUS_OK);
+        	result.put(TransactionConstants.SYSTEM_MSG, JSON.toJSONString(userInfo));
     	} catch(Exception e) {
     		e.printStackTrace();
-    		result.put("status", "error");
-    		result.put("msg", e.getMessage());
+    		result.put(TransactionConstants.SYSTEM_STATUS, TransactionConstants.SYSTEM_STATUS_ERROR);
+    		result.put(TransactionConstants.SYSTEM_MSG, e.getMessage());
     	}
     	return result.toJSONString();
     }
@@ -109,17 +110,17 @@ public class UserController {
         	user.setMail(mail);
         	int number = userService.updateUserById(user);
 			if(number > 0) {
-				result.put("status", "ok");
-				result.put("msg", "save successful");
+				result.put(TransactionConstants.SYSTEM_STATUS, TransactionConstants.SYSTEM_STATUS_OK);
+				result.put(TransactionConstants.SYSTEM_MSG, "save successful");
 			} else {
-				result.put("status", "error");
-				result.put("msg", "save failed");
+				result.put(TransactionConstants.SYSTEM_STATUS, TransactionConstants.SYSTEM_STATUS_ERROR);
+				result.put(TransactionConstants.SYSTEM_MSG, "save failed");
 			}
         	session.invalidate();
     	} catch(Exception e) {
     		e.printStackTrace();
-    		result.put("status", "error");
-    		result.put("msg", e.getMessage());
+    		result.put(TransactionConstants.SYSTEM_STATUS, TransactionConstants.SYSTEM_STATUS_ERROR);
+    		result.put(TransactionConstants.SYSTEM_MSG, e.getMessage());
     	}
         return result.toJSONString();
     }
@@ -130,12 +131,12 @@ public class UserController {
     	JSONObject result = new JSONObject();
     	try {
     		List<User> userInfos = userService.findUserByUid(uid);    	
-        	result.put("status", "ok");
-        	result.put("msg", JSON.toJSONString(userInfos));
+        	result.put(TransactionConstants.SYSTEM_STATUS, TransactionConstants.SYSTEM_STATUS_OK);
+        	result.put(TransactionConstants.SYSTEM_MSG, JSON.toJSONString(userInfos));
     	} catch(Exception e) {
     		e.printStackTrace();
-    		result.put("status", "error");
-    		result.put("msg", e.getMessage());
+    		result.put(TransactionConstants.SYSTEM_STATUS, TransactionConstants.SYSTEM_STATUS_ERROR);
+    		result.put(TransactionConstants.SYSTEM_MSG, e.getMessage());
     	}
     	return result.toJSONString();
     }
@@ -150,23 +151,23 @@ public class UserController {
     			User relaUser = userService.findRelaUser(Integer.parseInt(relaid));
     			if(relaUser != null) {
     				session.setMaxInactiveInterval(-1);
-    	            session.setAttribute("USER_SESSION", relaUser);
+    	            session.setAttribute(TransactionConstants.USER_SESSION, relaUser);
     				Map<String, String> temp = new HashMap<String, String>();
-    				temp.put("id", "" + relaUser.getId());
-    				temp.put("role", relaUser.getRole());
-    				temp.put("username", relaUser.getUsername());
-    				temp.put("nickname", relaUser.getNickname());
-    	        	result.put("status", "ok");
-    	        	result.put("msg", JSON.toJSONString(temp));
+    				temp.put(TransactionConstants.USER_ID, "" + relaUser.getId());
+    				temp.put(TransactionConstants.USER_ROLE, relaUser.getRole());
+    				temp.put(TransactionConstants.USER_USERNAME, relaUser.getUsername());
+    				temp.put(TransactionConstants.USER_NICKNAME, relaUser.getNickname());
+    	        	result.put(TransactionConstants.SYSTEM_STATUS, TransactionConstants.SYSTEM_STATUS_OK);
+    	        	result.put(TransactionConstants.SYSTEM_MSG, JSON.toJSONString(temp));
     	        	return result.toJSONString();
     			}
     		}
-        	result.put("status", "error");
-        	result.put("msg", "切换用户失败");
+        	result.put(TransactionConstants.SYSTEM_STATUS, TransactionConstants.SYSTEM_STATUS_ERROR);
+        	result.put(TransactionConstants.SYSTEM_MSG, "切换用户失败");
     	} catch(Exception e) {
     		e.printStackTrace();
-    		result.put("status", "error");
-    		result.put("msg", e.getMessage());
+    		result.put(TransactionConstants.SYSTEM_STATUS, TransactionConstants.SYSTEM_STATUS_ERROR);
+    		result.put(TransactionConstants.SYSTEM_MSG, e.getMessage());
     	}
     	return result.toJSONString();
     }

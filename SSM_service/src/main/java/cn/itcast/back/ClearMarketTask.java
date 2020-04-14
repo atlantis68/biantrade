@@ -11,6 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 
+import cn.itcast.constant.TransactionConstants;
 import cn.itcast.pojo.Mail;
 import cn.itcast.service.OrderService;
 import cn.itcast.utils.ToolsUtils;
@@ -61,19 +62,19 @@ public class ClearMarketTask implements Runnable {
     		List<String> lists = JSON.parseArray(risks, String.class);
     		for(String list : lists) {
     			Map<String, String> risk = JSON.parseObject(list, new TypeReference<Map<String, String>>(){} );
-    			if(risk != null && StringUtils.isNotEmpty(risk.get("positionAmt")) 
-    					&& StringUtils.isNotEmpty(risk.get("symbol")) && risk.get("symbol").equals(symbol)) {
+    			if(risk != null && StringUtils.isNotEmpty(risk.get(TransactionConstants.BIAN_POSITIONAMT)) 
+    					&& StringUtils.isNotEmpty(risk.get(TransactionConstants.BIAN_SYMBOL)) && risk.get(TransactionConstants.BIAN_SYMBOL).equals(symbol)) {
     				if(firstsd) {
-    					if(side.equals("BUY") && risk.get("positionSide").equals("SHORT")) {
-    						positionAmt = Math.abs(Float.parseFloat(risk.get("positionAmt"))); 
+    					if(side.equals(TransactionConstants.SIDE_BUY) && risk.get(TransactionConstants.BIAN_POSITIONSIDE).equals(TransactionConstants.POSITIONSIDE_SHORT)) {
+    						positionAmt = Math.abs(Float.parseFloat(risk.get(TransactionConstants.BIAN_POSITIONAMT))); 
     						break;
-    					} else if(side.equals("SELL") && risk.get("positionSide").equals("LONG")) {
-    						positionAmt = Math.abs(Float.parseFloat(risk.get("positionAmt"))); 
+    					} else if(side.equals(TransactionConstants.SIDE_SELL) && risk.get(TransactionConstants.BIAN_POSITIONSIDE).equals(TransactionConstants.POSITIONSIDE_LONG)) {
+    						positionAmt = Math.abs(Float.parseFloat(risk.get(TransactionConstants.BIAN_POSITIONAMT))); 
     						break;
     					}
     				} else {
-    					if(risk.get("positionSide").equals("BOTH")) {
-    						positionAmt = Math.abs(Float.parseFloat(risk.get("positionAmt")));     
+    					if(risk.get(TransactionConstants.BIAN_POSITIONSIDE).equals(TransactionConstants.POSITIONSIDE_BOTH)) {
+    						positionAmt = Math.abs(Float.parseFloat(risk.get(TransactionConstants.BIAN_POSITIONAMT)));     
     						break;
     					}
     				}
@@ -84,7 +85,7 @@ public class ClearMarketTask implements Runnable {
 					ToolsUtils.formatQuantity(symbol, Float.parseFloat(quantity)), price, 
 					stopPrice, type, timeInForce, workingType, firstsd ? null : "true", apiKey, secretKey);
 			Map<String, String> tempInfo = JSON.parseObject(temp, new TypeReference<Map<String, String>>(){} );
-			if(tempInfo != null && StringUtils.isNotEmpty(tempInfo.get("orderId"))) {
+			if(tempInfo != null && StringUtils.isNotEmpty(tempInfo.get(TransactionConstants.BIAN_ORDERID))) {
 				Mail mail = new Mail();
 	    		mail.setUid(uid);
 	    		mail.setSymbol(symbol);

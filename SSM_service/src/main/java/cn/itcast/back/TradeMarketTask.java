@@ -10,6 +10,7 @@ import org.apache.commons.lang3.StringUtils;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 
+import cn.itcast.constant.TransactionConstants;
 import cn.itcast.pojo.Mail;
 import cn.itcast.service.OrderService;
 import cn.itcast.utils.ToolsUtils;
@@ -56,11 +57,11 @@ public class TradeMarketTask implements Runnable {
     		String temp = orderService.trade(symbol, side, ToolsUtils.generatePositionSide(firstsd, false, side), 
     				quantity, price, null, type, timeInForce, workingType, null, apiKey, secretKey);
 			Map<String, String> tempInfo = JSON.parseObject(temp, new TypeReference<Map<String, String>>(){} );
-			if(tempInfo != null && StringUtils.isNotEmpty(tempInfo.get("orderId"))) {
+			if(tempInfo != null && StringUtils.isNotEmpty(tempInfo.get(TransactionConstants.BIAN_ORDERID))) {
 				Mail mail = new Mail();
 	    		mail.setUid(uid);
 	    		mail.setSymbol(symbol);
-				if(type.equals("LIMIT")) {
+				if(type.equals(TransactionConstants.TYPE_LIMIT)) {
 					mail.setSubject(symbol + "即时限价跟单创建成功，成交价格" + price + "，已提交到币安");
 				} else {
 					mail.setSubject(symbol + "即时市价跟单创建成功，成交价格" + ToolsUtils.getCurPriceByKey(symbol) + "，已提交到币安");					

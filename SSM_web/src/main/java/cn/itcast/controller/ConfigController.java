@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
+import cn.itcast.constant.TransactionConstants;
 import cn.itcast.pojo.Config;
 import cn.itcast.pojo.User;
 import cn.itcast.service.ConfigService;
@@ -30,10 +31,10 @@ public class ConfigController {
 	
     @RequestMapping(value = "/index")
     public String index(Model model, HttpSession session) {
-    	User user = (User) session.getAttribute("USER_SESSION");
-    	model.addAttribute("role", user.getRole());
-    	model.addAttribute("username", user.getUsername());
-    	model.addAttribute("nickname", user.getNickname());
+    	User user = (User) session.getAttribute(TransactionConstants.USER_SESSION);
+    	model.addAttribute(TransactionConstants.USER_ROLE, user.getRole());
+    	model.addAttribute(TransactionConstants.USER_USERNAME, user.getUsername());
+    	model.addAttribute(TransactionConstants.USER_NICKNAME, user.getNickname());
         return "config";
     }
     
@@ -42,18 +43,18 @@ public class ConfigController {
     public String findConfig(String symbol, HttpSession session) {
     	JSONObject result = new JSONObject();
     	try {
-    		User user = (User) session.getAttribute("USER_SESSION");
+    		User user = (User) session.getAttribute(TransactionConstants.USER_SESSION);
 			Config config = new Config();
 			config.setUid(user.getId());
 			config.setType(symbol);
 			Config allConfig = configService.findConfigByUid(config);
-        	result.put("status", "ok");
-        	result.put("msg", JSON.toJSONString(allConfig));
+        	result.put(TransactionConstants.SYSTEM_STATUS, TransactionConstants.SYSTEM_STATUS_OK);
+        	result.put(TransactionConstants.SYSTEM_MSG, JSON.toJSONString(allConfig));
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-    		result.put("status", "error");
-    		result.put("msg", e.getMessage());
+    		result.put(TransactionConstants.SYSTEM_STATUS, TransactionConstants.SYSTEM_STATUS_ERROR);
+    		result.put(TransactionConstants.SYSTEM_MSG, e.getMessage());
 		}
     	return result.toJSONString();
     }
@@ -63,15 +64,15 @@ public class ConfigController {
     public String findConfigs(HttpSession session) {
     	JSONObject result = new JSONObject();
     	try {
-    		User user = (User) session.getAttribute("USER_SESSION");
+    		User user = (User) session.getAttribute(TransactionConstants.USER_SESSION);
 			List<Config> allConfigs = configService.findConfigsByUid(user.getId());
-        	result.put("status", "ok");
-        	result.put("msg", JSON.toJSONString(allConfigs));
+        	result.put(TransactionConstants.SYSTEM_STATUS, TransactionConstants.SYSTEM_STATUS_OK);
+        	result.put(TransactionConstants.SYSTEM_MSG, JSON.toJSONString(allConfigs));
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-    		result.put("status", "error");
-    		result.put("msg", e.getMessage());
+    		result.put(TransactionConstants.SYSTEM_STATUS, TransactionConstants.SYSTEM_STATUS_ERROR);
+    		result.put(TransactionConstants.SYSTEM_MSG, e.getMessage());
 		}
     	return result.toJSONString();
     }
@@ -97,17 +98,17 @@ public class ConfigController {
 			config.setAutoCancel(Integer.parseInt(autoCancel));
 			int number = configService.updateConfig(config);
 			if(number > 0) {
-				result.put("status", "ok");
-				result.put("msg", "save successful");
+				result.put(TransactionConstants.SYSTEM_STATUS, TransactionConstants.SYSTEM_STATUS_OK);
+				result.put(TransactionConstants.SYSTEM_MSG, "save successful");
 			} else {
-				result.put("status", "error");
-				result.put("msg", "save failed");
+				result.put(TransactionConstants.SYSTEM_STATUS, TransactionConstants.SYSTEM_STATUS_ERROR);
+				result.put(TransactionConstants.SYSTEM_MSG, "save failed");
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-    		result.put("status", "error");
-    		result.put("msg", e.getMessage());
+    		result.put(TransactionConstants.SYSTEM_STATUS, TransactionConstants.SYSTEM_STATUS_ERROR);
+    		result.put(TransactionConstants.SYSTEM_MSG, e.getMessage());
 		}
     	return result.toJSONString();
     }

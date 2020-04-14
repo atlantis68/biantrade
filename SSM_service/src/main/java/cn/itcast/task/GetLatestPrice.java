@@ -10,6 +10,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 
 import cn.itcast.client.HttpClient;
+import cn.itcast.constant.TransactionConstants;
 import cn.itcast.utils.ToolsUtils;
 import okhttp3.Call;
 import okhttp3.Request;
@@ -37,7 +38,7 @@ public class GetLatestPrice implements Runnable {
 	    		String temp = response.body().string();
 	    		List<Map<String, String>> prices = JSON.parseObject(temp, new TypeReference<List<Map<String, String>>>(){} );
 	    		for(Map<String, String> price : prices) {
-	    			ToolsUtils.setCurPrice(price.get("symbol").toString(), Float.parseFloat(price.get("price").toString()));
+	    			ToolsUtils.setCurPrice(price.get(TransactionConstants.BIAN_SYMBOL).toString(), Float.parseFloat(price.get("price").toString()));
 	    		}
 				logger.info("{}", ToolsUtils.getCurPrice());
 	    	} catch(Exception e) {

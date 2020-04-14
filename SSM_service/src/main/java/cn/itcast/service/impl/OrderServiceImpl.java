@@ -19,6 +19,7 @@ import com.alibaba.fastjson.TypeReference;
 
 import cn.itcast.client.HttpClient;
 import cn.itcast.client.SHA256;
+import cn.itcast.constant.TransactionConstants;
 import cn.itcast.dao.BalanceMapper;
 import cn.itcast.dao.MailMapper;
 import cn.itcast.dao.PlanMapper;
@@ -130,9 +131,9 @@ public class OrderServiceImpl implements OrderService {
 			plan.setOrderIds(orders);
 			planMapper.insertPlan(plan);
 			JSONObject resultJson = new JSONObject();
-			resultJson.put("status", "ok");
-			resultJson.put("msg", "create plan successful");
-			resultJson.put("id", plan.getId());
+			resultJson.put(TransactionConstants.SYSTEM_STATUS, TransactionConstants.SYSTEM_STATUS_OK);
+			resultJson.put(TransactionConstants.SYSTEM_MSG, "create plan successful");
+			resultJson.put(TransactionConstants.USER_ID, plan.getId());
 			result = resultJson.toString();
 
 			Mail mail = ToolsUtils.generateMail(plan.getUid(), plan.getSymbol(), null, null, 
@@ -156,8 +157,8 @@ public class OrderServiceImpl implements OrderService {
 		} catch(Exception e) {
 			e.printStackTrace();
 			JSONObject resultJson = new JSONObject();
-			resultJson.put("status", "error");
-			resultJson.put("msg", e.getMessage());
+			resultJson.put(TransactionConstants.SYSTEM_STATUS, TransactionConstants.SYSTEM_STATUS_ERROR);
+			resultJson.put(TransactionConstants.SYSTEM_MSG, e.getMessage());
 			result = resultJson.toString();
 		}
 		return result;
@@ -197,8 +198,8 @@ public class OrderServiceImpl implements OrderService {
 			plan.setOrderIds(orders);
 			planMapper.insertPlan(plan);
 			JSONObject resultJson = new JSONObject();
-			resultJson.put("status", "ok");
-			resultJson.put("msg", "create plan successful");
+			resultJson.put(TransactionConstants.SYSTEM_STATUS, TransactionConstants.SYSTEM_STATUS_OK);
+			resultJson.put(TransactionConstants.SYSTEM_MSG, "create plan successful");
 			result = resultJson.toString();
 
     		Mail mail = ToolsUtils.generateMail(plan.getUid(), plan.getSymbol(), null, null, 
@@ -222,8 +223,8 @@ public class OrderServiceImpl implements OrderService {
 		} catch(Exception e) {
 			e.printStackTrace();
 			JSONObject resultJson = new JSONObject();
-			resultJson.put("status", "error");
-			resultJson.put("msg", e.getMessage());
+			resultJson.put(TransactionConstants.SYSTEM_STATUS, TransactionConstants.SYSTEM_STATUS_ERROR);
+			resultJson.put(TransactionConstants.SYSTEM_MSG, e.getMessage());
 			result = resultJson.toString();
 		}
 		return result;
@@ -255,19 +256,19 @@ public class OrderServiceImpl implements OrderService {
 			String stopSide = null;
 			Float entrustPrice = null;
 			if(firstPrice > stopPrice && secondPrice > stopPrice && thirdPrice > stopPrice) {
-				side = "BUY";
+				side = TransactionConstants.SIDE_BUY;
 				firstPrice = firstPrice * (1 + allConfig.getTradeOffset() / 10000);
 				secondPrice = secondPrice * (1 + allConfig.getTradeOffset() / 10000);
 				thirdPrice = thirdPrice * (1 + allConfig.getTradeOffset() / 10000);
-				stopSide = "SELL";
+				stopSide = TransactionConstants.SIDE_SELL;
 				stopPrice = stopPrice * (1 - allConfig.getLossTriggerOffset() / 10000);
 				entrustPrice = stopPrice * (1 - allConfig.getLossEntrustOffset() / 10000);
 			} else if(firstPrice < stopPrice && secondPrice < stopPrice && thirdPrice < stopPrice) {
-				side = "SELL";
+				side = TransactionConstants.SIDE_SELL;
 				firstPrice = firstPrice * (1 - allConfig.getTradeOffset() / 10000);
 				secondPrice = secondPrice * (1 - allConfig.getTradeOffset() / 10000);
 				thirdPrice = thirdPrice * (1 - allConfig.getTradeOffset() / 10000);
-				stopSide = "BUY";
+				stopSide = TransactionConstants.SIDE_BUY;
 				stopPrice = stopPrice * (1 + allConfig.getLossTriggerOffset() / 10000);
 				entrustPrice = stopPrice * (1 + allConfig.getLossEntrustOffset() / 10000);
 			}
@@ -356,10 +357,11 @@ public class OrderServiceImpl implements OrderService {
 			boolean firstsd = positionSide(apiKey, secretKey);
 			//操作第一档
 			String temp = trade(symbol, side, ToolsUtils.generatePositionSide(firstsd, false, side), quantity, 
-					ToolsUtils.formatPrice(symbol, firstPrice), null, "LIMIT", "GTC", allConfig.getLossWorkingType(), null, apiKey, secretKey);
+					ToolsUtils.formatPrice(symbol, firstPrice), null, TransactionConstants.TYPE_LIMIT, 
+					TransactionConstants.TIMEINFORCE_GTC, allConfig.getLossWorkingType(), null, apiKey, secretKey);
 			Map<String, String> tempInfo = JSON.parseObject(temp, new TypeReference<Map<String, String>>(){} );
-			if(tempInfo != null && StringUtils.isNotEmpty(tempInfo.get("orderId"))) {
-				orderIds.add(tempInfo.get("orderId"));
+			if(tempInfo != null && StringUtils.isNotEmpty(tempInfo.get(TransactionConstants.BIAN_ORDERID))) {
+				orderIds.add(tempInfo.get(TransactionConstants.BIAN_ORDERID));
 			} else {
 				msg = temp;
 			}
@@ -367,10 +369,11 @@ public class OrderServiceImpl implements OrderService {
 			if(orderIds.size() == seq) {
 				//操作第二档
 				temp = trade(symbol, side, ToolsUtils.generatePositionSide(firstsd, false, side), quantity, 
-						ToolsUtils.formatPrice(symbol, secondPrice), null, "LIMIT", "GTC", allConfig.getLossWorkingType(), null, apiKey, secretKey);
+						ToolsUtils.formatPrice(symbol, secondPrice), null, TransactionConstants.TYPE_LIMIT, 
+						TransactionConstants.TIMEINFORCE_GTC, allConfig.getLossWorkingType(), null, apiKey, secretKey);
 				tempInfo = JSON.parseObject(temp, new TypeReference<Map<String, String>>(){} );
-				if(tempInfo != null && StringUtils.isNotEmpty(tempInfo.get("orderId"))) {
-					orderIds.add(tempInfo.get("orderId"));
+				if(tempInfo != null && StringUtils.isNotEmpty(tempInfo.get(TransactionConstants.BIAN_ORDERID))) {
+					orderIds.add(tempInfo.get(TransactionConstants.BIAN_ORDERID));
 				} else {
 					msg = temp;
 				}			
@@ -379,10 +382,11 @@ public class OrderServiceImpl implements OrderService {
 			if(orderIds.size() == seq) {
 				//操作第三档
 				temp = trade(symbol, side, ToolsUtils.generatePositionSide(firstsd, false, side), quantity, 
-						ToolsUtils.formatPrice(symbol, thirdPrice), null, "LIMIT", "GTC", allConfig.getLossWorkingType(), null, apiKey, secretKey);
+						ToolsUtils.formatPrice(symbol, thirdPrice), null, TransactionConstants.TYPE_LIMIT, 
+						TransactionConstants.TIMEINFORCE_GTC, allConfig.getLossWorkingType(), null, apiKey, secretKey);
 				tempInfo = JSON.parseObject(temp, new TypeReference<Map<String, String>>(){} );
-				if(tempInfo != null && StringUtils.isNotEmpty(tempInfo.get("orderId"))) {
-					orderIds.add(tempInfo.get("orderId"));
+				if(tempInfo != null && StringUtils.isNotEmpty(tempInfo.get(TransactionConstants.BIAN_ORDERID))) {
+					orderIds.add(tempInfo.get(TransactionConstants.BIAN_ORDERID));
 				} else {
 					msg = temp;
 				}	
@@ -394,10 +398,11 @@ public class OrderServiceImpl implements OrderService {
 					//操作止损单1
 					temp = trade(symbol, stopSide, ToolsUtils.generatePositionSide(firstsd, true, stopSide), quantity, 
 							ToolsUtils.formatPrice(symbol, entrustPrice), ToolsUtils.formatPrice(symbol, stopPrice), 
-							"STOP", "GTC", allConfig.getLossWorkingType(), firstsd ? null : "true", apiKey, secretKey);
+							TransactionConstants.TYPE_STOP, TransactionConstants.TIMEINFORCE_GTC, 
+							allConfig.getLossWorkingType(), firstsd ? null : "true", apiKey, secretKey);
 					tempInfo = JSON.parseObject(temp, new TypeReference<Map<String, String>>(){} );
-					if(tempInfo != null && StringUtils.isNotEmpty(tempInfo.get("orderId"))) {
-						orderIds.add(tempInfo.get("orderId"));
+					if(tempInfo != null && StringUtils.isNotEmpty(tempInfo.get(TransactionConstants.BIAN_ORDERID))) {
+						orderIds.add(tempInfo.get(TransactionConstants.BIAN_ORDERID));
 					} else {
 						msg = temp;
 					}
@@ -407,10 +412,11 @@ public class OrderServiceImpl implements OrderService {
 					//操作止损单2
 					temp = trade(symbol, stopSide, ToolsUtils.generatePositionSide(firstsd, true, stopSide), quantity, 
 							ToolsUtils.formatPrice(symbol, entrustPrice), ToolsUtils.formatPrice(symbol, stopPrice), 
-							"STOP", "GTC", allConfig.getLossWorkingType(), firstsd ? null : "true", apiKey, secretKey);
+							TransactionConstants.TYPE_STOP, TransactionConstants.TIMEINFORCE_GTC, 
+							allConfig.getLossWorkingType(), firstsd ? null : "true", apiKey, secretKey);
 					tempInfo = JSON.parseObject(temp, new TypeReference<Map<String, String>>(){} );
-					if(tempInfo != null && StringUtils.isNotEmpty(tempInfo.get("orderId"))) {
-						orderIds.add(tempInfo.get("orderId"));
+					if(tempInfo != null && StringUtils.isNotEmpty(tempInfo.get(TransactionConstants.BIAN_ORDERID))) {
+						orderIds.add(tempInfo.get(TransactionConstants.BIAN_ORDERID));
 					} else {
 						msg = temp;
 					}
@@ -420,10 +426,11 @@ public class OrderServiceImpl implements OrderService {
 					//操作止损单3
 					temp = trade(symbol, stopSide, ToolsUtils.generatePositionSide(firstsd, true, stopSide), quantity, 
 							ToolsUtils.formatPrice(symbol, entrustPrice), ToolsUtils.formatPrice(symbol, stopPrice), 
-							"STOP", "GTC", allConfig.getLossWorkingType(), firstsd ? null : "true", apiKey, secretKey);
+							TransactionConstants.TYPE_STOP, TransactionConstants.TIMEINFORCE_GTC, 
+							allConfig.getLossWorkingType(), firstsd ? null : "true", apiKey, secretKey);
 					tempInfo = JSON.parseObject(temp, new TypeReference<Map<String, String>>(){} );
-					if(tempInfo != null && StringUtils.isNotEmpty(tempInfo.get("orderId"))) {
-						orderIds.add(tempInfo.get("orderId"));
+					if(tempInfo != null && StringUtils.isNotEmpty(tempInfo.get(TransactionConstants.BIAN_ORDERID))) {
+						orderIds.add(tempInfo.get(TransactionConstants.BIAN_ORDERID));
 					} else {
 						msg = temp;
 					}
@@ -433,11 +440,11 @@ public class OrderServiceImpl implements OrderService {
 				if(orderIds.size() == seq) {
 					//操作止损单1
 					temp = trade(symbol, stopSide, ToolsUtils.generatePositionSide(firstsd, true, stopSide),  quantity, null, 
-							ToolsUtils.formatPrice(symbol, stopPrice),  "STOP_MARKET", null, allConfig.getLossWorkingType(), 
+							ToolsUtils.formatPrice(symbol, stopPrice),  TransactionConstants.TYPE_STOP_MARKET, null, allConfig.getLossWorkingType(), 
 							firstsd ? null : "true", apiKey, secretKey);
 					tempInfo = JSON.parseObject(temp, new TypeReference<Map<String, String>>(){} );
-					if(tempInfo != null && StringUtils.isNotEmpty(tempInfo.get("orderId"))) {
-						orderIds.add(tempInfo.get("orderId"));
+					if(tempInfo != null && StringUtils.isNotEmpty(tempInfo.get(TransactionConstants.BIAN_ORDERID))) {
+						orderIds.add(tempInfo.get(TransactionConstants.BIAN_ORDERID));
 					} else {
 						msg = temp;
 					}
@@ -446,11 +453,11 @@ public class OrderServiceImpl implements OrderService {
 				if(orderIds.size() == seq) {
 					//操作止损单2
 					temp = trade(symbol, stopSide, ToolsUtils.generatePositionSide(firstsd, true, stopSide), quantity, null, 
-							ToolsUtils.formatPrice(symbol, stopPrice),  "STOP_MARKET", null, allConfig.getLossWorkingType(), 
+							ToolsUtils.formatPrice(symbol, stopPrice),  TransactionConstants.TYPE_STOP_MARKET, null, allConfig.getLossWorkingType(), 
 							firstsd ? null : "true", apiKey, secretKey);
 					tempInfo = JSON.parseObject(temp, new TypeReference<Map<String, String>>(){} );
-					if(tempInfo != null && StringUtils.isNotEmpty(tempInfo.get("orderId"))) {
-						orderIds.add(tempInfo.get("orderId"));
+					if(tempInfo != null && StringUtils.isNotEmpty(tempInfo.get(TransactionConstants.BIAN_ORDERID))) {
+						orderIds.add(tempInfo.get(TransactionConstants.BIAN_ORDERID));
 					} else {
 						msg = temp;
 					}
@@ -459,11 +466,11 @@ public class OrderServiceImpl implements OrderService {
 				if(orderIds.size() == seq) {
 					//操作止损单3
 					temp = trade(symbol, stopSide, ToolsUtils.generatePositionSide(firstsd, true, stopSide), quantity, null, 
-							ToolsUtils.formatPrice(symbol, stopPrice), "STOP_MARKET", null, allConfig.getLossWorkingType(), 
+							ToolsUtils.formatPrice(symbol, stopPrice), TransactionConstants.TYPE_STOP_MARKET, null, allConfig.getLossWorkingType(), 
 							firstsd ? null : "true", apiKey, secretKey);
 					tempInfo = JSON.parseObject(temp, new TypeReference<Map<String, String>>(){} );
-					if(tempInfo != null && StringUtils.isNotEmpty(tempInfo.get("orderId"))) {
-						orderIds.add(tempInfo.get("orderId"));
+					if(tempInfo != null && StringUtils.isNotEmpty(tempInfo.get(TransactionConstants.BIAN_ORDERID))) {
+						orderIds.add(tempInfo.get(TransactionConstants.BIAN_ORDERID));
 					} else {
 						msg = temp;
 					}
@@ -482,7 +489,7 @@ public class OrderServiceImpl implements OrderService {
 				try {
 					String temp = cancel(symbol, orderId, apiKey, secretKey);	
 					Map<String, String> tempInfo = JSON.parseObject(temp, new TypeReference<Map<String, String>>(){} );
-					if(!(tempInfo != null && StringUtils.isNotEmpty(tempInfo.get("orderId")))) {
+					if(!(tempInfo != null && StringUtils.isNotEmpty(tempInfo.get(TransactionConstants.BIAN_ORDERID)))) {
 						allCanceled = false;
 					} 
 				} catch(Exception e) {
