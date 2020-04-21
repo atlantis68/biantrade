@@ -24,7 +24,7 @@
     <select id="findFllowPlans" parameterType="Integer"
             resultType="cn.itcast.pojo.Plan">
         SELECT p.* FROM plan p, USER u WHERE state &lt; 4 AND u.id = p.uid AND u.role like "%0%" 
-        	and p.level &lt;= #{level} and u.status = 1 order by createTime;
+        	and p.level &lt;= #{level} and u.status = 1 and p.type &lt; 2 order by createTime;
     </select>        
     <update id="updatePlanById" parameterType="cn.itcast.pojo.Plan">
         update `plan` set state = #{state}, updateTime = #{updateTime}, orderIds = #{orderIds} where id = #{id};
@@ -46,5 +46,8 @@
     <select id="findPlansByState1" resultType="cn.itcast.pojo.Plan">
         select p.`id`, p.`uid`, p.`pid`, p.`symbol`, p.`first`, p.`second`, p.`third`, p.`stop`, p.`trigger`, p.`compare`, p.`trigger1`, p.`compare1`, p.`state`, 
         	u.apikey as createTime, u.secretkey as updateTime, p.`type`, p.`orderIds` from `plan` p, user u where p.uid = u.id and state &lt; 4 and u.status = 1
-    </select>        
+    </select>  
+    <update id="updateStrategyById" parameterType="cn.itcast.pojo.Plan">
+        update `plan` set stop = #{stop}, updateTime = #{updateTime}, orderIds = #{orderIds} where id = #{id};
+    </update>           
 </mapper>

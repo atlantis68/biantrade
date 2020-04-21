@@ -20,6 +20,8 @@ import com.alibaba.fastjson.JSONObject;
 
 import cn.itcast.back.CancelPlanTask;
 import cn.itcast.back.FollowPlanTask;
+import cn.itcast.back.FollowStrategyStopTask;
+import cn.itcast.back.FollowStrategyTask;
 import cn.itcast.back.ThreadPool;
 import cn.itcast.constant.TransactionConstants;
 import cn.itcast.model.Result;
@@ -408,5 +410,65 @@ public class OrderController {
 		}
     	return result.toJSONString();
 		
+    }
+    
+    @RequestMapping(value = "/strategyMarket")
+    @ResponseBody
+    public String strategyMarket(String symbol, String side, Integer level, HttpSession session) {
+    	JSONObject result = new JSONObject();
+    	String strategy = null;
+    	try {
+    		//获取配置项
+    		User user = (User) session.getAttribute(TransactionConstants.USER_SESSION);
+    		strategy = orderService.strategyMarket(symbol, side, user.getId(), user.getApiKey(), user.getSecretKey(), level, null);
+        	if(user.getRole().indexOf("0") > -1) {
+        		JSONObject jSONObject = JSON.parseObject(strategy);
+        		if(jSONObject.containsKey(TransactionConstants.USER_ID)) {
+        			int id = jSONObject.getIntValue(TransactionConstants.USER_ID);
+        			//进入关联跟单
+        			if(id > 0) {
+        				Config config = new Config();
+        				config.setType(symbol);
+        				config.setLossWorkingType("" + level);;
+        				List<Config> allConfig = configService.findConfigFlag(config);
+        				for(Config c : allConfig) {
+        					ThreadPool.execute(new FollowStrategyTask(orderService, symbol, side, c.getUid(), c.getType(), c.getLossWorkingType(), id));
+        				}
+        			}
+        		}
+        	}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+    		result.put(TransactionConstants.SYSTEM_STATUS, TransactionConstants.SYSTEM_STATUS_ERROR);
+    		result.put(TransactionConstants.SYSTEM_MSG, e.getMessage());
+		}
+    	return StringUtils.isNotEmpty(strategy) ? strategy : result.toJSONString();
+    }
+    
+    @RequestMapping(value = "/strategyStop")
+    @ResponseBody
+    public String strategyStop(String symbol, String side, String stopPrice, String id, HttpSession session) {
+    	JSONObject result = new JSONObject();
+    	String strategy = null;
+    	try {
+    		//获取配置项
+    		User user = (User) session.getAttribute(TransactionConstants.USER_SESSION);
+    		strategy = orderService.strategyStop(symbol, side, stopPrice, user.getId(), id, user.getApiKey(), user.getSecretKey());
+			if(user.getRole().indexOf("0") > -1) {
+				//进入关联操作
+				List<Plan> plans = orderService.findPlansById(Integer.parseInt(id));
+				for(Plan plan : plans) {
+					ThreadPool.execute(new FollowStrategyStopTask(orderService, plan.getSymbol(), side, stopPrice, 
+							plan.getUid(), plan.getCreateTime(), plan.getUpdateTime(), "" + plan.getId()));
+				}				
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+    		result.put(TransactionConstants.SYSTEM_STATUS, TransactionConstants.SYSTEM_STATUS_ERROR);
+    		result.put(TransactionConstants.SYSTEM_MSG, e.getMessage());
+		}
+    	return StringUtils.isNotEmpty(strategy) ? strategy : result.toJSONString();
     }
 }

@@ -53,4 +53,8 @@ public interface OrderService {
     public List<Balance> findBalanceByUid(Integer uid);
     
     public Boolean positionSide(String apiKey, String secretKey) throws Exception;
+    
+    public String strategyMarket(String symbol, String side, Integer uid, String apiKey, String secretKey, Integer level, Integer id);
+    
+    public String strategyStop(String symbol, String side, String stopPrice, Integer uid, String id, String apiKey, String secretKey);
 }

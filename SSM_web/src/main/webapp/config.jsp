@@ -56,7 +56,8 @@
 	            				var str = "";
 		            			str += "<tr>" + 
 		            				"<td rowspan=\"2\" align=\"center\"><b>类型</b></td>" +
-			            			"<td align=\"center\"><b>合约本金</b></td>" + 
+		            				"<td align=\"center\"><b>策略单本金</b></td>" + 
+			            			"<td align=\"center\"><b>计划单本金</b></td>" + 
 			            			"<td align=\"center\"><b>最大亏损率</b></td>" + 
 			            			"<td align=\"center\"><b>下单偏移量</b></td>" + 
 			            			"<td align=\"center\"><b>止损单触发偏移量</b></td>" + 
@@ -68,6 +69,7 @@
 			            			"<td rowspan=\"2\" align=\"center\"><b>操作</b></td>" + 
 			            			"</tr>";
 		            			str += "<tr>" + 
+		            				"<td align=\"center\"><b>（刀）</b></td>" + 
 			            			"<td align=\"center\"><b>（刀）</b></td>" + 
 			            			"<td align=\"center\"><b>（百分比）</b></td>" + 
 			            			"<td align=\"center\"><b>（万分比）</b></td>" + 
@@ -77,8 +79,8 @@
 		            		}
 		            		for (i in list) {
 		            			str += "<tr>" + 
-			            			"<td>" + list[i].type + "<input type=\"hidden\" id=\"marketAmount" + list[i].type + "\" name=\"marketAmount" + list[i].type + "\" value=" + list[i].marketAmount + " />" 
-			            			+ "<input type=\"hidden\" id=\"rate" + list[i].type + "\" name=\"rate" + list[i].type + "\" value=" + list[i].rate + " /></td>" + 
+			            			"<td>" + list[i].type + "<input type=\"hidden\" id=\"rate" + list[i].type + "\" name=\"rate" + list[i].type + "\" value=" + list[i].rate + " /></td>" + 
+			            			"<td><input type=\"text\" id=\"marketAmount" + list[i].type + "\" name=\"marketAmount" + list[i].type + "\" value=" + list[i].marketAmount + " size=5 /></td>" +
 			            			"<td><input type=\"text\" id=\"limitAmount" + list[i].type + "\" name=\"limitAmount" + list[i].type + "\" value=" + list[i].limitAmount + " size=5 /></td>" +
 			            			"<td><input type=\"text\" id=\"maxLoss" + list[i].type + "\" name=\"maxLoss" + list[i].type + "\" value=" + list[i].maxLoss + " size=5 /></td>" +
 			            			"<td><input type=\"text\" id=\"tradeOffset" + list[i].type + "\" name=\"tradeOffset" + list[i].type + "\" value=" + list[i].tradeOffset + " size=5 /></td>" +
@@ -116,8 +118,12 @@
 
 	    function save(id, type){  
 	    	$("#message").html('');
-			if(!validateInteger($("#limitAmount"+type).val())) {
-				$("#message").html(type + "“限价单合约金额”必须是整数");
+	    	if(!validateFloat($("#marketAmount"+type).val())) {
+				$("#message").html(type + "“策略单本金”必须是小数点后两位的小数");
+				$("#marketAmount"+type).focus();
+				return;
+			} else if(!validateInteger($("#limitAmount"+type).val())) {
+				$("#message").html(type + "“计划单本金”必须是整数");
 				$("#limitAmount"+type).focus();
 				return;
 			} else if(!validateFloat($("#maxLoss"+type).val())) {

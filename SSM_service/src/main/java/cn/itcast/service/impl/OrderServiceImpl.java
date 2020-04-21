@@ -590,7 +590,7 @@ public class OrderServiceImpl implements OrderService {
     	    		e.printStackTrace();
     	    	}
     		}
-    		Mail mail = ToolsUtils.generateMail(uid, symbol, symbol + "计划单" + id + "和相关挂单撤销成功", 
+    		Mail mail = ToolsUtils.generateMail(uid, symbol, symbol + "订单" + id + "和相关挂单撤销成功", 
     				"关联订单：" + orderIds, 0, format.format(new Date()), format.format(new Date()));
     		mailMapper.insertMail(mail);
     	}
@@ -646,8 +646,13 @@ public class OrderServiceImpl implements OrderService {
     public int warn(String id) throws Exception {
 		List<Plan> plans = findPlansById(Integer.parseInt(id));
 		for(Plan plan : plans) {
-    		Mail mail = ToolsUtils.generateMail(plan.getUid(), plan.getSymbol(), plan.getSymbol() + "计划单" 
-    				+ (plan.getThird() > plan.getStop() ? "（多单）" : "（空单）") + plan.getFirst() + "建议止盈", 
+			String subject = "";
+			if(plan.getType() < 2) {
+				subject = plan.getSymbol() + "计划单" + (plan.getThird() > plan.getStop() ? "（多单）" : "（空单）") + plan.getFirst() + "建议止盈";
+			} else {
+				subject = plan.getSymbol() + "策略单" + (plan.getType() == 2 ? "（多单）" : "（空单）") + "建议止盈";
+			}
+    		Mail mail = ToolsUtils.generateMail(plan.getUid(), plan.getSymbol(), subject, 
     				"", 0, format.format(new Date()), format.format(new Date()));
     		mailMapper.insertMail(mail);
 		}	
@@ -679,4 +684,123 @@ public class OrderServiceImpl implements OrderService {
 		}
 		return null;
     }
+    
+	//需要保证事务
+	public String strategyMarket(String symbol, String side, Integer uid, String apiKey, String secretKey, Integer level, Integer id) {
+		JSONObject resultJson = new JSONObject();
+		try {
+			String temp = null;
+			Config config = new Config();
+			config.setUid(uid);
+			config.setType(symbol);
+			Config allConfig = configService.findConfigByUid(config);
+			boolean firstsd = positionSide(apiKey, secretKey);
+			temp = trade(symbol, side, ToolsUtils.generatePositionSide(firstsd, false, side), "" + allConfig.getMarketAmount(), 
+					null, null, TransactionConstants.TYPE_MARKET, null, null, null, apiKey, secretKey);  
+			Float curPrice = ToolsUtils.getCurPriceByKey(symbol);
+			Plan plan = new Plan();
+			plan.setUid(uid);
+			plan.setPid(id != null ? id : 0);
+			plan.setSymbol(symbol);
+			plan.setFirst(curPrice);
+			plan.setSecond(curPrice);
+			plan.setThird(curPrice);
+			plan.setStop(-1f);
+			plan.setTrigger(0f);
+			plan.setCompare(0);
+			plan.setTrigger1(0f);
+			plan.setCompare1(1);
+			plan.setCreateTime(format.format(new Date()));
+			plan.setUpdateTime(format.format(new Date()));
+			plan.setType(side.equals(TransactionConstants.SIDE_BUY) ? 2 : 3);
+			plan.setLevel(level != null ? level : 1);
+			
+			Map<String, String> tempInfo = JSON.parseObject(temp, new TypeReference<Map<String, String>>(){} );
+			if(tempInfo != null && StringUtils.isNotEmpty(tempInfo.get(TransactionConstants.BIAN_ORDERID))) {
+				plan.setState(2);
+				plan.setOrderIds(tempInfo.get(TransactionConstants.BIAN_ORDERID));
+				resultJson.put(TransactionConstants.SYSTEM_STATUS, TransactionConstants.SYSTEM_STATUS_OK);
+				resultJson.put(TransactionConstants.SYSTEM_MSG, "create strategy market successful");
+			} else {
+				plan.setState(3);
+				plan.setOrderIds("");
+				resultJson.put(TransactionConstants.SYSTEM_STATUS, TransactionConstants.SYSTEM_STATUS_ERROR);
+				resultJson.put(TransactionConstants.SYSTEM_MSG, "create strategy market failed");
+			}
+			planMapper.insertPlan(plan);
+			Mail mail = new Mail();
+			resultJson.put(TransactionConstants.USER_ID, plan.getId());
+			mail.setUid(uid);
+			mail.setSymbol(symbol);
+			if(plan.getState() == 2) {
+				mail.setSubject(symbol + "策略" + (plan.getType() == 2 ? "多单" : "空单") + (id != null ? "跟单" : "") 
+						+ "创建成功，预计成交价格在" + curPrice + "附近，已提交到币安");
+			} else {
+				mail.setSubject(symbol + "策略" + (plan.getType() == 2 ? "多单" : "空单") + (id != null ? "跟单" : "") 
+						+ "提交币安失败，错误原因：" + temp);
+			}
+			mail.setContent("提交数量：" + allConfig.getMarketAmount());
+			mail.setState(0);
+			mail.setCreateTime(format.format(new Date()));
+			mail.setUpdateTime(format.format(new Date()));
+			insertMail(mail);
+		} catch(Exception e) {
+			e.printStackTrace();
+			resultJson.put(TransactionConstants.SYSTEM_STATUS, TransactionConstants.SYSTEM_STATUS_ERROR);
+			resultJson.put(TransactionConstants.SYSTEM_MSG, e.getMessage());
+		}
+		return resultJson.toString();
+	}
+	
+	//需要保证事务
+	public String strategyStop(String symbol, String side, String stopPrice, Integer uid, String id, String apiKey, String secretKey) {
+		String result = "";
+		try {
+			String temp = null;
+			Config config = new Config();
+			config.setUid(uid);
+			config.setType(symbol);
+			Config allConfig = configService.findConfigByUid(config);
+			boolean firstsd = positionSide(apiKey, secretKey);
+			temp = trade(symbol, side, ToolsUtils.generatePositionSide(firstsd, true, side), "" + allConfig.getMarketAmount(), 
+				null, ToolsUtils.formatPrice(symbol, Float.parseFloat(stopPrice)), TransactionConstants.TYPE_STOP_MARKET, 
+				null, allConfig.getLossWorkingType(), firstsd ? null : "true", apiKey, secretKey);
+			Plan plan = planMapper.findPlanById(Integer.parseInt(id));
+			plan.setUpdateTime(format.format(new Date()));
+			Mail mail = new Mail();
+			mail.setUid(uid);
+			mail.setSymbol(symbol);
+			mail.setContent("提交数量：" + allConfig.getMarketAmount());
+			mail.setState(0);
+			mail.setCreateTime(format.format(new Date()));
+			mail.setUpdateTime(format.format(new Date()));
+			Map<String, String> tempInfo = JSON.parseObject(temp, new TypeReference<Map<String, String>>(){} );
+			if(tempInfo != null && StringUtils.isNotEmpty(tempInfo.get(TransactionConstants.BIAN_ORDERID))) {
+				plan.setStop(Float.parseFloat(stopPrice));
+				plan.setOrderIds(plan.getOrderIds() + "," + tempInfo.get(TransactionConstants.BIAN_ORDERID));
+				mail.setSubject(symbol + "策略" + (plan.getType() == 2 ? "多单" : "空单") + "止损" + (plan.getPid() == 0 ? "" : "跟") 
+						+ "单创建成功，价格" + stopPrice + "，已提交到币安");	
+				JSONObject resultJson = new JSONObject();
+				resultJson.put(TransactionConstants.SYSTEM_STATUS, TransactionConstants.SYSTEM_STATUS_OK);
+				resultJson.put(TransactionConstants.SYSTEM_MSG, "create strategy stop successful");
+				result = resultJson.toString();
+			} else {
+				mail.setSubject(symbol + "策略" + (plan.getType() == 2 ? "多单" : "空单") + "止损" + (plan.getPid() == 0 ? "" : "跟") 
+						+ "单创建失败");	
+				JSONObject resultJson = new JSONObject();
+				resultJson.put(TransactionConstants.SYSTEM_STATUS, TransactionConstants.SYSTEM_STATUS_ERROR);
+				resultJson.put(TransactionConstants.SYSTEM_MSG, "create strategy stop failed");
+				result = resultJson.toString();
+			}
+			planMapper.updateStrategyById(plan);			
+			insertMail(mail);
+		} catch(Exception e) {
+			e.printStackTrace();
+			JSONObject resultJson = new JSONObject();
+			resultJson.put(TransactionConstants.SYSTEM_STATUS, TransactionConstants.SYSTEM_STATUS_ERROR);
+			resultJson.put(TransactionConstants.SYSTEM_MSG, e.getMessage());
+			result = resultJson.toString();
+		}
+		return result;
+	}
 }

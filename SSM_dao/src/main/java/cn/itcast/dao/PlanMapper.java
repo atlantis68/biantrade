@@ -27,4 +27,6 @@ public interface PlanMapper {
 	public List<Plan> findPlansByState1();
 	
 	public List<Plan> findPlanByTime(@Param("time") Integer time, @Param("level") Integer level);
+	
+	public int updateStrategyById(Plan plan);
 }

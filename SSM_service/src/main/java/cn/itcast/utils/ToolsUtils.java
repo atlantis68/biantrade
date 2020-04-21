@@ -96,7 +96,9 @@ public class ToolsUtils {
 			result = number.setScale(0, BigDecimal.ROUND_DOWN).toString();
 		} else if(symbol.toUpperCase().equals("XRPUSDT") || symbol.toUpperCase().equals("EOSUSDT")
 				|| symbol.toUpperCase().equals("ETCUSDT") || symbol.toUpperCase().equals("LINKUSDT")
-				|| symbol.toUpperCase().equals("BNBUSDT") || symbol.toUpperCase().equals("ATOMUSDT")) {
+				|| symbol.toUpperCase().equals("BNBUSDT") || symbol.toUpperCase().equals("ATOMUSDT")
+				|| symbol.toUpperCase().equals("NEOUSDT") || symbol.toUpperCase().equals("XTZUSDT")
+				|| symbol.toUpperCase().equals("QTUMUSDT") || symbol.toUpperCase().equals("ONTUSDT")) {
 			result = number.setScale(1, BigDecimal.ROUND_DOWN).toString();
 		} else {
 			result = number.setScale(3, BigDecimal.ROUND_DOWN).toString();
@@ -110,11 +112,12 @@ public class ToolsUtils {
 		if(symbol.toUpperCase().equals("TRXUSDT") || symbol.toUpperCase().equals("XLMUSDT") 
 				|| symbol.toUpperCase().equals("ADAUSDT")) {
 			result = number.setScale(5, BigDecimal.ROUND_DOWN).toString();
-		} else if(symbol.toUpperCase().equals("XRPUSDT")) {
+		} else if(symbol.toUpperCase().equals("XRPUSDT") || symbol.toUpperCase().equals("ONTUSDT")) {
 			result = number.setScale(4, BigDecimal.ROUND_DOWN).toString();
 		} else if(symbol.toUpperCase().equals("EOSUSDT") || symbol.toUpperCase().equals("ETCUSDT")
 				|| symbol.toUpperCase().equals("LINKUSDT") || symbol.toUpperCase().equals("BNBUSDT")
-				|| symbol.toUpperCase().equals("ATOMUSDT")) {
+				|| symbol.toUpperCase().equals("ATOMUSDT") || symbol.toUpperCase().equals("NEOUSDT")
+				|| symbol.toUpperCase().equals("QTUMUSDT") || symbol.toUpperCase().equals("XTZUSDT")) {
 			result = number.setScale(3, BigDecimal.ROUND_DOWN).toString();
 		} else {
 			result = number.setScale(2, BigDecimal.ROUND_DOWN).toString();
