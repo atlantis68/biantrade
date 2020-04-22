@@ -803,4 +803,43 @@ public class OrderServiceImpl implements OrderService {
 		}
 		return result;
 	}
+	
+    public String cancelAll(String symbol, Integer uid, String apiKey, String secretKey) throws Exception {
+    	JSONObject result = new JSONObject();
+    	try {
+    		StringBuffer uri = new StringBuffer();
+    		uri.append("timestamp=").append(System.currentTimeMillis());
+    		if(StringUtils.isNotEmpty(symbol)) {
+    			uri.append("&symbol=").append(symbol);
+    		}
+            String signature = SHA256.HMACSHA256(apiKey.getBytes(), secretKey.getBytes());
+    		uri.append("&signature=").append(signature);
+    		Request request = new Request.Builder()
+    			.url(HttpClient.baseUrl + "/fapi/v1/allOpenOrders?" + uri.toString())
+    			.header("X-MBX-APIKEY", apiKey)
+    			.delete().build();
+    		logger.info(request.url().toString());
+    		Call call = HttpClient.okHttpClient.newCall(request);
+			Response response = call.execute();
+			String temp = response.body().string();
+			logger.info("cancelAll = " + temp);
+        	result.put(TransactionConstants.SYSTEM_STATUS, TransactionConstants.SYSTEM_STATUS_OK);
+        	result.put(TransactionConstants.SYSTEM_MSG, temp);
+    		Mail mail = new Mail();
+    		mail.setUid(uid);
+    		mail.setSymbol(symbol);
+    		mail.setSubject(symbol + "的全部即时单撤销成功，已提交到币安");
+    		mail.setContent(symbol + "的全部即时单撤销成功，已提交到币安");
+    		mail.setState(0);
+    		mail.setCreateTime(format.format(new Date()));
+    		mail.setUpdateTime(format.format(new Date()));
+    		insertMail(mail);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+    		result.put(TransactionConstants.SYSTEM_STATUS, TransactionConstants.SYSTEM_STATUS_ERROR);
+    		result.put(TransactionConstants.SYSTEM_MSG, e.getMessage());
+		}
+    	return result.toJSONString();
+    }
 }

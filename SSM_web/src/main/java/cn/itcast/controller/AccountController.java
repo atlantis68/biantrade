@@ -23,6 +23,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 
+import cn.itcast.back.CancelAllTask;
 import cn.itcast.back.ClearMarketTask;
 import cn.itcast.back.ThreadPool;
 import cn.itcast.back.TradeMarketTask;
@@ -347,43 +348,25 @@ public class AccountController {
     @RequestMapping("/cancelAll")
     @ResponseBody
     public String cancelAll(String symbol, HttpSession session) {
-    	JSONObject result = new JSONObject();
+    	JSONObject json = new JSONObject();
+    	String result = null;
     	try {
-    		StringBuffer uri = new StringBuffer();
-    		uri.append("timestamp=").append(System.currentTimeMillis());
-    		if(StringUtils.isNotEmpty(symbol)) {
-    			uri.append("&symbol=").append(symbol);
-    		}
-            User user = (User) session.getAttribute(TransactionConstants.USER_SESSION);
-            String signature = SHA256.HMACSHA256(uri.toString().getBytes(), user.getSecretKey().getBytes());
-    		uri.append("&signature=").append(signature);
-    		Request request = new Request.Builder()
-    			.url(HttpClient.baseUrl + "/fapi/v1/allOpenOrders?" + uri.toString())
-    			.header("X-MBX-APIKEY", user.getApiKey())
-    			.delete().build();
-    		logger.info(request.url().toString());
-    		Call call = HttpClient.okHttpClient.newCall(request);
-			Response response = call.execute();
-			String temp = response.body().string();
-			logger.info("cancelAll = " + temp);
-        	result.put(TransactionConstants.SYSTEM_STATUS, TransactionConstants.SYSTEM_STATUS_OK);
-        	result.put(TransactionConstants.SYSTEM_MSG, temp);
-    		Mail mail = new Mail();
-    		mail.setUid(user.getId());
-    		mail.setSymbol(symbol);
-    		mail.setSubject(symbol + "的全部即时单撤销成功，已提交到币安");
-    		mail.setContent(symbol + "的全部即时单撤销成功，已提交到币安");
-    		mail.setState(0);
-    		mail.setCreateTime(format.format(new Date()));
-    		mail.setUpdateTime(format.format(new Date()));
-    		orderService.insertMail(mail);
+    		User user = (User) session.getAttribute(TransactionConstants.USER_SESSION);
+    		result = orderService.cancelAll(symbol, user.getId(), user.getApiKey(), user.getSecretKey());
+			Config config = new Config();
+			config.setType(symbol);
+			config.setLossWorkingType(user.getId().toString() + "9");;
+			List<Config> allConfig = configService.findConfigFlag(config);
+			for(Config c : allConfig) {
+				ThreadPool.execute(new CancelAllTask(orderService, c.getUid(), symbol, c.getType(), c.getLossWorkingType()));
+			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-    		result.put(TransactionConstants.SYSTEM_STATUS, TransactionConstants.SYSTEM_STATUS_ERROR);
-    		result.put(TransactionConstants.SYSTEM_MSG, e.getMessage());
+			json.put(TransactionConstants.SYSTEM_STATUS, TransactionConstants.SYSTEM_STATUS_ERROR);
+			json.put(TransactionConstants.SYSTEM_MSG, e.getMessage());
 		}
-    	return result.toJSONString();
+    	return StringUtils.isNotEmpty(result) ? result : json.toJSONString();
     }     
     
 

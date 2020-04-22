@@ -56,7 +56,7 @@
 	            				var str = "";
 		            			str += "<tr>" + 
 		            				"<td rowspan=\"2\" align=\"center\"><b>类型</b></td>" +
-		            				"<td align=\"center\"><b>策略单本金</b></td>" + 
+		            				"<td align=\"center\"><b>策略单个数 </b></td>" + 
 			            			"<td align=\"center\"><b>计划单本金</b></td>" + 
 			            			"<td align=\"center\"><b>最大亏损率</b></td>" + 
 			            			"<td align=\"center\"><b>下单偏移量</b></td>" + 
@@ -69,7 +69,7 @@
 			            			"<td rowspan=\"2\" align=\"center\"><b>操作</b></td>" + 
 			            			"</tr>";
 		            			str += "<tr>" + 
-		            				"<td align=\"center\"><b>（刀）</b></td>" + 
+		            				"<td align=\"center\"><b>（数量）</b></td>" + 
 			            			"<td align=\"center\"><b>（刀）</b></td>" + 
 			            			"<td align=\"center\"><b>（百分比）</b></td>" + 
 			            			"<td align=\"center\"><b>（万分比）</b></td>" + 
