@@ -812,7 +812,7 @@ public class OrderServiceImpl implements OrderService {
     		if(StringUtils.isNotEmpty(symbol)) {
     			uri.append("&symbol=").append(symbol);
     		}
-            String signature = SHA256.HMACSHA256(apiKey.getBytes(), secretKey.getBytes());
+            String signature = SHA256.HMACSHA256(uri.toString().getBytes(), secretKey.getBytes());
     		uri.append("&signature=").append(signature);
     		Request request = new Request.Builder()
     			.url(HttpClient.baseUrl + "/fapi/v1/allOpenOrders?" + uri.toString())
