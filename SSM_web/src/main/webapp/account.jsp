@@ -651,19 +651,19 @@
 		            			if(Math.abs(list[i].positionAmt) > 0) {
 			            			var edit = "";
 			            		   	if(list[i].positionAmt < 0) {
-			            		   		edit = "<input type=\"type\" value=10 id=\"position" + list[i].symbol + "\" name=\"position" + list[i].symbol + "\")\" size=3/>%" 
-			            		   			+ "<input type=\"button\" value=\"平仓\" id=\"market" + list[i].symbol + "\" name=\"market" + list[i].symbol + "\" onclick =\"tradeMarket2('BUY', '" + list[i].symbol + "')\"/>"
-			            		   			+ "&nbsp&nbsp<input type=\"type\" value=50 id=\"prate" + list[i].symbol + "\" name=\"prate" + list[i].symbol + "\")\" size=5/>%" 
-			            		   			+ "<input type=\"button\" value=\"止盈\" id=\"profit" + list[i].symbol + "\" name=\"profit" + list[i].symbol + "\" onclick =\"tradeMarket3('BUY', 'TAKE_PROFIT_MARKET', '" + list[i].symbol + "', '" + list[i].entryPrice + "', '" + list[i].leverage + "')\"/>"
-			            		   			+ "&nbsp&nbsp<input type=\"type\" value=50 id=\"lrate" + list[i].symbol + "\" name=\"lrate" + list[i].symbol + "\")\" size=5/>%" 
-			            		   			+ "<input type=\"button\" value=\"止损\" id=\"loss" + list[i].symbol + "\" name=\"loss" + list[i].symbol + "\" onclick =\"tradeMarket4('BUY', 'STOP_MARKET', '" + list[i].symbol + "', '" + list[i].entryPrice + "', '" + list[i].leverage + "')\"/>"            		   			
+			            		   		edit = "<input type=\"type\" value=10 id=\"position" + list[i].symbol + list[i].positionSide + "\" name=\"position" + list[i].symbol + list[i].positionSide + "\")\" size=3/>%" 
+			            		   			+ "<input type=\"button\" value=\"平仓\" id=\"market" + list[i].symbol + list[i].positionSide + "\" name=\"market" + list[i].symbol + list[i].positionSide + "\" onclick =\"tradeMarket2('BUY', '" + list[i].symbol + "','" + list[i].positionSide + "')\"/>"
+			            		   			+ "&nbsp&nbsp<input type=\"type\" value=50 id=\"prate" + list[i].symbol + list[i].positionSide + "\" name=\"prate" + list[i].symbol + list[i].positionSide + "\")\" size=5/>%" 
+			            		   			+ "<input type=\"button\" value=\"止盈\" id=\"profit" + list[i].symbol + list[i].positionSide + "\" name=\"profit" + list[i].symbol + list[i].positionSide + "\" onclick =\"tradeMarket3('BUY', 'TAKE_PROFIT_MARKET', '" + list[i].symbol + "', '" + list[i].entryPrice + "', '" + list[i].leverage + "','" + list[i].positionSide + "')\"/>"
+			            		   			+ "&nbsp&nbsp<input type=\"type\" value=50 id=\"lrate" + list[i].symbol + list[i].positionSide + "\" name=\"lrate" + list[i].symbol + list[i].positionSide + "\")\" size=5/>%" 
+			            		   			+ "<input type=\"button\" value=\"止损\" id=\"loss" + list[i].symbol + list[i].positionSide + "\" name=\"loss" + list[i].symbol + list[i].positionSide + "\" onclick =\"tradeMarket4('BUY', 'STOP_MARKET', '" + list[i].symbol + "', '" + list[i].entryPrice + "', '" + list[i].leverage + "','" + list[i].positionSide + "')\"/>"      		   			
 			            		    } else if(list[i].positionAmt > 0) {
-			            		    	edit = "<input type=\"type\" value=10 id=\"position" + list[i].symbol + "\" name=\"position" + list[i].symbol + "\")\" size=3/>%" 
-			            		    		+ "<input type=\"button\" value=\"平仓\" id=\"market" + list[i].symbol + "\" name=\"market" + list[i].symbol + "\" onclick =\"tradeMarket2('SELL', '" + list[i].symbol + "')\"/>"
-			            		   			+ "&nbsp&nbsp<input type=\"type\" value=50 id=\"prate" + list[i].symbol + "\" name=\"prate" + list[i].symbol + "\")\" size=5/>%" 
-			            		   			+ "<input type=\"button\" value=\"止盈\" id=\"profit" + list[i].symbol + "\" name=\"profit" + list[i].symbol + "\" onclick =\"tradeMarket3('SELL', 'TAKE_PROFIT_MARKET', '" + list[i].symbol + "', '" + list[i].entryPrice + "', '" + list[i].leverage + "')\"/>"
-			            		   			+ "&nbsp&nbsp<input type=\"type\" value=50 id=\"lrate" + list[i].symbol + "\" name=\"lrate" + list[i].symbol + "\")\" size=5/>%" 
-			            		   			+ "<input type=\"button\" value=\"止损\" id=\"loss" + list[i].symbol + "\" name=\"loss" + list[i].symbol + "\" onclick =\"tradeMarket4('SELL', 'STOP_MARKET', '" + list[i].symbol + "', '" + list[i].entryPrice + "', '" + list[i].leverage + "')\"/>"
+			            		    	edit = "<input type=\"type\" value=10 id=\"position" + list[i].symbol + list[i].positionSide + "\" name=\"position" + list[i].symbol + list[i].positionSide + "\")\" size=3/>%" 
+			            		    		+ "<input type=\"button\" value=\"平仓\" id=\"market" + list[i].symbol + list[i].positionSide + "\" name=\"market" + list[i].symbol + list[i].positionSide + "\" onclick =\"tradeMarket2('SELL', '" + list[i].symbol + "','" + list[i].positionSide + "')\"/>"
+			            		   			+ "&nbsp&nbsp<input type=\"type\" value=50 id=\"prate" + list[i].symbol + list[i].positionSide + "\" name=\"prate" + list[i].symbol + list[i].positionSide + "\")\" size=5/>%" 
+			            		   			+ "<input type=\"button\" value=\"止盈\" id=\"profit" + list[i].symbol + list[i].positionSide + "\" name=\"profit" + list[i].symbol + list[i].positionSide + "\" onclick =\"tradeMarket3('SELL', 'TAKE_PROFIT_MARKET', '" + list[i].symbol + "', '" + list[i].entryPrice + "', '" + list[i].leverage + "','" + list[i].positionSide + "')\"/>"
+			            		   			+ "&nbsp&nbsp<input type=\"type\" value=50 id=\"lrate" + list[i].symbol + list[i].positionSide + "\" name=\"lrate" + list[i].symbol + list[i].positionSide + "\")\" size=5/>%" 
+			            		   			+ "<input type=\"button\" value=\"止损\" id=\"loss" + list[i].symbol + list[i].positionSide + "\" name=\"loss" + list[i].symbol + list[i].positionSide + "\" onclick =\"tradeMarket4('SELL', 'STOP_MARKET', '" + list[i].symbol + "', '" + list[i].entryPrice + "', '" + list[i].leverage + "','" + list[i].positionSide + "')\"/>"
 			            		    }
 			            		   	var profit = Number(list[i].unRealizedProfit.match(/^\-?\d+(?:\.\d{0,4})?/)) / Number(list[i].entryPrice.match(/^\-?\d+(?:\.\d{0,4})?/)) * 100 * Number(list[i].leverage) / Math.abs(Number(list[i].positionAmt));
 			            			str += "<tr>" + 
@@ -857,17 +857,17 @@
 	        }); 
 	    }
 	    
-	    function tradeMarket2(side, symbol) { 
+	    function tradeMarket2(side, symbol, positionSide) { 
 	    	if(!confirm(symbol + "：是否" + translateSide1(side) + "平仓")) {
 	    		return;
 	    	}
 	     	$("#message").html('');
-    		if(!validateFloat2($("#position" + symbol).val())) {
+    		if(!validateFloat2($("#position" + symbol + positionSide).val())) {
     			$("#message").html("“平仓数量”必须是小数点后两位以内的小数");
-    			$("#position" + symbol).focus();
+    			$("#position" + symbol + positionSide).focus();
     			return;
     		}
-	    	$("#market"+symbol).attr("disabled","true");
+	    	$("#market"+symbol + positionSide).attr("disabled","true");
 
 	        $.ajax({  
 	            type : "get",
@@ -897,39 +897,39 @@
 
 	            //请求完成后回调函数 (请求成功或失败之后均调用)。
 	            complete: function(message) {
-	            	$("#market"+symbol).removeAttr("disabled");
+	            	$("#market"+symbol + positionSide).removeAttr("disabled");
 	            } 
 	        }); 
 	    }	  
 	    
-	    function tradeMarket3(side, type, symbol, price, rate) { 
+	    function tradeMarket3(side, type, symbol, price, rate, positionSide) { 
 	     	$("#message").html('');
-    		if(!validateFloat2($("#position" + symbol).val())) {
+    		if(!validateFloat2($("#position" + symbol + positionSide).val())) {
     			$("#message").html("“止盈数量”必须是小数点后两位以内的小数");
-    			$("#position" + symbol).focus();
+    			$("#position" + symbol + positionSide).focus();
     			return;
-    		} else if(!validateFloat2($("#prate" + symbol).val())) {
+    		} else if(!validateFloat2($("#prate" + symbol + positionSide).val())) {
 				$("#message").html("“止盈率”必须是小数点后两位以内的小数");
-				$("#prate" + symbol).focus();
+				$("#prate" + symbol + positionSide).focus();
 				return;
     		}
     		var stopPrice;
     		if(side == 'BUY') {
-    			stopPrice = parseFloat(price) * (1 - parseFloat($("#prate" + symbol).val()) / 100 / parseFloat(rate));
+    			stopPrice = parseFloat(price) * (1 - parseFloat($("#prate" + symbol + positionSide).val()) / 100 / parseFloat(rate));
     		} else {
-    			stopPrice = parseFloat(price) * (1 + parseFloat($("#prate" + symbol).val()) / 100 / parseFloat(rate));
+    			stopPrice = parseFloat(price) * (1 + parseFloat($("#prate" + symbol + positionSide).val()) / 100 / parseFloat(rate));
     		}
 	    	if(!confirm(symbol + "：是否" + translateSide1(side) + "止盈，点位：" + stopPrice)) {
 	    		return;
 	    	}
-	    	$("#profit"+symbol).attr("disabled","true");
+	    	$("#profit"+symbol + positionSide).attr("disabled","true");
 	    	
 	        $.ajax({  
 	            type : "get",
 	            url : "/Account/profitOrLoss",
 	            timeout : 10000,
-	            data : "symbol=" + symbol + "&side=" + side + "&quantity=" + $("#position" + symbol).val() 
-	            	+ "&rate=" + $("#prate" + symbol).val() + "&type=" + type + "&stopPrice=" + stopPrice,
+	            data : "symbol=" + symbol + "&side=" + side + "&quantity=" + $("#position" + symbol + positionSide).val() 
+	            	+ "&rate=" + $("#prate" + symbol + positionSide).val() + "&type=" + type + "&stopPrice=" + stopPrice,
 
 	            //成功
 	            success : function(data) {
@@ -953,39 +953,39 @@
 
 	            //请求完成后回调函数 (请求成功或失败之后均调用)。
 	            complete: function(message) {
-	            	$("#profit"+symbol).removeAttr("disabled");
+	            	$("#profit"+symbol + positionSide).removeAttr("disabled");
 	            } 
 	        }); 
 	    }
 	    
-	    function tradeMarket4(side, type, symbol, price, rate) {  
+	    function tradeMarket4(side, type, symbol, price, rate, positionSide) {  
 	     	$("#message").html('');
-    		if(!validateFloat2($("#position" + symbol).val())) {
+    		if(!validateFloat2($("#position" + symbol + positionSide).val())) {
     			$("#message").html("“止损数量”必须是小数点后两位以内的小数");
-    			$("#position" + symbol).focus();
+    			$("#position" + symbol + positionSide).focus();
     			return;
-    		} else if(!validateFloat2($("#lrate" + symbol).val())) {
+    		} else if(!validateFloat2($("#lrate" + symbol + positionSide).val())) {
 				$("#message").html("“止损率”必须是小数点后两位以内的小数");
-				$("#lrate" + symbol).focus();
+				$("#lrate" + symbol + positionSide).focus();
 				return;
     		}
     		var stopPrice;
     		if(side == 'SELL') {
-    			stopPrice = parseFloat(price) * (1 - parseFloat($("#lrate" + symbol).val()) / 100 / parseFloat(rate));
+    			stopPrice = parseFloat(price) * (1 - parseFloat($("#lrate" + symbol + positionSide).val()) / 100 / parseFloat(rate));
     		} else {
-    			stopPrice = parseFloat(price) * (1 + parseFloat($("#lrate" + symbol).val()) / 100 / parseFloat(rate));
+    			stopPrice = parseFloat(price) * (1 + parseFloat($("#lrate" + symbol + positionSide).val()) / 100 / parseFloat(rate));
     		}
 	    	if(!confirm(symbol + "：是否" + translateSide1(side) + "止损，点位：" + stopPrice)) {
 	    		return;
 	    	}
-	    	$("#loss"+symbol).attr("disabled","true");
+	    	$("#loss"+symbol + positionSide).attr("disabled","true");
 	    	
 	        $.ajax({  
 	            type : "get",
 	            url : "/Account/profitOrLoss",
 	            timeout : 10000,
-	            data : "symbol=" + symbol + "&side=" + side + "&quantity=" + $("#position" + symbol).val() 
-	            	+ "&rate=" + $("#lrate" + symbol).val() + "&type=" + type + "&stopPrice=" + stopPrice,
+	            data : "symbol=" + symbol + "&side=" + side + "&quantity=" + $("#position" + symbol + positionSide).val() 
+	            	+ "&rate=" + $("#lrate" + symbol + positionSide).val() + "&type=" + type + "&stopPrice=" + stopPrice,
 
 	            //成功
 	            success : function(data) {
@@ -1009,7 +1009,7 @@
 
 	            //请求完成后回调函数 (请求成功或失败之后均调用)。
 	            complete: function(message) {
-	            	$("#loss"+symbol).removeAttr("disabled");
+	            	$("#loss"+symbol + positionSide).removeAttr("disabled");
 	            } 
 	        }); 
 	    }	
