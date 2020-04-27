@@ -873,7 +873,7 @@
 	            type : "get",
 	            url : "/Account/clearMarket",
 	            timeout : 10000,
-	            data : "symbol=" + symbol + "&side=" + side + "&quantity=" + $("#position" + symbol).val(),
+	            data : "symbol=" + symbol + "&side=" + side + "&quantity=" + $("#position" + symbol + positionSide).val(),
 
 	            //成功
 	            success : function(data) {
