@@ -190,10 +190,13 @@ public class OrderController {
 			int level = 1;
 			String[] roles = user.getRole().split(",");
 			for(String role : roles) {
-				int atomic = Integer.parseInt(role);
-				if(atomic < 6 && atomic > level) {
-					level = atomic;
-				}
+    			if(StringUtils.isNotEmpty(role)) {
+    				int atomic = Integer.parseInt(role);
+    				if(atomic < 6 && atomic > level) {
+    					level = atomic;
+    				}
+    				
+    			}
 			}
 			List<Plan> plans = orderService.findPlanByTime(startTime, level);  
         	result.put(TransactionConstants.SYSTEM_STATUS, TransactionConstants.SYSTEM_STATUS_OK);
