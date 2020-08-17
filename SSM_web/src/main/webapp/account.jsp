@@ -62,7 +62,7 @@
     });
     
     function init(vrole, nickname, username) {
-    	if(vrole.indexOf("0") > -1) {
+    	if(vrole.indexOf(",0,") > -1) {
     		role = 0;
     	} else {
 			role = 1;
